@@ -37,48 +37,45 @@ Dự án chú trọng vào việc xây dựng một **Clickable Prototype Websit
 
 ```text
 TechnoStore/
-├── assets/                  
-│   ├── images/              # Lưu trữ hình ảnh sản phẩm, banner quảng cáo, logo thương hiệu (.png, .jpg).
-│   └── icons/               # Lưu trữ các biểu tượng hệ thống dạng vector (.svg) để hiển thị sắc nét.
+├── assets/                  # Nơi lưu trữ toàn bộ tài nguyên tĩnh của website
+│   ├── images/              # Hình ảnh sản phẩm, banner tiếp thị và logo
+│   └── icons/               # Các biểu tượng (icon) định dạng SVG 
 │
-├── css/                     
-│   ├── base.css             # Thiết lập Reset CSS, khai báo biến màu (:root), quy chuẩn font chữ và khung layout chung (.container).
-│   ├── components.css       # Định nghĩa các thành phần UI dùng chung: nút bấm (.btn), ô nhập liệu (.input), nhãn trạng thái (.badge), khung thẻ (.card).
-│   ├── admin.css            # Định kiểu bố cục giao diện quản trị: thanh điều hướng dọc (sidebar), bảng dữ liệu (table), form quản lý.
-│   └── style.css            # Định kiểu giao diện chi tiết cho các khối nội dung đặc thù thuộc phân hệ khách hàng.
+├── css/                     # Nơi chứa các tệp định dạng giao diện (Stylesheet)
+│   ├── base.css             # Reset CSS, định nghĩa biến màu (:root) và layout cơ bản
+│   ├── components.css       # Các class dùng chung cho toàn dự án (button, input, badge, card)
+│   ├── admin.css            # Định kiểu riêng biệt cho phân hệ quản trị (Admin Dashboard)
+│   └── style.css            # Định kiểu chi tiết cho các trang thuộc phân hệ Khách hàng
 │
-├── js/                      
-│   ├── data.js              # Khởi tạo dữ liệu mẫu (sản phẩm, tài khoản, đơn hàng) và lưu vào localStorage khi web chạy lần đầu.
-│   ├── components.js        # Chứa các hàm JavaScript tạo và trả về chuỗi HTML tái sử dụng (thẻ sản phẩm, thanh điều hướng, chân trang).
-│   ├── auth.js              # Xử lý logic đăng nhập, đăng ký, đăng xuất và kiểm tra phiên làm việc qua localStorage.
-│   ├── display.js           # Truy xuất dữ liệu sản phẩm từ localStorage, hiển thị lên giao diện trang chủ/chi tiết và phân trang.
-│   ├── search.js            # Xử lý thuật toán tìm kiếm và lọc mảng sản phẩm theo tên, danh mục, khoảng giá.
-│   ├── cart.js              # Quản lý mảng giỏ hàng (thêm/sửa số lượng/xóa), tính tổng tiền và tạo đối tượng đơn hàng khi thanh toán.
-│   └── admin.js             # Xử lý các thao tác CRUD (thêm, sửa, xóa/ẩn sản phẩm), quản lý nhập kho và duyệt trạng thái đơn hàng.
+├── js/                      # Nơi chứa logic xử lý cốt lõi của website
+│   ├── data.js              # Nạp mảng dữ liệu mẫu (Sản phẩm, User) vào localStorage
+│   ├── components.js        # Hàm render các thành phần HTML lặp lại (Navbar, Footer, Product Card)
+│   ├── auth.js              # Logic kiểm tra đăng nhập, đăng ký và quản lý phiên người dùng
+│   ├── display.js           # Truy xuất sản phẩm từ localStorage, in ra giao diện và phân trang
+│   ├── search.js            # Thuật toán lọc mảng sản phẩm đa tiêu chí (Tên, hãng, khoảng giá)
+│   ├── cart.js              # Quản lý giỏ hàng, tính tổng tiền và tạo Object Đơn hàng
+│   └── admin.js             # Logic chuyển Tab ẩn/hiện và thao tác CRUD bên Admin
 │
-├── views/                   
-│   ├── admin/               
-│   │   ├── dashboard.html   # Giao diện tổng quan: hiển thị các thẻ thống kê doanh thu, số lượng đơn hàng, cảnh báo tồn kho.
-│   │   ├── products.html    # Giao diện quản lý danh mục và sản phẩm: form nhập liệu và bảng hiển thị thao tác thêm/sửa/xóa.
-│   │   └── orders.html      # Giao diện danh sách đơn hàng: bảng tra cứu chi tiết và các nút thao tác cập nhật trạng thái đơn.
+├── views/                   # Nơi chứa các trang giao diện HTML
+│   ├── admin.html           # (Giả lập SPA) Trang Quản trị duy nhất chứa luồng Dashboard, Products, Orders
 │   │
-│   └── customer/            
-│       ├── login.html       # Giao diện biểu mẫu cho khách hàng đăng nhập hoặc tạo tài khoản mới.
-│       ├── profile.html     # Giao diện xem và chỉnh sửa thông tin cá nhân của người dùng đã đăng nhập.
-│       ├── detail.html      # Giao diện chi tiết sản phẩm: hình ảnh phóng to, thông số kỹ thuật, giá bán và nút thêm vào giỏ.
-│       ├── search.html      # Giao diện hiển thị danh sách kết quả tìm kiếm kèm thanh bộ lọc tiêu chí bên cạnh.
-│       ├── cart.html        # Giao diện giỏ hàng: bảng danh sách sản phẩm đã chọn, điều chỉnh số lượng và tổng thanh toán tạm tính.
-│       ├── checkout.html    # Giao diện hoàn tất đơn: biểu mẫu nhập thông tin người nhận, địa chỉ và chọn phương thức thanh toán.
-│       └── history.html     # Giao diện theo dõi danh sách các đơn hàng đã đặt và trạng thái xử lý tương ứng của từng đơn.
+│   └── customer/            # (Mô hình MPA) Các trang chức năng rời rạc của Khách hàng
+│       ├── login.html       # Giao diện Đăng ký / Đăng nhập
+│       ├── profile.html     # Giao diện xem và chỉnh sửa thông tin cá nhân
+│       ├── detail.html      # Giao diện xem chi tiết thông số một sản phẩm
+│       ├── search.html      # Giao diện tìm kiếm và hiển thị kết quả lọc
+│       ├── cart.html        # Giao diện giỏ hàng tổng kết số lượng và đơn giá
+│       ├── checkout.html    # Giao diện điền thông tin giao hàng và xác nhận thanh toán
+│       └── history.html     # Giao diện xem lại lịch sử trạng thái đơn hàng cá nhân
 │
-├── database/                
-│   ├── technostore.sql      # Tập lệnh SQL hoàn chỉnh chứa cấu trúc tạo bảng và dữ liệu mẫu được trích xuất từ phpMyAdmin.
-│   └── ERD_Diagram.png      # Sơ đồ quan hệ thực thể (ERD) minh họa kiến trúc liên kết giữa các bảng trong cơ sở dữ liệu.
+├── database/                # Nơi chứa minh chứng thiết kế Cơ sở dữ liệu
+│   ├── technostore.sql      # Script xuất cấu trúc bảng và dữ liệu từ MySQL/phpMyAdmin
+│   └── ERD_Diagram.png      # Sơ đồ quan hệ thực thể minh họa kiến trúc Database
 │
-├── index.html               # Trang chủ của website: điểm truy cập chính, hiển thị banner tiếp thị và lưới sản phẩm nổi bật.
-├── README.md                # Tài liệu tổng quan: thông tin đề tài, chức năng cốt lõi, công nghệ sử dụng và kiến trúc hệ thống.
-├── SETUP_GUIDE.md           # Hướng dẫn chi tiết cách thiết lập, cài đặt công cụ và khởi chạy website trên trình duyệt cục bộ.
-└── Git_workFlow.md          # Quy chuẩn phân chia nhánh (branch), quy tắc commit và quy trình xử lý xung đột mã nguồn khi làm việc nhóm.
+├── index.html               # Trang chủ website, hiển thị banner và các sản phẩm nổi bật
+├── README.md                # Tài liệu tổng quan về dự án và phân công nhiệm vụ
+├── SETUP_GUIDE.md           # Hướng dẫn chi tiết cách chạy website bằng Live Server
+└── Git_workFlow.md          # Tài liệu quy định luồng làm việc và phân nhánh trên GitHub
 ```
 
 ---
