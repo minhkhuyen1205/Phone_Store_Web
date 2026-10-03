@@ -1,0 +1,146 @@
+/* ========================================================
+   KHAI BÁO BIẾN MÀU SẮC & FONT CHỮ (COLOR PALETTE)
+   (Dùng chung cho toàn bộ website, lấy từ mục "01 Màu sắc & Kiểu chữ" trong Figma)
+======================================================== */
+:root {
+  --brand-50: #EEF5FF;
+  --brand-500: #1A6DFF; /* Màu xanh chủ đạo */
+  --brand-600: #0A58E6; /* Màu xanh khi hover */
+  --ink: #0B1220;       /* Màu chữ đen đậm nhất */
+  --ink-2: #3F495E;     /* Màu chữ đen nhạt (mô tả) */
+  --ink-3: #6B7587;     /* Màu chữ xám (caption, placeholder) */
+  --line: #E6E9EF;      /* Màu viền (border) */
+  --surface: #F5F6F9;   /* Màu nền xám nhạt (card, secondary button) */
+  --success: #10B981;   /* Xanh lá (Thành công/Đã giao) */
+  --warning: #F59E0B;   /* Vàng cam (Cảnh báo/Đang giao) */
+  --danger: #EF4444;    /* Đỏ (Lỗi/Xóa/Sắp hết hàng) */
+  
+  --font-main: 'Inter', sans-serif;
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--ink);
+  background-color: #ffffff;
+}
+
+/* ========================================================
+   COMPONENTS: NÚT BẤM (BUTTONS) - Lấy từ mục "02 Nút bấm"
+   Cú pháp dùng HTML: <button class="btn btn-md btn-primary">Mua ngay</button>
+======================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  font-family: var(--font-main);
+}
+
+/* Trạng thái Vô hiệu hoá (Figma: Nút mờ đi không bấm được) */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Kích thước nút --- */
+.btn-sm { padding: 6px 14px; font-size: 13px; height: 32px; } /* Figma: Nút "Nhỏ" */
+.btn-md { padding: 10px 20px; font-size: 15px; height: 40px; } /* Figma: Nút "Vừa" (Mặc định dùng cái này) */
+.btn-lg { padding: 14px 28px; font-size: 17px; height: 48px; } /* Figma: Nút "Lớn" */
+
+/* --- Kiểu dáng nút (Variants) --- */
+/* Nút Chính 1: Màu xanh dương (Figma: nút "Mua ngay") */
+.btn-primary { background-color: var(--brand-500); color: #fff; }
+.btn-primary:hover:not(:disabled) { background-color: var(--brand-600); }
+
+/* Nút Chính 2: Màu đen (Figma: nút "Thêm vào giỏ") */
+.btn-dark { background-color: var(--ink); color: #fff; }
+.btn-dark:hover:not(:disabled) { opacity: 0.8; }
+
+/* Nút Phụ 1: Nền xám nhạt (Figma: nút "Huỷ", "Quay lại") */
+.btn-secondary { background-color: var(--surface); color: var(--ink); border-color: var(--line); }
+.btn-secondary:hover:not(:disabled) { background-color: var(--line); }
+
+/* Nút Phụ 2: Trong suốt, chỉ có chữ (Figma: nút "Xem thêm") */
+.btn-ghost { background-color: transparent; color: var(--ink); }
+.btn-ghost:hover:not(:disabled) { background-color: var(--surface); }
+
+/* Nút Phụ 3: Màu đỏ nhạt (Figma: nút "Xoá") */
+.btn-danger { background-color: #FEF2F2; color: var(--danger); border-color: #FECACA; }
+.btn-danger:hover:not(:disabled) { background-color: #FEE2E2; }
+
+
+/* ========================================================
+   COMPONENTS: BIỂU MẪU (FORMS) - Lấy từ mục "03 Biểu mẫu"
+======================================================== */
+/* Khung bọc ngoài mỗi ô nhập liệu */
+.form-group {
+  margin-bottom: 16px;
+}
+
+/* Tiêu đề của ô nhập liệu (Figma: chữ "Văn bản", "Mật khẩu", "Danh sách chọn") */
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Ô nhập chữ (Input) và Khung chọn (Select) - Figma: ô "Nhập họ và tên" */
+.form-input, .form-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--ink);
+  font-size: 15px;
+  font-family: var(--font-main);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+/* Hiệu ứng khi click chuột vào ô nhập liệu (Viền xanh) */
+.form-input:focus, .form-select:focus {
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 3px var(--brand-50);
+}
+
+/* Trạng thái ô nhập liệu bị vô hiệu hóa (Figma: ô xám có sẵn chữ minhanh@mail.com) */
+.form-input:disabled {
+  background-color: var(--surface);
+  color: var(--ink-3);
+  cursor: not-allowed;
+}
+
+/* ========================================================
+   COMPONENTS: NHÃN TRẠNG THÁI (BADGES) - Lấy từ mục "04 Nhãn trạng thái"
+   Cú pháp dùng HTML: <span class="badge badge-success">Đã giao</span>
+======================================================== */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Nhãn xám (Figma: nhãn "Nháp") */
+.badge-default { background-color: var(--surface); color: var(--ink-2); }
+
+/* Nhãn xanh dương (Figma: nhãn "Mới đặt") */
+.badge-info { background-color: #EFF6FF; color: var(--brand-500); }
+
+/* Nhãn vàng (Figma: nhãn "Đang giao", "Sắp hết hàng") */
+.badge-warning { background-color: #FFFBEB; color: var(--warning); }
+
+/* Nhãn xanh lá (Figma: nhãn "Đã giao", "Còn hàng") */
+.badge-success { background-color: #ECFDF5; color: var(--success); }
+
+/* Nhãn đỏ (Figma: nhãn lỗi, báo hủy đơn) */
+.badge-danger { background-color: #FEF2F2; color: var(--danger); }
