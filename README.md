@@ -89,14 +89,13 @@ DoAn_TechnoStore/
 
 Nhóm 5 thành viên chia tách module độc lập. Mọi thành viên đều tham gia thiết kế giao diện (HTML/CSS) và xử lý logic (JS) cho phần việc của mình:
 
-| Thành viên | Nhiệm vụ chính phụ trách | Khối lượng |
-| :--- | :--- | :---: |
-| **Thành viên 1** (Trưởng nhóm) | **Admin toàn diện & Thiết kế Figma**<br>Thiết kế hệ thống UI trên Figma. Code các trang Admin (Dashboard, Sản phẩm, Đơn hàng) và logic xử lý `localStorage` bên quản trị. | **24%** |
-| **Thành viên 2** | **Quản lý tài khoản (Auth) & UI Kit Components**<br>Trang Auth, Hồ sơ. Xây dựng `components.css` (button, input) và hàm JS sinh component động tái sử dụng. | **19%** |
-| **Thành viên 3** | **Trưng bày, Chi tiết, Database & Base HTML**<br>Thiết kế Database. Dựng khung `base.css` và `index.html`. Xử lý in chi tiết sản phẩm và phân trang. | **19%** |
-| **Thành viên 4** | **Tìm kiếm đa tiêu chí & Deploy**<br>Giao diện tìm kiếm. Xử lý thuật toán lọc sản phẩm theo điều kiện kết hợp. Triển khai website lên Internet. | **18%** |
-| **Thành viên 5** | **Giỏ hàng, Thanh toán & Logic cốt lõi**<br>Giao diện Giỏ hàng, Thanh toán, Lịch sử. Xử lý logic tính tổng tiền, kiểm tra tồn kho và tạo đơn hàng. | **20%** |
-
+| Thành viên | Nhiệm vụ chính phụ trách | 
+| :--- | :--- | 
+| **Thành viên 1** (Trưởng nhóm) | **Admin toàn diện & Thiết kế Figma**<br>Thiết kế hệ thống UI trên Figma. Code các trang Admin (Dashboard, Sản phẩm, Đơn hàng) và logic xử lý `localStorage` bên quản trị.
+| **Thành viên 2** | **Quản lý tài khoản (Auth) & UI Kit Components**<br>Trang Auth, Hồ sơ. Xây dựng `components.css` (button, input) và hàm JS sinh component động tái sử dụng. 
+| **Thành viên 3** | **Trưng bày, Chi tiết, Database & Base HTML**<br>Thiết kế Database. Dựng khung `base.css` và `index.html`. Xử lý in chi tiết sản phẩm và phân trang. 
+| **Thành viên 4** | **Tìm kiếm đa tiêu chí & Deploy**<br>Giao diện tìm kiếm. Xử lý thuật toán lọc sản phẩm theo điều kiện kết hợp. Triển khai website lên Internet. 
+| **Thành viên 5** | **Giỏ hàng, Thanh toán & Logic cốt lõi**<br>Giao diện Giỏ hàng, Thanh toán, Lịch sử. Xử lý logic tính tổng tiền, kiểm tra tồn kho và tạo đơn hàng. 
 
 
 ---
