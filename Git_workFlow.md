@@ -6,22 +6,35 @@ Tài liệu này chuẩn hóa quy trình phân chia giai đoạn code và các l
 
 ## 1️⃣ Luồng Phối hợp Công việc (Work Coordination Flow)
 
-Dự án được triển khai theo 4 giai đoạn nối tiếp. Các thành viên phải tuân thủ thứ tự này để có tài nguyên code của nhau:
+Dự án được triển khai tuần tự qua 4 giai đoạn khép kín nhằm đảm bảo tính đồng bộ dữ liệu và giao diện giữa 5 thành viên:
 
-*   **Giai đoạn 1: Dựng móng UI & Data (TV 2 & TV 3)**
-    *   **Thành viên 3:** Xây dựng `base.css` (Reset css, biến màu `:root`, layout `.container`). Thiết lập cấu trúc thư mục và `index.html`.
-    *   **Thành viên 2:** Xây dựng `components.css` (UI Kit định dạng chung cho input, button) và file `components.js` chứa hàm sinh giao diện động.
-    *   👉 *Merge toàn bộ lên nhánh `main` để các thành viên khác kéo về tái sử dụng.*
-*   **Giai đoạn 2: Lắp ráp Giao diện (Toàn nhóm)**
-    *   Mỗi thành viên tạo các file `.html` riêng biệt trong thư mục `views`.
-    *   Tất cả phải `<link>` file `base.css` và `components.css` vào trang của mình để đảm bảo giao diện đồng bộ 100% với Figma. 
-*   **Giai đoạn 3: Xử lý Logic Javascript (TV 1, 4, 5)**
-    *   **Thành viên 4 (Tìm kiếm):** Rút mảng sản phẩm từ `localStorage`, dùng hàm `.filter()` để lọc đa điều kiện, gọi hàm render của TV2 để in kết quả.
-    *   **Thành viên 5 (Giỏ hàng):** Viết logic tính toán tiền, tạo Object đơn hàng mới và đẩy vào `localStorage`.
-    *   **Thành viên 1 (Admin):** Truy xuất mảng Đơn hàng do TV5 vừa tạo để hiển thị lên bảng quản trị và xử lý thay đổi trạng thái (Đã giao, Hủy...).
-*   **Giai đoạn 4: Đóng gói & Deploy (TV 4)**
-    *   Kiểm tra chéo toàn bộ luồng, gộp code vào `main` và Deploy lên nền tảng đám mây.
+*   **Giai đoạn 1: Thiết kế UI & Chuẩn hóa Nền tảng (TV1, TV2, TV3)**
+    *   **Thành viên 1:** Hoàn thiện bản vẽ Figma các màn hình cốt lõi (Khách hàng & Admin), trích xuất mã màu, typography và xuất toàn bộ ảnh/icon vào thư mục `assets/`.
+    *   **Thành viên 3:** 
+        * Thiết lập cấu trúc khung thư mục dự án và file `index.html` mẫu.
+        * Viết `base.css` (Reset CSS, khai báo CSS Variables `:root`, layout `.container`).
+        * Thiết kế CSDL trên MySQL qua phpMyAdmin, vẽ sơ đồ `ERD_Diagram.png` và xuất file `technostore.sql` vào thư mục `database/`.
+    *   **Thành viên 2:** Dựa vào Figma của TV1 để code `components.css` (UI Kit: button, input, badge, card) và viết hàm render HTML động trong `components.js`.
+    *   **Thống nhất chung:** Thống nhất cấu trúc Schema của đối tượng (Product, User, Order) và tạo sẵn file `js/data.js` để nạp dữ liệu mẫu ban đầu vào `localStorage`.
+    *   👉 *Merge toàn bộ nhánh móng lên `main` để các thành viên đồng bộ về máy trước khi code giao diện.*
 
+*   **Giai đoạn 2: Lắp ráp Giao diện HTML tĩnh (Toàn bộ 5 thành viên)**
+    *   Mỗi thành viên tạo nhánh riêng và dựng các file `.html` được phân công trong thư mục `views/`.
+    *   Bắt buộc nhúng đồng thời `base.css` và `components.css` vào tất cả các file HTML để đảm bảo chuẩn giao diện từ Figma.
+    *   Liên kết các trang với nhau bằng thẻ `<a>` với đường dẫn tương đối (`./` hoặc `../`) để tạo luồng Clickable Prototype hoàn chỉnh.
+    *   👉 *Hoàn tất bộ khung giao diện tĩnh, kiểm tra hiển thị trên trình duyệt trước khi gắn logic.*
+
+*   **Giai đoạn 3: Hiện thực hóa Logic JavaScript & LocalStorage (Toàn bộ 5 thành viên)**
+    *   **Thành viên 2 (`auth.js`):** Xử lý form Đăng ký, Đăng nhập, Đăng xuất, cập nhật thông tin cá nhân và lưu trạng thái phiên đăng nhập vào `localStorage`.
+    *   **Thành viên 3 (`display.js`):** Đọc danh sách sản phẩm từ `localStorage`, render ra trang chủ, xử lý thuật toán phân trang (pagination) và hiển thị trang chi tiết khi click vào sản phẩm.
+    *   **Thành viên 4 (`search.js`):** Lấy dữ liệu sản phẩm từ `localStorage`, dùng hàm `.filter()` để lọc theo từ khóa, danh mục và khoảng giá; tái sử dụng hàm render của TV2 để in kết quả ra `search.html`.
+    *   **Thành viên 5 (`cart.js`):** Xử lý thêm/bớt/xóa giỏ hàng, tính tổng tiền tự động, kiểm tra tồn kho, xử lý form đặt hàng và đẩy Object đơn hàng mới vào `localStorage`.
+    *   **Thành viên 1 (`admin.js`):** Thao tác CRUD (Thêm/Sửa/Ẩn sản phẩm) bên Admin; đọc mảng đơn hàng do TV5 đẩy lên để duyệt trạng thái (Chờ xử lý -> Đang giao -> Đã giao).
+
+*   **Giai đoạn 4: Kiểm thử tích hợp, Sửa lỗi & Đóng gói Triển khai (Toàn nhóm & TV4)**
+    *   **Kiểm thử luồng khép kín:** Khách đăng ký -> Đăng nhập -> Tìm kiếm -> Thêm giỏ -> Đặt hàng -> Admin đăng nhập -> Kiểm tra sản phẩm và duyệt đơn hàng -> Xem lại lịch sử mua.
+    *   **Kiểm tra tính tương thích Local:** Mở trực tiếp các file HTML bằng giao thức file local (`file:///...`) trên máy tính lạ không có server để đảm bảo không lỗi font, mất ảnh hay chết script.
+    *   **Thành viên 4:** Đóng gói phiên bản ổn định cuối cùng trên nhánh `main`, cấu hình và triển khai (Deploy) website lên nền tảng đám mây (GitHub Pages hoặc Vercel) để lấy điểm cộng triển khai thực tế.
 ---
 
 ## 2️⃣ Quy định Phân nhánh (Branching Strategy)
