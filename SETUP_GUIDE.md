@@ -17,7 +17,7 @@ Tài liệu này cung cấp các bước thiết lập môi trường nội bộ
 **Bước 1: Clone dự án về máy**
 Mở Terminal / Git Bash và chạy chuỗi lệnh sau:
 ```bash
-git clone <URL_CUA_REPOSITORY_GITHUB>
+git clone <https://github.com/minhkhuyen1205/Phone_Store_Web>
 cd TechnoStore
 ```
 
