@@ -1,0 +1,35 @@
+# --- Thư mục môi trường & phụ thuộc ---
+node_modules/
+vendor/
+
+# --- File cấu hình môi trường & bảo mật ---
+.env
+.env.local
+.env.*.local
+
+# --- Hệ điều hành & Editor ---
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# --- Log và cache ---
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.cache/
