@@ -1,146 +1,211 @@
 /* ========================================================
-   KHAI BÁO BIẾN MÀU SẮC & FONT CHỮ (COLOR PALETTE)
-   (Dùng chung cho toàn bộ website, lấy từ mục "01 Màu sắc & Kiểu chữ" trong Figma)
+   KHAI BÁO BIẾN MÀU SẮC & NỀN
 ======================================================== */
 :root {
-  --brand-50: #EEF5FF;
-  --brand-500: #1A6DFF; /* Màu xanh chủ đạo */
-  --brand-600: #0A58E6; /* Màu xanh khi hover */
-  --ink: #0B1220;       /* Màu chữ đen đậm nhất */
-  --ink-2: #3F495E;     /* Màu chữ đen nhạt (mô tả) */
-  --ink-3: #6B7587;     /* Màu chữ xám (caption, placeholder) */
-  --line: #E6E9EF;      /* Màu viền (border) */
-  --surface: #F5F6F9;   /* Màu nền xám nhạt (card, secondary button) */
-  --success: #10B981;   /* Xanh lá (Thành công/Đã giao) */
-  --warning: #F59E0B;   /* Vàng cam (Cảnh báo/Đang giao) */
-  --danger: #EF4444;    /* Đỏ (Lỗi/Xóa/Sắp hết hàng) */
+  --brand-50: #eff6ff;
+  --brand-100: #dbeafe;
+  --brand-500: #1a6dff; 
+  --brand-600: #1558cc;
+  --brand-700: #0f44a0;
   
-  --font-main: 'Inter', sans-serif;
-}
-
-body {
-  font-family: var(--font-main);
-  color: var(--ink);
-  background-color: #ffffff;
+  --ink: #0b1220;       /* Đen đậm (Tiêu đề, Chữ chính, Nút Giỏ hàng) */
+  --ink-2: #3f495e;     /* Xám đậm (Menu, Text phụ) */
+  --ink-3: #6b7587;     /* Xám nhạt (Placeholder, Giá cũ gạch ngang) */
+  
+  --line: #e5e7eb;      /* Màu viền (Border thẻ sản phẩm, Border input) */
+  --surface: #f3f4f6;   /* Màu nền xám nhạt (Nền xám của ảnh sản phẩm,Footer) */
 }
 
 /* ========================================================
-   COMPONENTS: NÚT BẤM (BUTTONS) - Lấy từ mục "02 Nút bấm"
-   Cú pháp dùng HTML: <button class="btn btn-md btn-primary">Mua ngay</button>
+   1. BUTTON COMPONENTS 
+   Cách dùng chung: <button class="btn [kích-thước] [màu-sắc]">Tên nút</button>
 ======================================================== */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  font-weight: 600;
+  gap: 8px; /* Khoảng cách giữa Icon và Chữ */
+  border-radius: 9999px; /* Bo tròn hoàn toàn dạng viên thuốc */
+  font-weight: 600; 
+  transition: all 150ms ease;
   cursor: pointer;
   border: 1px solid transparent;
-  transition: all 0.2s ease;
-  font-family: var(--font-main);
+  outline: none;
 }
 
-/* Trạng thái Vô hiệu hoá (Figma: Nút mờ đi không bấm được) */
+/* Trạng thái nút bị khóa (Disabled) */
 .btn:disabled {
-  opacity: 0.5;
+  background-color: var(--surface) !important;
+  color: var(--ink-3) !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
   cursor: not-allowed;
 }
 
-/* --- Kích thước nút --- */
-.btn-sm { padding: 6px 14px; font-size: 13px; height: 32px; } /* Figma: Nút "Nhỏ" */
-.btn-md { padding: 10px 20px; font-size: 15px; height: 40px; } /* Figma: Nút "Vừa" (Mặc định dùng cái này) */
-.btn-lg { padding: 14px 28px; font-size: 17px; height: 48px; } /* Figma: Nút "Lớn" */
+.btn:focus-visible { outline: 2px solid var(--brand-500); outline-offset: 2px; }
 
-/* --- Kiểu dáng nút (Variants) --- */
-/* Nút Chính 1: Màu xanh dương (Figma: nút "Mua ngay") */
-.btn-primary { background-color: var(--brand-500); color: #fff; }
+/* --------------------------------------------------------
+   KÍCH THƯỚC NÚT
+-------------------------------------------------------- */
+/* Figma: Nút siêu nhỏ (Dùng cho nhãn phụ hoặc các nút filter) */
+.btn-sm { height: 32px; padding: 0 12px; font-size: 13px; }
+
+/* Figma: Nút kích thước chuẩn (Nút Đăng nhập, nút Header) */
+.btn-md { height: 40px; padding: 0 20px; font-size: 14px; }
+
+/* Figma: Nút to, nổi bật (Nút "Mua ngay", Cấu hình sản phẩm) */
+.btn-lg { height: 48px; padding: 0 28px; font-size: 15px; }
+
+
+/* --------------------------------------------------------
+   MÀU SẮC & KIỂU DÁNG NÚT
+-------------------------------------------------------- */
+/* 
+ * 1. NÚT CHÍNH XANH DƯƠNG CÓ BÓNG ĐỔ 
+ * Figma: Nút "Mua ngay" to ở trang chi tiết, icon Logo Header
+ * HTML: <button class="btn btn-lg btn-primary">Mua ngay</button> 
+ */
+.btn-primary {
+  background-color: var(--brand-500);
+  color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(26, 109, 255, 0.7);
+}
 .btn-primary:hover:not(:disabled) { background-color: var(--brand-600); }
+.btn-primary:active:not(:disabled) { background-color: var(--brand-700); }
 
-/* Nút Chính 2: Màu đen (Figma: nút "Thêm vào giỏ") */
+/* 
+ * 2. NÚT ĐEN ĐẬM 
+ * Figma: Nút dấu Cộng (+) "Thêm vào giỏ" ở góc thẻ sản phẩm (Product Card), Nút phân trang đang active
+ * HTML: <button class="btn btn-md btn-dark">Thêm</button> 
+ */
 .btn-dark { background-color: var(--ink); color: #fff; }
-.btn-dark:hover:not(:disabled) { opacity: 0.8; }
+.btn-dark:hover:not(:disabled) { background-color: #000; }
 
-/* Nút Phụ 1: Nền xám nhạt (Figma: nút "Huỷ", "Quay lại") */
-.btn-secondary { background-color: var(--surface); color: var(--ink); border-color: var(--line); }
-.btn-secondary:hover:not(:disabled) { background-color: var(--line); }
-
-/* Nút Phụ 2: Trong suốt, chỉ có chữ (Figma: nút "Xem thêm") */
-.btn-ghost { background-color: transparent; color: var(--ink); }
-.btn-ghost:hover:not(:disabled) { background-color: var(--surface); }
-
-/* Nút Phụ 3: Màu đỏ nhạt (Figma: nút "Xoá") */
-.btn-danger { background-color: #FEF2F2; color: var(--danger); border-color: #FECACA; }
-.btn-danger:hover:not(:disabled) { background-color: #FEE2E2; }
-
-
-/* ========================================================
-   COMPONENTS: BIỂU MẪU (FORMS) - Lấy từ mục "03 Biểu mẫu"
-======================================================== */
-/* Khung bọc ngoài mỗi ô nhập liệu */
-.form-group {
-  margin-bottom: 16px;
-}
-
-/* Tiêu đề của ô nhập liệu (Figma: chữ "Văn bản", "Mật khẩu", "Danh sách chọn") */
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-/* Ô nhập chữ (Input) và Khung chọn (Select) - Figma: ô "Nhập họ và tên" */
-.form-input, .form-select {
-  width: 100%;
-  padding: 10px 14px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
+/* 
+ * 3. NÚT PHỤ NỀN TRẮNG, VIỀN XÁM 
+ * Figma: Các nút Hủy, Quay lại, Hoặc nút phân loại không active
+ * HTML: <button class="btn btn-md btn-secondary">Hủy</button> 
+ */
+.btn-secondary {
   background-color: #fff;
   color: var(--ink);
-  font-size: 15px;
-  font-family: var(--font-main);
-  outline: none;
-  transition: border-color 0.2s;
+  border-color: var(--line);
 }
-
-/* Hiệu ứng khi click chuột vào ô nhập liệu (Viền xanh) */
-.form-input:focus, .form-select:focus {
-  border-color: var(--brand-500);
-  box-shadow: 0 0 0 3px var(--brand-50);
-}
-
-/* Trạng thái ô nhập liệu bị vô hiệu hóa (Figma: ô xám có sẵn chữ minhanh@mail.com) */
-.form-input:disabled {
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--ink-3);
   background-color: var(--surface);
-  color: var(--ink-3);
-  cursor: not-allowed;
 }
+
+/* 
+ * 4. NÚT TRONG SUỐT (Chỉ có chữ) 
+ * Figma: Nút "Cổng quản trị ->", các liên kết chữ màu xanh có hover nền
+ * HTML: <button class="btn btn-md btn-ghost">Xem thêm</button> 
+ */
+.btn-ghost { background-color: transparent; color: var(--brand-600); }
+.btn-ghost:hover:not(:disabled) { background-color: var(--brand-50); }
+
+/* 
+ * 5. NÚT ĐỎ CẢNH BÁO
+ * Figma: Nút Xóa đơn hàng, Hủy giỏ hàng
+ * HTML: <button class="btn btn-md btn-danger">Xóa</button> 
+ */
+.btn-danger { background-color: #fef2f2; color: #dc2626; }
+.btn-danger:hover:not(:disabled) { background-color: #fee2e2; }
+
 
 /* ========================================================
-   COMPONENTS: NHÃN TRẠNG THÁI (BADGES) - Lấy từ mục "04 Nhãn trạng thái"
-   Cú pháp dùng HTML: <span class="badge badge-success">Đã giao</span>
+   2. FORM COMPONENTS (Biểu mẫu, Ô nhập liệu, Select)
 ======================================================== */
-.badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 600;
-  white-space: nowrap;
+/* Bao bọc 1 cụm input hoàn chỉnh */
+.form-group { display: block; margin-bottom: 16px; }
+
+/* Figma: Tiêu đề trên ô nhập (VD: "Họ và tên", "Email") */
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
 }
 
-/* Nhãn xám (Figma: nhãn "Nháp") */
-.badge-default { background-color: var(--surface); color: var(--ink-2); }
+/* Figma: Dòng chú thích nhỏ xíu dưới ô nhập */
+.form-hint {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
 
-/* Nhãn xanh dương (Figma: nhãn "Mới đặt") */
-.badge-info { background-color: #EFF6FF; color: var(--brand-500); }
+/* 
+ * Figma: Ô nhập text / thanh tìm kiếm "Tìm iPhone, Galaxy..."
+ * HTML: <input class="form-control" type="text" placeholder="Tìm kiếm..." /> 
+ */
+.form-control {
+  height: 44px; /* h-11 */
+  width: 100%;
+  border-radius: 12px; /* Bo góc nhẹ 12px */
+  border: 1px solid var(--line);
+  background-color: #fff;
+  padding: 0 14px; 
+  font-size: 14px;
+  color: var(--ink);
+  transition: all 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
 
-/* Nhãn vàng (Figma: nhãn "Đang giao", "Sắp hết hàng") */
-.badge-warning { background-color: #FFFBEB; color: var(--warning); }
+.form-control::placeholder { color: var(--ink-3); }
 
-/* Nhãn xanh lá (Figma: nhãn "Đã giao", "Còn hàng") */
-.badge-success { background-color: #ECFDF5; color: var(--success); }
+/* Hiệu ứng viền xanh dương sáng lên khi click chuột vào ô nhập */
+.form-control:focus {
+  border-color: var(--brand-500);
+  box-shadow: 0 0 0 4px var(--brand-100); 
+}
 
-/* Nhãn đỏ (Figma: nhãn lỗi, báo hủy đơn) */
-.badge-danger { background-color: #FEF2F2; color: var(--danger); }
+/* Trạng thái không cho nhập (Khóa) */
+.form-control:disabled { background-color: var(--surface); cursor: not-allowed; }
+
+
+/* ========================================================
+   3. BADGE COMPONENTS (Nhãn trạng thái đơn hàng / user)
+   Cách dùng chung: <span class="badge [màu-trạng-thái]">Nội dung</span>
+======================================================== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; 
+  white-space: nowrap;
+  border-radius: 9999px; /* Hình viên thuốc */
+  padding: 4px 10px; 
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Dấu chấm tròn màu nhỏ nằm phía trước Text của thẻ Badge */
+.badge::before {
+  content: "";
+  display: block;
+  width: 6px; 
+  height: 6px;
+  border-radius: 9999px;
+}
+
+/* Figma: Nhãn xanh lá (Trạng thái: "Đã giao", "Hoàn thành", "Hoạt động") */
+.badge-success { background-color: #ecfdf5; color: #047857; }
+.badge-success::before { background-color: #10b981; }
+
+/* Figma: Nhãn vàng/cam (Trạng thái: "Đang giao", "Đã xác nhận") */
+.badge-warning { background-color: #fffbeb; color: #b45309; }
+.badge-warning::before { background-color: #f59e0b; }
+
+/* Figma: Nhãn đỏ (Trạng thái: "Đã huỷ", "Bị khoá") */
+.badge-danger { background-color: #fef2f2; color: #b91c1c; }
+.badge-danger::before { background-color: #ef4444; }
+
+/* Figma: Nhãn xanh dương (Trạng thái: "Mới đặt") */
+.badge-info { background-color: var(--brand-50); color: var(--brand-700); }
+.badge-info::before { background-color: var(--brand-500); }
+
+/* Figma: Nhãn xám (Trạng thái: "Nháp", "Tạm dừng") */
+.badge-neutral { background-color: var(--surface); color: var(--ink-2); }
+.badge-neutral::before { background-color: var(--ink-3); }
