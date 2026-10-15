@@ -1,5 +1,3 @@
-
-
 // 1. Hàm định dạng tiền tệ Việt Nam Đồng (VNĐ)
 export const vnd = (n) => (Number(n) || 0).toLocaleString('vi-VN') + ' ₫';
 
@@ -25,13 +23,13 @@ export const defaultProducts = [
 
 // 4. Dữ liệu danh sách đơn hàng mẫu
 export const defaultOrders = [
-  { id: 'DH24101', customer: 'Nguyễn Minh Anh', date: '02/10/2026', total: 34990000, status: 'Mới đặt', pay: 'Chuyển khoản', items: [[1, 1]] },
-  { id: 'DH24100', customer: 'Trần Quốc Bảo', date: '02/10/2026', total: 6080000, status: 'Đã xác nhận', pay: 'Tiền mặt', items: [[9, 1], [12, 1]] },
-  { id: 'DH24099', customer: 'Lê Thu Hà', date: '01/10/2026', total: 21990000, status: 'Đang giao', pay: 'Thẻ tín dụng', items: [[5, 1]] },
-  { id: 'DH24098', customer: 'Phạm Đức Long', date: '30/09/2026', total: 18990000, status: 'Đã giao', pay: 'Tiền mặt', items: [[3, 1]] },
-  { id: 'DH24097', customer: 'Võ Thanh Tâm', date: '29/09/2026', total: 33490000, status: 'Đã giao', pay: 'Chuyển khoản', items: [[2, 1]] },
-  { id: 'DH24096', customer: 'Đặng Hoàng Nam', date: '28/09/2026', total: 11990000, status: 'Đã huỷ', pay: 'Thẻ tín dụng', items: [[10, 1]] },
-  { id: 'DH24095', customer: 'Bùi Khánh Linh', date: '27/09/2026', total: 28990000, status: 'Đã giao', pay: 'Chuyển khoản', items: [[8, 1]] }
+  { id: 'DH24101', customer: 'Nguyễn Minh Anh', date: '02/10/2026', total: 34990000, status: 'Mới đặt', pay: 'Chuyển khoản', items: [{ productId: 1, quantity: 1, price: 34990000 }] },
+  { id: 'DH24100', customer: 'Trần Quốc Bảo', date: '02/10/2026', total: 6080000, status: 'Đã xác nhận', pay: 'Tiền mặt', items: [{ productId: 9, quantity: 1, price: 5990000 }, { productId: 12, quantity: 1, price: 1090000 }] },
+  { id: 'DH24099', customer: 'Lê Thu Hà', date: '01/10/2026', total: 21990000, status: 'Đang giao', pay: 'Thẻ tín dụng', items: [{ productId: 5, quantity: 1, price: 21990000 }] },
+  { id: 'DH24098', customer: 'Phạm Đức Long', date: '30/09/2026', total: 18990000, status: 'Đã giao', pay: 'Tiền mặt', items: [{ productId: 3, quantity: 1, price: 18990000 }] },
+  { id: 'DH24097', customer: 'Võ Thanh Tâm', date: '29/09/2026', total: 33490000, status: 'Đã giao', pay: 'Chuyển khoản', items: [{ productId: 2, quantity: 1, price: 33490000 }] },
+  { id: 'DH24096', customer: 'Đặng Hoàng Nam', date: '28/09/2026', total: 11990000, status: 'Đã huỷ', pay: 'Thẻ tín dụng', items: [{ productId: 10, quantity: 1, price: 11990000 }] },
+  { id: 'DH24095', customer: 'Bùi Khánh Linh', date: '27/09/2026', total: 28990000, status: 'Đã giao', pay: 'Chuyển khoản', items: [{ productId: 8, quantity: 1, price: 28990000 }] }
 ];
 
 // 5. Dữ liệu danh sách khách hàng mẫu
@@ -53,42 +51,39 @@ export const defaultReceipts = [
 ];
 
 /* ========================================================
-   CƠ CHẾ LƯU TRỮ VÀ KHỞI TẠO VÀO LOCALSTORAGE
+   CƠ CHẾ LƯU TRỮ VÀ HÀM HELPER TƯƠNG TÁC LOCALSTORAGE
 ======================================================== */
-function initData() {
-  if (!localStorage.getItem('ts_products')) {
-    localStorage.setItem('ts_products', JSON.stringify(defaultProducts));
-  }
-  if (!localStorage.getItem('ts_orders')) {
-    localStorage.setItem('ts_orders', JSON.stringify(defaultOrders));
-  }
-  if (!localStorage.getItem('ts_customers')) {
-    localStorage.setItem('ts_customers', JSON.stringify(defaultCustomers));
-  }
-  if (!localStorage.getItem('ts_receipts')) {
-    localStorage.setItem('ts_receipts', JSON.stringify(defaultReceipts));
-  }
-  if (!localStorage.getItem('ts_categories')) {
-    localStorage.setItem('ts_categories', JSON.stringify(categories));
-  }
+
+// Khởi tạo dữ liệu ban đầu
+export function initData() {
+  if (!localStorage.getItem('ts_products')) localStorage.setItem('ts_products', JSON.stringify(defaultProducts));
+  if (!localStorage.getItem('ts_orders')) localStorage.setItem('ts_orders', JSON.stringify(defaultOrders));
+  if (!localStorage.getItem('ts_customers')) localStorage.setItem('ts_customers', JSON.stringify(defaultCustomers));
+  if (!localStorage.getItem('ts_receipts')) localStorage.setItem('ts_receipts', JSON.stringify(defaultReceipts));
+  if (!localStorage.getItem('ts_categories')) localStorage.setItem('ts_categories', JSON.stringify(categories));
+  if (!localStorage.getItem('ts_brands')) localStorage.setItem('ts_brands', JSON.stringify(brands));
 }
 
-//Hàm lấy dữ liệu ra từ localStorage
-function getData(key) {
-  const data = localStorage.getItem(key);
-  return data ? JSON.parse(data) : null;
-}
+// Các hàm lấy dữ liệu luôn mới nhất (Getters)
+export const getProducts = () => JSON.parse(localStorage.getItem('ts_products')) || defaultProducts;
+export const getOrders = () => JSON.parse(localStorage.getItem('ts_orders')) || defaultOrders;
+export const getCustomers = () => JSON.parse(localStorage.getItem('ts_customers')) || defaultCustomers;
+export const getReceipts = () => JSON.parse(localStorage.getItem('ts_receipts')) || defaultReceipts;
+export const getCategories = () => JSON.parse(localStorage.getItem('ts_categories')) || categories;
+export const getBrands = () => JSON.parse(localStorage.getItem('ts_brands')) || brands;
 
-// Hàm lưu dữ liệu mới vào localStorage
-function saveData(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
-}
+// Các hàm lưu dữ liệu cập nhật (Setters)
+export const saveProducts = (data) => localStorage.setItem('ts_products', JSON.stringify(data));
+export const saveOrders = (data) => localStorage.setItem('ts_orders', JSON.stringify(data));
+export const saveCustomers = (data) => localStorage.setItem('ts_customers', JSON.stringify(data));
+export const saveReceipts = (data) => localStorage.setItem('ts_receipts', JSON.stringify(data));
 
-// Chạy tự động khi nạp file
+// Hàm Reset toàn bộ dữ liệu về mặc định 
+export const resetToDefault = () => {
+  localStorage.clear();
+  initData();
+  location.reload();
+};
+
+// Tự động chạy khởi tạo khi load file
 initData();
-
-// Lấy dữ liệu đã lưu ra để các file JS khác sử dụng
-export const products = JSON.parse(localStorage.getItem('ts_products')) || defaultProducts;
-export const orders = JSON.parse(localStorage.getItem('ts_orders')) || defaultOrders;
-export const customers = JSON.parse(localStorage.getItem('ts_customers')) || defaultCustomers;
-export const receipts = JSON.parse(localStorage.getItem('ts_receipts')) || defaultReceipts;
