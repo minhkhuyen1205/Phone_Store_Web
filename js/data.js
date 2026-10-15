@@ -1,7 +1,4 @@
-/* ========================================================
-   FILE: js/data.js
-   Mô tả: Khởi tạo dữ liệu mẫu và đồng bộ tự động với localStorage
-======================================================== */
+
 
 // 1. Hàm định dạng tiền tệ Việt Nam Đồng (VNĐ)
 export const vnd = (n) => (Number(n) || 0).toLocaleString('vi-VN') + ' ₫';
