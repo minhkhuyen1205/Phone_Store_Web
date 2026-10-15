@@ -1,12 +1,12 @@
 // 1. Hàm định dạng tiền tệ Việt Nam Đồng (VNĐ)
-export const vnd = (n) => (Number(n) || 0).toLocaleString('vi-VN') + ' ₫';
+const vnd = (n) => (Number(n) || 0).toLocaleString('vi-VN') + ' ₫';
 
 // 2. Danh mục & Hãng sản xuất mẫu
-export const categories = ['Điện thoại', 'Máy tính bảng', 'Tai nghe', 'Đồng hồ thông minh', 'Phụ kiện'];
-export const brands = ['Apple', 'Samsung', 'Xiaomi', 'OPPO', 'Google'];
+const categories = ['Điện thoại', 'Máy tính bảng', 'Tai nghe', 'Đồng hồ thông minh', 'Phụ kiện'];
+const brands = ['Apple', 'Samsung', 'Xiaomi', 'OPPO', 'Google'];
 
 // 3. Dữ liệu danh sách sản phẩm mẫu (12 sản phẩm)
-export const defaultProducts = [
+const defaultProducts = [
   { id: 1, code: 'SP001', name: 'iPhone 16 Pro Max 256GB', brand: 'Apple', category: 'Điện thoại', price: 34990000, cost: 30200000, old: 36990000, ram: '8 GB', rom: '256 GB', chip: 'Apple A18 Pro', screen: '6.9" OLED 120Hz', camera: '48MP + 48MP + 12MP', battery: '4685 mAh', color: ['#d9d4cb', '#8c867b'], stock: 24, rating: 4.9, isNew: true, imported: 60, sold: 36 },
   { id: 2, code: 'SP002', name: 'Samsung Galaxy S25 Ultra 512GB', brand: 'Samsung', category: 'Điện thoại', price: 33490000, cost: 28900000, old: 35990000, ram: '12 GB', rom: '512 GB', chip: 'Snapdragon 8 Elite', screen: '6.9" Dynamic AMOLED 2X', camera: '200MP + 50MP + 10MP + 50MP', battery: '5000 mAh', color: ['#2b3a55', '#0f1626'], stock: 8, rating: 4.8, isNew: true, imported: 40, sold: 32 },
   { id: 3, code: 'SP003', name: 'iPhone 15 128GB', brand: 'Apple', category: 'Điện thoại', price: 18990000, cost: 16400000, old: 21990000, ram: '6 GB', rom: '128 GB', chip: 'Apple A16 Bionic', screen: '6.1" OLED 60Hz', camera: '48MP + 12MP', battery: '3349 mAh', color: ['#f3c9d0', '#d38b98'], stock: 41, rating: 4.7, imported: 80, sold: 39 },
@@ -22,7 +22,7 @@ export const defaultProducts = [
 ];
 
 // 4. Dữ liệu danh sách đơn hàng mẫu
-export const defaultOrders = [
+const defaultOrders = [
   { id: 'DH24101', customer: 'Nguyễn Minh Anh', date: '02/10/2026', total: 34990000, status: 'Mới đặt', pay: 'Chuyển khoản', items: [{ productId: 1, quantity: 1, price: 34990000 }] },
   { id: 'DH24100', customer: 'Trần Quốc Bảo', date: '02/10/2026', total: 6080000, status: 'Đã xác nhận', pay: 'Tiền mặt', items: [{ productId: 9, quantity: 1, price: 5990000 }, { productId: 12, quantity: 1, price: 1090000 }] },
   { id: 'DH24099', customer: 'Lê Thu Hà', date: '01/10/2026', total: 21990000, status: 'Đang giao', pay: 'Thẻ tín dụng', items: [{ productId: 5, quantity: 1, price: 21990000 }] },
@@ -33,7 +33,7 @@ export const defaultOrders = [
 ];
 
 // 5. Dữ liệu danh sách khách hàng mẫu
-export const defaultCustomers = [
+const defaultCustomers = [
   { id: 'KH001', name: 'Nguyễn Minh Anh', email: 'minhanh@mail.com', phone: '0901 234 567', joined: '12/03/2025', orders: 8, locked: false },
   { id: 'KH002', name: 'Trần Quốc Bảo', email: 'quocbao@mail.com', phone: '0912 345 678', joined: '28/05/2025', orders: 3, locked: false },
   { id: 'KH003', name: 'Lê Thu Hà', email: 'thuha@mail.com', phone: '0933 456 789', joined: '02/07/2025', orders: 5, locked: false },
@@ -43,7 +43,7 @@ export const defaultCustomers = [
 ];
 
 // 6. Dữ liệu danh sách phiếu nhập kho mẫu
-export const defaultReceipts = [
+const defaultReceipts = [
   { id: 'PN0012', date: '28/09/2026', lines: 3, qty: 85, total: 1862000000, status: 'Hoàn thành' },
   { id: 'PN0011', date: '20/09/2026', lines: 2, qty: 40, total: 904000000, status: 'Hoàn thành' },
   { id: 'PN0010', date: '11/09/2026', lines: 4, qty: 120, total: 1215000000, status: 'Hoàn thành' },
@@ -55,7 +55,7 @@ export const defaultReceipts = [
 ======================================================== */
 
 // Khởi tạo dữ liệu ban đầu
-export function initData() {
+function initData() {
   if (!localStorage.getItem('ts_products')) localStorage.setItem('ts_products', JSON.stringify(defaultProducts));
   if (!localStorage.getItem('ts_orders')) localStorage.setItem('ts_orders', JSON.stringify(defaultOrders));
   if (!localStorage.getItem('ts_customers')) localStorage.setItem('ts_customers', JSON.stringify(defaultCustomers));
@@ -65,21 +65,21 @@ export function initData() {
 }
 
 // Các hàm lấy dữ liệu luôn mới nhất (Getters)
-export const getProducts = () => JSON.parse(localStorage.getItem('ts_products')) || defaultProducts;
-export const getOrders = () => JSON.parse(localStorage.getItem('ts_orders')) || defaultOrders;
-export const getCustomers = () => JSON.parse(localStorage.getItem('ts_customers')) || defaultCustomers;
-export const getReceipts = () => JSON.parse(localStorage.getItem('ts_receipts')) || defaultReceipts;
-export const getCategories = () => JSON.parse(localStorage.getItem('ts_categories')) || categories;
-export const getBrands = () => JSON.parse(localStorage.getItem('ts_brands')) || brands;
+const getProducts = () => JSON.parse(localStorage.getItem('ts_products')) || defaultProducts;
+const getOrders = () => JSON.parse(localStorage.getItem('ts_orders')) || defaultOrders;
+const getCustomers = () => JSON.parse(localStorage.getItem('ts_customers')) || defaultCustomers;
+const getReceipts = () => JSON.parse(localStorage.getItem('ts_receipts')) || defaultReceipts;
+const getCategories = () => JSON.parse(localStorage.getItem('ts_categories')) || categories;
+const getBrands = () => JSON.parse(localStorage.getItem('ts_brands')) || brands;
 
 // Các hàm lưu dữ liệu cập nhật (Setters)
-export const saveProducts = (data) => localStorage.setItem('ts_products', JSON.stringify(data));
-export const saveOrders = (data) => localStorage.setItem('ts_orders', JSON.stringify(data));
-export const saveCustomers = (data) => localStorage.setItem('ts_customers', JSON.stringify(data));
-export const saveReceipts = (data) => localStorage.setItem('ts_receipts', JSON.stringify(data));
+const saveProducts = (data) => localStorage.setItem('ts_products', JSON.stringify(data));
+const saveOrders = (data) => localStorage.setItem('ts_orders', JSON.stringify(data));
+const saveCustomers = (data) => localStorage.setItem('ts_customers', JSON.stringify(data));
+const saveReceipts = (data) => localStorage.setItem('ts_receipts', JSON.stringify(data));
 
 // Hàm Reset toàn bộ dữ liệu về mặc định 
-export const resetToDefault = () => {
+const resetToDefault = () => {
   localStorage.clear();
   initData();
   location.reload();
