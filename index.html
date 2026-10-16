@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechnoStore - Điện thoại & Thiết bị công nghệ chính hãng</title>
+  <meta name="description"
+    content="TechnoStore chuyên cung cấp điện thoại, máy tính bảng, tai nghe, đồng hồ chính hãng. Bảo hành 12 tháng, giao hàng nhanh 2h.">
+
+  <!-- Các tệp định kiểu CSS -->
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/page/home.css">
+</head>
+
+<body>
+
+  <!-- Vùng chứa phần đầu ứng dụng -->
+  <div id="headerContainer"></div>
+
+  <!-- Nội dung chính -->
+  <main>
+    <!-- Khu vực biểu ngữ nổi bật -->
+    <section class="container hero-section">
+      <div class="hero-banner">
+        <!-- Nội dung giới thiệu nổi bật -->
+        <div class="hero-text-col">
+          <span class="badge badge-info">iPhone 16 Pro Max · Mới về</span>
+          <h1 class="hero-heading">
+            Đỉnh cao.<br />Trong tầm tay.
+          </h1>
+          <p class="hero-desc">
+            Chip A18 Pro, camera 48MP và pin cả ngày. Trả góp 0% lãi suất, thu cũ đổi mới trợ giá đến 5 triệu.
+          </p>
+          <div class="hero-actions">
+            <a href="view/customer/detail.html?id=1" class="btn btn-primary btn-lg">Mua ngay</a>
+            <button onclick="document.getElementById('list').scrollIntoView({ behavior: 'smooth' })"
+              class="btn btn-secondary btn-lg">
+              Xem tất cả sản phẩm
+            </button>
+          </div>
+          <div class="hero-price-tag">
+            Từ <b id="heroStartingPrice">34.990.000 ₫</b>
+          </div>
+        </div>
+
+        <!-- Hình minh họa nổi bật -->
+        <div class="hero-art-col">
+          <div class="hero-glow-circle"></div>
+          <div id="heroArtWrapper" class="hero-device-art"></div>
+        </div>
+      </div>
+
+      <!-- Hàng các ưu đãi nổi bật -->
+      <div class="perks-grid">
+        <div class="perk-card">
+          <div class="perk-icon-wrap">
+            <img src="assets/icon/giao-hang.svg" class="icon icon-20" alt="" />
+          </div>
+          <div>
+            <div class="perk-title">Giao nhanh 2 giờ</div>
+            <div class="perk-desc">Nội thành TP.HCM & Hà Nội</div>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-icon-wrap">
+            <img src="assets/icon/bao-ve.svg" class="icon icon-20" alt="" />
+          </div>
+          <div>
+            <div class="perk-title">Chính hãng 100%</div>
+            <div class="perk-desc">Bảo hành 12 tháng tại đại lý</div>
+          </div>
+        </div>
+
+        <div class="perk-card">
+          <div class="perk-icon-wrap">
+            <img src="assets/icon/refresh.svg" class="icon icon-20" alt="" />
+          </div>
+          <div>
+            <div class="perk-title">Đổi trả 30 ngày</div>
+            <div class="perk-desc">Lỗi là đổi, không hỏi nhiều</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Khu vực danh sách sản phẩm chính -->
+    <section id="list" class="container product-section">
+      <!-- Thanh thông tin đầu mục -->
+      <div class="section-top-bar">
+        <div>
+          <h2 class="section-title">Tất cả sản phẩm</h2>
+          <p id="productCountDisplay" class="section-subtitle">Đang tải sản phẩm...</p>
+        </div>
+
+        <div class="section-controls">
+          <div class="select-wrapper sort-select-wrap">
+            <select id="filterSortSelect" class="select-control" aria-label="Sắp xếp sản phẩm">
+              <option value="pop">Bán chạy nhất</option>
+              <option value="asc">Giá thấp → cao</option>
+              <option value="desc">Giá cao → thấp</option>
+            </select>
+            <span class="select-arrow">▼</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Các nút danh mục -->
+      <div class="category-pills-row" id="categoryPillsWrapper">
+        <button class="cat-pill-btn active" data-category="Tất cả" onclick="filterCtrl.setCategory('Tất cả')">Tất
+          cả</button>
+        <button class="cat-pill-btn" data-category="Điện thoại" onclick="filterCtrl.setCategory('Điện thoại')">Điện
+          thoại</button>
+        <button class="cat-pill-btn" data-category="Máy tính bảng" onclick="filterCtrl.setCategory('Máy tính bảng')">Máy
+          tính bảng</button>
+        <button class="cat-pill-btn" data-category="Tai nghe" onclick="filterCtrl.setCategory('Tai nghe')">Tai
+          nghe</button>
+        <button class="cat-pill-btn" data-category="Đồng hồ thông minh"
+          onclick="filterCtrl.setCategory('Đồng hồ thông minh')">Đồng hồ thông minh</button>
+        <button class="cat-pill-btn" data-category="Phụ kiện" onclick="filterCtrl.setCategory('Phụ kiện')">Phụ
+          kiện</button>
+      </div>
+
+      <!-- Bố cục cửa hàng hai cột -->
+      <div class="store-layout">
+        <!-- Thanh bên bộ lọc -->
+        <aside class="filter-sidebar">
+          <div class="filter-sidebar-header">
+            <h3 class="filter-sidebar-title">Tìm kiếm nâng cao</h3>
+            <button onclick="filterCtrl.reset()" class="reset-filter-link">Xoá lọc</button>
+          </div>
+
+          <!-- Bộ lọc tên sản phẩm -->
+          <div class="form-field" style="margin:0;">
+            <label class="form-label">Tên sản phẩm</label>
+            <input type="text" id="filterKeywordInput" placeholder="VD: Galaxy S25" class="input-control" />
+          </div>
+
+          <!-- Bộ lọc danh mục -->
+          <div class="form-field" style="margin:0;">
+            <label class="form-label">Danh mục</label>
+            <div class="select-wrapper">
+              <select id="filterCategorySelect" class="select-control">
+                <option value="Tất cả">Tất cả</option>
+                <option value="Điện thoại">Điện thoại</option>
+                <option value="Máy tính bảng">Máy tính bảng</option>
+                <option value="Tai nghe">Tai nghe</option>
+                <option value="Đồng hồ thông minh">Đồng hồ thông minh</option>
+                <option value="Phụ kiện">Phụ kiện</option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+          </div>
+
+          <!-- Bộ lọc hãng sản xuất bằng hộp kiểm -->
+          <div>
+            <div class="form-label">Hãng sản xuất</div>
+            <div class="brand-checkbox-list">
+              <label class="checkbox-label">
+                <input type="checkbox" class="brand-filter-cb" value="Apple" /> Apple
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="brand-filter-cb" value="Samsung" /> Samsung
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="brand-filter-cb" value="Xiaomi" /> Xiaomi
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="brand-filter-cb" value="OPPO" /> OPPO
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" class="brand-filter-cb" value="Google" /> Google
+              </label>
+            </div>
+          </div>
+
+          <!-- Bộ lọc khoảng giá -->
+          <div>
+            <div class="form-label">Khoảng giá</div>
+            <div class="price-inputs-grid">
+              <input type="number" id="filterPriceMin" class="input-control" value="0" step="1000000"
+                placeholder="Từ" />
+              <input type="number" id="filterPriceMax" class="input-control" value="40000000" step="1000000"
+                placeholder="Đến" />
+            </div>
+            <input type="range" id="filterPriceRange" min="0" max="40000000" step="1000000" value="40000000"
+              style="margin-top: 12px;" />
+            <div class="price-range-label" id="priceRangeLabel">0 ₫ – 40.000.000 ₫</div>
+          </div>
+        </aside>
+
+        <!-- Lưới sản phẩm và phân trang -->
+        <div>
+          <div id="productsGrid" class="products-grid"></div>
+          <div id="paginationContainer" class="pagination-wrapper"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Vùng chứa chân trang ứng dụng -->
+  <div id="footerContainer"></div>
+
+  <!-- Thanh điều hướng nhanh nổi -->
+  <div id="floatingNavContainer"></div>
+
+  <!-- Các mpdule JavaScript -->
+  <script src="js/data.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/display.js"></script>
+  <script src="js/search.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Hiển thị phần đầu trang và chân trang
+      renderStoreHeader('headerContainer', {
+        basePath: './',
+        viewPath: 'view/',
+        isRoot: true,
+        activePage: 'home'
+      });
+
+      renderStoreFooter('footerContainer', {
+        basePath: './',
+        viewPath: 'view/',
+        isRoot: true
+      });
+
+      // Hiển thị thanh điều hướng nhanh
+      // renderFloatingNav('floatingNavContainer', {
+      //   basePath: './',
+      //   viewPath: 'view/',
+      //   isRoot: true,
+      //   active: 'store'
+      // });
+
+      // 2. Hiển thị hình minh họa nổi bật
+      const hero = getProducts()[0];
+      const heroArt = document.getElementById('heroArtWrapper');
+      if (heroArt && hero) {
+        heroArt.innerHTML = renderDeviceArt(hero, 'height:360px; width:auto;');
+      }
+
+      // 3. Khởi tạo bộ điều khiển tìm kiếm và lọc
+      window.filterCtrl = new FilterController({
+        detailUrlPrefix: 'view/customer/detail.html?id='
+      });
+      window.filterCtrl.init();
+
+      // Kiểm tra danh mục trong URL (nếu có)
+      const urlCat = new URLSearchParams(window.location.search).get('cat');
+      if (urlCat) {
+        filterCtrl.setCategory(urlCat);
+      }
+    });
+  </script>
+</body>
+
+</html>
