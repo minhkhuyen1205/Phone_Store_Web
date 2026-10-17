@@ -36,7 +36,7 @@ Dự án chú trọng vào việc xây dựng một **Clickable Prototype Websit
 ## 📁 3. Cấu trúc dự án
 
 ```text
-DoAn_TechnoStore/
+TechnoStore/
 ├── assets/                  
 │   └── images/              # Lưu trữ hình ảnh sản phẩm thực tế (.png nền trong suốt), banner quảng cáo, logo cửa hàng (đã nén tối ưu dung lượng).
 │
