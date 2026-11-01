@@ -4,8 +4,8 @@
  * @returns {string} Chuỗi hiển thị VNĐ (VD: 34.990.000 ₫)
  */
 function vnd(n) {
-        if (typeof n !== 'number') n = Number(n) || 0;
-        return n.toLocaleString('vi-VN') + ' ₫';
+  if (typeof n !== 'number') n = Number(n) || 0;
+  return n.toLocaleString('vi-VN') + ' ₫';
 }
 
 /**
@@ -14,500 +14,1384 @@ function vnd(n) {
  * @returns {string} Chuỗi slug (VD: "TITAN_DEN")
  */
 function slugifySkuPart(str) {
-        if (!str) return 'DEF';
-        return String(str)
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/đ/g, 'd')
-                .replace(/Đ/g, 'D')
-                .replace(/[^a-zA-Z0-9]/g, '_')
-                .replace(/_+/g, '_')
-                .replace(/^_|_$/g, '')
-                .toUpperCase();
+  if (!str) return 'DEF';
+  return String(str)
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .replace(/[^a-zA-Z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '')
+    .toUpperCase();
 }
 
 // ==========================================================================
-//DANH MỤC & THƯƠNG HIỆU MẶC ĐỊNH
+// 1. DANH MỤC & THƯƠNG HIỆU MẶC ĐỊNH
 // ==========================================================================
-const defaultCategories = ['Điện thoại', 'Máy tính bảng', 'Tai nghe', 'Đồng hồ thông minh', 'Phụ kiện'];
-const defaultBrands = ['Apple', 'Samsung', 'Xiaomi', 'OPPO', 'Google'];
+// 1. DANH MỤC & THƯƠNG HIỆU MẶC ĐỊNH (CÓ THUỘC TÍNH STATUS)
+// ==========================================================================
+const defaultCategories = [
+  { id: 'DM001', name: 'Điện thoại', type: 'Thiết bị chính', status: 'active' },
+  { id: 'DM002', name: 'Máy tính bảng', type: 'Thiết bị chính', status: 'active' },
+  { id: 'DM003', name: 'Tai nghe', type: 'Phụ kiện & Đeo', status: 'active' },
+  { id: 'DM004', name: 'Đồng hồ thông minh', type: 'Phụ kiện & Đeo', status: 'active' },
+  { id: 'DM005', name: 'Phụ kiện', type: 'Phụ kiện & Đeo', status: 'active' }
+];
+const defaultBrands = ["Apple", "Samsung", "Xiaomi", "OPPO", "Vivo", "Realme", "ASUS", "Sony", "Anker", "Google"];
+
+// ==========================================================================
+// 2. DANH SÁCH 20 SẢN PHẨM CÔNG NGHỆ THỰC TẾ (DEFAULT_PRODUCTS)
+// Phân bổ chính xác theo 5 danh mục:
+// - Điện thoại: 9 sản phẩm
+// - Máy tính bảng: 4 sản phẩm
+// - Tai nghe: 3 sản phẩm
+// - Đồng hồ thông minh: 2 sản phẩm
+// - Phụ kiện: 2 sản phẩm
+// ==========================================================================
 
 const defaultProducts = [
-        {
-                id: 1,
-                code: 'SP001',
-                name: 'iPhone 16 Pro Max',
-                brand: 'Apple',
-                category: 'Điện thoại',
-                description: 'iPhone 16 Pro Max sở hữu màn hình Super Retina XDR 6.9" viền siêu mỏng, chip Apple A18 Pro mạnh mẽ vượt trội cùng camera 48MP Fusion thế hệ mới. Khung viền Titan chuẩn hàng không vũ trụ siêu nhẹ và bền bỉ.',
-                image: '',
-                createdAt: '2026-09-20',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                // Thông số kỹ thuật chung
-                chip: 'Apple A18 Pro',
-                screen: '6.9" OLED 120Hz',
-                camera: '48MP + 48MP + 12MP',
-                battery: '4685 mAh',
-                color: ['#d9d4cb', '#8c867b'],
-                rating: 4.9,
-                isNew: true,
-                imported: 60,
-                sold: 36,
-                // Danh sách biến thể (Product Variant Matrix)
-                variants: [
-                        { sku: 'SP001-TITANDEN-8GB-256GB', color: 'Titan Đen', ram: '8GB', rom: '256GB', cost: 30200000, price: 34990000, stock: 14 },
-                        { sku: 'SP001-TITANTRANG-8GB-256GB', color: 'Titan Trắng', ram: '8GB', rom: '256GB', cost: 30200000, price: 34990000, stock: 10 },
-                        { sku: 'SP001-TITANTUNHIEN-8GB-512GB', color: 'Titan Tự Nhiên', ram: '8GB', rom: '512GB', cost: 34500000, price: 39990000, stock: 0 }, // Hết hàng demo
-                        { sku: 'SP001-TITANSAMAC-8GB-1TB', color: 'Titan Sa Mạc', ram: '8GB', rom: '1TB', cost: 40000000, price: 46990000, stock: 5 }
-                ]
-        },
-        {
-                id: 2,
-                code: 'SP002',
-                name: 'Samsung Galaxy S25 Ultra',
-                brand: 'Samsung',
-                category: 'Điện thoại',
-                description: 'Galaxy S25 Ultra trang bị chip Snapdragon 8 Elite đỉnh cao, camera 200MP bắt trọn từng chi tiết, tích hợp bút S-Pen thông minh và bộ tính năng Galaxy AI tiên tiến nhất hiện nay.',
-                image: '',
-                createdAt: '2026-09-22',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Snapdragon 8 Elite',
-                screen: '6.9" Dynamic AMOLED 2X',
-                camera: '200MP + 50MP + 10MP + 50MP',
-                battery: '5000 mAh',
-                color: ['#2b3a55', '#0f1626'],
-                rating: 4.8,
-                isNew: true,
-                imported: 40,
-                sold: 32,
-                variants: [
-                        { sku: 'SP002-XANHTITAN-12GB-256GB', color: 'Xanh Titan', ram: '12GB', rom: '256GB', cost: 26000000, price: 30490000, stock: 5 },
-                        { sku: 'SP002-DENTITAN-12GB-512GB', color: 'Đen Titan', ram: '12GB', rom: '512GB', cost: 28900000, price: 33490000, stock: 3 },
-                        { sku: 'SP002-XAMTITAN-16GB-1TB', color: 'Xám Titan', ram: '16GB', rom: '1TB', cost: 36000000, price: 41990000, stock: 0 }
-                ]
-        },
-        {
-                id: 3,
-                code: 'SP003',
-                name: 'iPhone 15',
-                brand: 'Apple',
-                category: 'Điện thoại',
-                description: 'Thiết kế mặt lưng kính pha màu bền bỉ, đảo Dynamic Island tiện ích, chip A16 Bionic và cổng sạc USB-C tiện dụng đáp ứng trọn vẹn mọi nhu cầu học tập và giải trí.',
-                image: '',
-                createdAt: '2026-08-15',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Apple A16 Bionic',
-                screen: '6.1" OLED 60Hz',
-                camera: '48MP + 12MP',
-                battery: '3349 mAh',
-                color: ['#f3c9d0', '#d38b98'],
-                rating: 4.7,
-                imported: 80,
-                sold: 39,
-                variants: [
-                        { sku: 'SP003-HONG-6GB-128GB', color: 'Hồng Pastel', ram: '6GB', rom: '128GB', cost: 16400000, price: 18990000, stock: 25 },
-                        { sku: 'SP003-XANHLA-6GB-128GB', color: 'Xanh Lá', ram: '6GB', rom: '128GB', cost: 16400000, price: 18990000, stock: 10 },
-                        { sku: 'SP003-DEN-6GB-256GB', color: 'Đen Nhám', ram: '6GB', rom: '256GB', cost: 19100000, price: 21990000, stock: 6 }
-                ]
-        },
-        {
-                id: 4,
-                code: 'SP004',
-                name: 'Xiaomi 15 Ultra',
-                brand: 'Xiaomi',
-                category: 'Điện thoại',
-                description: 'Hệ thống 4 ống kính quang học Leica đỉnh cao, chip Snapdragon 8 Elite tản nhiệt buồng hơi 3D IceLoop, màn hình 2K siêu sáng 3200 nits.',
-                image: '',
-                createdAt: '2026-09-25',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Snapdragon 8 Elite',
-                screen: '6.73" AMOLED 120Hz',
-                camera: '50MP Leica x4',
-                battery: '5410 mAh',
-                color: ['#1e1e22', '#55565c'],
-                rating: 4.6,
-                isNew: true,
-                imported: 20,
-                sold: 15,
-                variants: [
-                        { sku: 'SP004-DENGOM-16GB-512GB', color: 'Đen Gốm', ram: '16GB', rom: '512GB', cost: 25800000, price: 29990000, stock: 5 },
-                        { sku: 'SP004-TRANGGOM-16GB-1TB', color: 'Trắng Gốm', ram: '16GB', rom: '1TB', cost: 29000000, price: 33990000, stock: 3 }
-                ]
-        },
-        {
-                id: 5,
-                code: 'SP005',
-                name: 'Galaxy Z Flip6',
-                brand: 'Samsung',
-                category: 'Điện thoại',
-                description: 'Thiết kế gập vỏ sò thời thượng nhỏ gọn, màn hình ngoài FlexWindow tùy biến thông minh, kháng nước chuẩn IP48 cùng chip xử lý mạnh mẽ.',
-                image: '',
-                createdAt: '2026-08-10',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Snapdragon 8 Gen 3',
-                screen: '6.7" Dynamic AMOLED 2X',
-                camera: '50MP + 12MP',
-                battery: '4000 mAh',
-                color: ['#b9d4f5', '#6f9bd1'],
-                rating: 4.5,
-                imported: 30,
-                sold: 13,
-                variants: [
-                        { sku: 'SP005-XANHMAYA-12GB-256GB', color: 'Xanh Maya', ram: '12GB', rom: '256GB', cost: 18700000, price: 21990000, stock: 10 },
-                        { sku: 'SP005-VANGSOLAR-12GB-512GB', color: 'Vàng Solar', ram: '12GB', rom: '512GB', cost: 21500000, price: 25490000, stock: 7 }
-                ]
-        },
-        {
-                id: 6,
-                code: 'SP006',
-                name: 'OPPO Find X8 Pro',
-                brand: 'OPPO',
-                category: 'Điện thoại',
-                description: 'Camera kép tiềm vọng Hasselblad dẫn đầu xu hướng nhiếp ảnh, màn hình cong siêu mỏng 4 cạnh và thời lượng pin vượt trội 5910mAh Silicon-Carbon.',
-                image: '',
-                createdAt: '2026-09-28',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Dimensity 9400',
-                screen: '6.78" LTPO AMOLED',
-                camera: '50MP Hasselblad x4',
-                battery: '5910 mAh',
-                color: ['#f1ede4', '#bfb6a1'],
-                rating: 4.6,
-                imported: 25,
-                sold: 13,
-                variants: [
-                        { sku: 'SP006-TRANGNGOC-16GB-512GB', color: 'Trắng Ngọc Trai', ram: '16GB', rom: '512GB', cost: 24100000, price: 27990000, stock: 8 },
-                        { sku: 'SP006-DENKHONGGIAN-16GB-512GB', color: 'Đen Không Gian', ram: '16GB', rom: '512GB', cost: 24100000, price: 27990000, stock: 4 }
-                ]
-        },
-        {
-                id: 7,
-                code: 'SP007',
-                name: 'Google Pixel 9 Pro',
-                brand: 'Google',
-                category: 'Điện thoại',
-                description: 'Trải nghiệm Android thuần khiết thông minh nhất với chip Tensor G4, trợ lý ảo Gemini Live tích hợp sâu và hệ thống camera AI xóa nhòa mọi giới hạn.',
-                image: '',
-                createdAt: '2026-09-12',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Google Tensor G4',
-                screen: '6.3" LTPO OLED',
-                camera: '50MP + 48MP + 48MP',
-                battery: '4700 mAh',
-                color: ['#e7e3d6', '#a29c85'],
-                rating: 4.7,
-                imported: 15,
-                sold: 12,
-                variants: [
-                        { sku: 'SP007-TRANGSU-16GB-128GB', color: 'Trắng Sứ', ram: '16GB', rom: '128GB', cost: 19800000, price: 22990000, stock: 2 },
-                        { sku: 'SP007-DENOBSIDIAN-16GB-256GB', color: 'Đen Obsidian', ram: '16GB', rom: '256GB', cost: 21500000, price: 24990000, stock: 1 }
-                ]
-        },
-        {
-                id: 8,
-                code: 'SP008',
-                name: 'iPad Pro M4 11 inch Wi-Fi',
-                brand: 'Apple',
-                category: 'Máy tính bảng',
-                description: 'Màn hình Ultra Retina XDR công nghệ Tandem OLED đột phá, thiết kế siêu mỏng chỉ 5.3mm và sức mạnh không đối thủ từ bộ vi xử lý Apple M4.',
-                image: '',
-                createdAt: '2026-07-15',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Apple M4',
-                screen: '11" Tandem OLED',
-                camera: '12MP',
-                battery: '31.29 Wh',
-                color: ['#c6c8cc', '#6e7076'],
-                rating: 4.9,
-                imported: 20,
-                sold: 6,
-                variants: [
-                        { sku: 'SP008-BAC-8GB-256GB', color: 'Bạc Ánh Kim', ram: '8GB', rom: '256GB', cost: 25200000, price: 28990000, stock: 9 },
-                        { sku: 'SP008-DEN-8GB-512GB', color: 'Đen Không Gian', ram: '8GB', rom: '512GB', cost: 28500000, price: 32490000, stock: 5 }
-                ]
-        },
-        {
-                id: 9,
-                code: 'SP009',
-                name: 'AirPods Pro 2 USB-C',
-                brand: 'Apple',
-                category: 'Tai nghe',
-                description: 'Chống ồn chủ động ANC gấp 2 lần, chế độ Âm thanh thích ứng mượt mà và hộp sạc MagSafe trang bị cổng USB-C tiện lợi kèm loa định vị Precision Finding.',
-                image: '',
-                createdAt: '2026-06-10',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Apple H2',
-                screen: '-',
-                camera: '-',
-                battery: '6 giờ',
-                color: ['#f4f4f6', '#c9cad0'],
-                rating: 4.8,
-                imported: 100,
-                sold: 38,
-                variants: [
-                        { sku: 'SP009-TRANG-STD', color: 'Trắng', ram: 'Tiêu chuẩn', rom: 'Tiêu chuẩn', cost: 4700000, price: 5990000, stock: 62 }
-                ]
-        },
-        {
-                id: 10,
-                code: 'SP010',
-                name: 'Apple Watch Series 10 46mm',
-                brand: 'Apple',
-                category: 'Đồng hồ thông minh',
-                description: 'Màn hình OLED góc nhìn rộng siêu sáng, thiết kế mỏng nhẹ tinh tế nhất từ trước đến nay với tính năng đo điện tâm đồ ECG và phát hiện ngưng thở khi ngủ.',
-                image: '',
-                createdAt: '2026-09-20',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Apple S10',
-                screen: '46mm LTPO OLED',
-                camera: '-',
-                battery: '18 giờ',
-                color: ['#2a2b30', '#0e0e11'],
-                rating: 4.6,
-                imported: 30,
-                sold: 24,
-                variants: [
-                        { sku: 'SP010-DENBONG-64GB', color: 'Nhôm Đen Bóng', ram: 'Tiêu chuẩn', rom: '64GB', cost: 9900000, price: 11990000, stock: 4 },
-                        { sku: 'SP010-NHOMBAC-64GB', color: 'Nhôm Bạc', ram: 'Tiêu chuẩn', rom: '64GB', cost: 9900000, price: 11990000, stock: 2 }
-                ]
-        },
-        {
-                id: 11,
-                code: 'SP011',
-                name: 'Galaxy Tab S10+ 12GB/256GB',
-                brand: 'Samsung',
-                category: 'Máy tính bảng',
-                description: 'Màn hình Dynamic AMOLED 2X 12.4" phủ lớp chống chói cao cấp, bút S-Pen kháng nước đi kèm và hiệu năng tối ưu hóa đồ họa cùng Galaxy AI.',
-                image: '',
-                createdAt: '2026-09-26',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: 'Dimensity 9300+',
-                screen: '12.4" Dynamic AMOLED',
-                camera: '13MP + 8MP',
-                battery: '10090 mAh',
-                color: ['#cfd3da', '#8a909c'],
-                rating: 4.5,
-                imported: 25,
-                sold: 6,
-                variants: [
-                        { sku: 'SP011-XAMMOON-12GB-256GB', color: 'Xám Moonstone', ram: '12GB', rom: '256GB', cost: 20400000, price: 23990000, stock: 12 },
-                        { sku: 'SP011-BACPLAT-12GB-512GB', color: 'Bạc Platinum', ram: '12GB', rom: '512GB', cost: 23500000, price: 27490000, stock: 7 }
-                ]
-        },
-        {
-                id: 12,
-                code: 'SP012',
-                name: 'Sạc nhanh MagSafe 25W',
-                brand: 'Apple',
-                category: 'Phụ kiện',
-                description: 'Đế sạc không dây nam châm từ tính MagSafe chính hãng, hỗ trợ sạc nhanh lên đến 25W khi kết hợp với củ sạc công suất từ 30W trở lên.',
-                image: '',
-                createdAt: '2026-09-18',
-                isDeleted: false,
-                attributes: ['Màu sắc', 'RAM', 'ROM'],
-                chip: '-',
-                screen: '-',
-                camera: '-',
-                battery: '-',
-                color: ['#fafafa', '#d4d5da'],
-                rating: 4.4,
-                imported: 200,
-                sold: 80,
-                variants: [
-                        { sku: 'SP012-TRANG-1M', color: 'Trắng 1 mét', ram: 'Tiêu chuẩn', rom: 'Tiêu chuẩn', cost: 720000, price: 1090000, stock: 80 },
-                        { sku: 'SP012-TRANG-2M', color: 'Trắng 2 mét', ram: 'Tiêu chuẩn', rom: 'Tiêu chuẩn', cost: 950000, price: 1390000, stock: 40 }
-                ]
-        }
+  {
+    "id": 1,
+    "code": "SP001",
+    "name": "iPhone 16 Pro Max",
+    "brand": "Apple",
+    "category": "Điện thoại",
+    "description": "iPhone 16 Pro Max sở hữu màn hình Super Retina XDR 6.9\" viền siêu mỏng, chip Apple A18 Pro mạnh mẽ vượt trội cùng camera 48MP Fusion thế hệ mới. Khung viền Titan chuẩn hàng không vũ trụ siêu nhẹ và bền bỉ.",
+    "image": "",
+    "createdAt": "2026-09-20",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.9\" OLED Super Retina XDR 120Hz",
+    "chip": "Apple A18 Pro",
+    "camera": "48MP Fusion + 48MP Ultra Wide + 12MP Telephoto 5x",
+    "battery": "4685 mAh, Sạc nhanh 30W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.3",
+    "os": "iOS 18",
+    "color": [
+      "#d9d4cb",
+      "#8c867b"
+    ],
+    "rating": 4.9,
+    "isNew": true,
+    "imported": 68,
+    "sold": 36,
+    "variants": [
+      {
+        "sku": "SP001-TITAN_DEN-8GB-256GB",
+        "color": "Titan Đen",
+        "ram": "8GB",
+        "rom": "256GB",
+        "cost": 30200000,
+        "price": 34990000,
+        "stock": 14
+      },
+      {
+        "sku": "SP001-TITAN_TRANG-8GB-256GB",
+        "color": "Titan Trắng",
+        "ram": "8GB",
+        "rom": "256GB",
+        "cost": 30200000,
+        "price": 34990000,
+        "stock": 10
+      },
+      {
+        "sku": "SP001-TITAN_TU_NHIEN-8GB-512GB",
+        "color": "Titan Tự Nhiên",
+        "ram": "8GB",
+        "rom": "512GB",
+        "cost": 34500000,
+        "price": 39990000,
+        "stock": 8
+      },
+      {
+        "sku": "SP001-TITAN_SA_MAC-8GB-1TB",
+        "color": "Titan Sa Mạc",
+        "ram": "8GB",
+        "rom": "1TB",
+        "cost": 40000000,
+        "price": 46990000,
+        "stock": 0
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "code": "SP002",
+    "name": "iPhone 16",
+    "brand": "Apple",
+    "category": "Điện thoại",
+    "description": "iPhone 16 mang đến chip A18 Bionic tiên tiến, nút Điều Khiển Camera hoàn toàn mới và hệ thống Camera Fusion 48MP đột phá 2 trong 1. Hỗ trợ hệ sinh thái Apple Intelligence với thiết kế mặt lưng kính pha màu rực rỡ.",
+    "image": "",
+    "createdAt": "2026-09-20",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.1\" OLED Super Retina XDR 60Hz",
+    "chip": "Apple A18 Bionic",
+    "camera": "48MP Fusion + 12MP Ultra Wide",
+    "battery": "3561 mAh, Sạc nhanh 25W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.3",
+    "os": "iOS 18",
+    "color": [
+      "#f3c9d0",
+      "#d38b98"
+    ],
+    "rating": 4.7,
+    "isNew": true,
+    "imported": 69,
+    "sold": 39,
+    "variants": [
+      {
+        "sku": "SP002-HONG_PASTEL-8GB-128GB",
+        "color": "Hồng Pastel",
+        "ram": "8GB",
+        "rom": "128GB",
+        "cost": 16500000,
+        "price": 18990000,
+        "stock": 15
+      },
+      {
+        "sku": "SP002-XANH_LUU_LY-8GB-128GB",
+        "color": "Xanh Lưu Ly",
+        "ram": "8GB",
+        "rom": "128GB",
+        "cost": 16500000,
+        "price": 18990000,
+        "stock": 10
+      },
+      {
+        "sku": "SP002-DEN_NHAM-8GB-256GB",
+        "color": "Đen Nhám",
+        "ram": "8GB",
+        "rom": "256GB",
+        "cost": 19000000,
+        "price": 21990000,
+        "stock": 5
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "code": "SP003",
+    "name": "Samsung Galaxy S25 Ultra",
+    "brand": "Samsung",
+    "category": "Điện thoại",
+    "description": "Galaxy S25 Ultra trang bị chip Snapdragon 8 Elite đỉnh cao, camera 200MP bắt trọn từng chi tiết, tích hợp bút S-Pen thông minh và bộ tính năng Galaxy AI tiên tiến nhất hiện nay cùng khung viền Titan sang trọng.",
+    "image": "",
+    "createdAt": "2026-09-22",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.9\" Dynamic AMOLED 2X 120Hz",
+    "chip": "Snapdragon 8 Elite for Galaxy",
+    "camera": "200MP + 50MP + 50MP + 10MP (S-Pen)",
+    "battery": "5000 mAh, Sạc nhanh 45W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.4",
+    "os": "Android 15 (One UI 7)",
+    "color": [
+      "#2b3a55",
+      "#0f1626"
+    ],
+    "rating": 4.8,
+    "isNew": true,
+    "imported": 59,
+    "sold": 32,
+    "variants": [
+      {
+        "sku": "SP003-XANH_TITAN-12GB-256GB",
+        "color": "Xanh Titan",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 26000000,
+        "price": 30490000,
+        "stock": 15
+      },
+      {
+        "sku": "SP003-DEN_TITAN-12GB-512GB",
+        "color": "Đen Titan",
+        "ram": "12GB",
+        "rom": "512GB",
+        "cost": 28900000,
+        "price": 33490000,
+        "stock": 8
+      },
+      {
+        "sku": "SP003-XAM_TITAN-16GB-1TB",
+        "color": "Xám Titan",
+        "ram": "16GB",
+        "rom": "1TB",
+        "cost": 36000000,
+        "price": 41990000,
+        "stock": 4
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "code": "SP004",
+    "name": "Samsung Galaxy Z Flip6",
+    "brand": "Samsung",
+    "category": "Điện thoại",
+    "description": "Điện thoại gập thời thượng Galaxy Z Flip6 với màn hình phụ FlexWindow thông minh, camera 50MP nâng cấp vượt bậc, vi xử lý Snapdragon 8 Gen 3 for Galaxy và viên pin 4000mAh bền bỉ suốt cả ngày.",
+    "image": "",
+    "createdAt": "2026-09-18",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.7\" Dynamic AMOLED 2X (Phụ 3.4\" Super AMOLED)",
+    "chip": "Snapdragon 8 Gen 3 for Galaxy",
+    "camera": "50MP Dual Pixel OIS + 12MP Ultra Wide",
+    "battery": "4000 mAh, Sạc nhanh 25W",
+    "connectivity": "5G, Wi-Fi 6E, Bluetooth 5.3",
+    "os": "Android 14 (One UI 6.1.1)",
+    "color": [
+      "#a4c8e1",
+      "#5d8aa8"
+    ],
+    "rating": 4.8,
+    "imported": 49,
+    "sold": 28,
+    "variants": [
+      {
+        "sku": "SP004-XANH_MAYA-12GB-256GB",
+        "color": "Xanh Maya",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 18500000,
+        "price": 21990000,
+        "stock": 10
+      },
+      {
+        "sku": "SP004-XAM_METAL-12GB-256GB",
+        "color": "Xám Metal",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 18500000,
+        "price": 21990000,
+        "stock": 6
+      },
+      {
+        "sku": "SP004-VANG_SOLAR-12GB-512GB",
+        "color": "Vàng Solar",
+        "ram": "12GB",
+        "rom": "512GB",
+        "cost": 21500000,
+        "price": 25490000,
+        "stock": 5
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "code": "SP005",
+    "name": "Xiaomi 15 Ultra",
+    "brand": "Xiaomi",
+    "category": "Điện thoại",
+    "description": "Xiaomi 15 Ultra đồng chế tác cùng Leica với cụm camera tiềm vọng 200MP cực khủng, màn hình 2K AMOLED 120Hz siêu sáng, vi xử lý Snapdragon 8 Elite cùng viên pin silicon-carbon dung lượng 6000mAh.",
+    "image": "",
+    "createdAt": "2026-09-25",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.73\" AMOLED 2K 120Hz LTPO",
+    "chip": "Snapdragon 8 Elite",
+    "camera": "Leica 50MP 1-inch + 200MP Periscope + 50MP Tele + 50MP Ultra Wide",
+    "battery": "6000 mAh, Sạc nhanh 90W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.4",
+    "os": "Xiaomi HyperOS 2.0",
+    "color": [
+      "#111213",
+      "#faf6f0"
+    ],
+    "rating": 4.9,
+    "isNew": true,
+    "imported": 42,
+    "sold": 22,
+    "variants": [
+      {
+        "sku": "SP005-DEN_GOM-12GB-256GB",
+        "color": "Đen Gốm",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 21000000,
+        "price": 24990000,
+        "stock": 12
+      },
+      {
+        "sku": "SP005-TRANG_GOM-16GB-512GB",
+        "color": "Trắng Gốm",
+        "ram": "16GB",
+        "rom": "512GB",
+        "cost": 24500000,
+        "price": 28990000,
+        "stock": 8
+      }
+    ]
+  },
+  {
+    "id": 6,
+    "code": "SP006",
+    "name": "OPPO Find X8 Pro",
+    "brand": "OPPO",
+    "category": "Điện thoại",
+    "description": "OPPO Find X8 Pro thiết lập chuẩn mực mới về nhiếp ảnh với cụm camera kép tiềm vọng Hasselblad, chip MediaTek Dimensity 9400 thế hệ mới, phím chụp nhanh chuyên dụng và pin siêu trâu 5910mAh.",
+    "image": "",
+    "createdAt": "2026-09-26",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.78\" AMOLED 1.5K 120Hz cong 4 cạnh",
+    "chip": "MediaTek Dimensity 9400",
+    "camera": "Hasselblad 50MP + 50MP Periscope đôi + 50MP Ultra Wide",
+    "battery": "5910 mAh, Sạc SuperVOOC 80W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.4",
+    "os": "ColorOS 15 (Android 15)",
+    "color": [
+      "#faf6f0",
+      "#1c1d1f"
+    ],
+    "rating": 4.8,
+    "isNew": true,
+    "imported": 19,
+    "sold": 16,
+    "variants": [
+      {
+        "sku": "SP006-TRANG_NGOC_TRAI-12GB-256GB",
+        "color": "Trắng Ngọc Trai",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 19500000,
+        "price": 22990000,
+        "stock": 2
+      },
+      {
+        "sku": "SP006-DEN_KHONG_GIAN-16GB-512GB",
+        "color": "Đen Không Gian",
+        "ram": "16GB",
+        "rom": "512GB",
+        "cost": 22800000,
+        "price": 26990000,
+        "stock": 1
+      }
+    ]
+  },
+  {
+    "id": 7,
+    "code": "SP007",
+    "name": "Vivo X100 Pro",
+    "brand": "Vivo",
+    "category": "Điện thoại",
+    "description": "Vivo X100 Pro tích hợp cụm ống kính quang học ZEISS đỉnh cao với cảm biến 1-inch, vi xử lý Dimensity 9300 tối ưu hóa cùng chip xử lý hình ảnh V3 độc quyền cho trải nghiệm chụp ảnh như máy ảnh cơ.",
+    "image": "",
+    "createdAt": "2026-09-24",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.78\" LTPO AMOLED 120Hz 3000 nits",
+    "chip": "MediaTek Dimensity 9300",
+    "camera": "ZEISS 50MP 1-inch + 50MP APO Telephoto + 50MP Ultra Wide",
+    "battery": "5400 mAh, Sạc nhanh 100W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.4",
+    "os": "Funtouch OS 14 (Android 14)",
+    "color": [
+      "#3b5998",
+      "#1a1a1a"
+    ],
+    "rating": 4.7,
+    "imported": 19,
+    "sold": 15,
+    "variants": [
+      {
+        "sku": "SP007-XANH_ANH_SAO-16GB-512GB",
+        "color": "Xanh Ánh Sao",
+        "ram": "16GB",
+        "rom": "512GB",
+        "cost": 18200000,
+        "price": 21490000,
+        "stock": 2
+      },
+      {
+        "sku": "SP007-DEN_HUYEN_BI-16GB-512GB",
+        "color": "Đen Huyền Bí",
+        "ram": "16GB",
+        "rom": "512GB",
+        "cost": 18200000,
+        "price": 21490000,
+        "stock": 2
+      }
+    ]
+  },
+  {
+    "id": 8,
+    "code": "SP008",
+    "name": "Realme GT 6",
+    "brand": "Realme",
+    "category": "Điện thoại",
+    "description": "Sát thủ hiệu năng Realme GT 6 sở hữu màn hình sáng nhất thế giới 6000 nits, chip Snapdragon 8s Gen 3 xử lý mượt mà mọi tựa game, camera 50MP cảm biến Sony LYT-808 cao cấp và sạc siêu nhanh 120W.",
+    "image": "",
+    "createdAt": "2026-09-21",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.78\" AMOLED 1.5K 120Hz 6000 nits đỉnh",
+    "chip": "Snapdragon 8s Gen 3",
+    "camera": "Sony LYT-808 50MP OIS + 50MP Telephoto + 8MP Ultra Wide",
+    "battery": "5500 mAh, Sạc nhanh 120W SuperVOOC",
+    "connectivity": "5G, Wi-Fi 6, Bluetooth 5.4",
+    "os": "realme UI 5.0 (Android 14)",
+    "color": [
+      "#cfd8dc",
+      "#00695c"
+    ],
+    "rating": 4.6,
+    "imported": 44,
+    "sold": 22,
+    "variants": [
+      {
+        "sku": "SP008-BAC_ANH_KIM-12GB-256GB",
+        "color": "Bạc Ánh Kim",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 11200000,
+        "price": 13490000,
+        "stock": 14
+      },
+      {
+        "sku": "SP008-XANH_LUC_BAO-16GB-512GB",
+        "color": "Xanh Lục Bảo",
+        "ram": "16GB",
+        "rom": "512GB",
+        "cost": 13000000,
+        "price": 15490000,
+        "stock": 8
+      }
+    ]
+  },
+  {
+    "id": 9,
+    "code": "SP009",
+    "name": "ASUS ROG Phone 9",
+    "brand": "ASUS",
+    "category": "Điện thoại",
+    "description": "Quái thú gaming ASUS ROG Phone 9 trang bị chip Snapdragon 8 Elite đỉnh nóc kịch trần, tần số quét kỷ lục 185Hz, hệ thống tản nhiệt buồng hơi GameCool 9 cùng màn hình AniMe Vision mặt lưng độc đáo.",
+    "image": "",
+    "createdAt": "2026-09-27",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "6.78\" AMOLED FHD+ 185Hz AniMe Vision",
+    "chip": "Snapdragon 8 Elite tản nhiệt buồng hơi 3D",
+    "camera": "Gimbal 50MP Sony Lytia 700 + 13MP Ultra Wide + 5MP Macro",
+    "battery": "5800 mAh, Sạc HyperCharge 65W",
+    "connectivity": "5G kép, Wi-Fi 7, Bluetooth 5.4",
+    "os": "ROG UI (Android 15)",
+    "color": [
+      "#111111",
+      "#eeeeee"
+    ],
+    "rating": 4.9,
+    "isNew": true,
+    "imported": 16,
+    "sold": 13,
+    "variants": [
+      {
+        "sku": "SP009-DEN_PHANTOM-12GB-256GB",
+        "color": "Đen Phantom",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 20000000,
+        "price": 23990000,
+        "stock": 2
+      },
+      {
+        "sku": "SP009-TRANG_STORM-16GB-512GB",
+        "color": "Trắng Storm",
+        "ram": "16GB",
+        "rom": "512GB",
+        "cost": 24000000,
+        "price": 27990000,
+        "stock": 1
+      }
+    ]
+  },
+  {
+    "id": 10,
+    "code": "SP010",
+    "name": "iPad Pro M4",
+    "brand": "Apple",
+    "category": "Máy tính bảng",
+    "description": "iPad Pro M4 thiết kế siêu mỏng kỷ lục 5.1mm, trang bị màn hình Ultra Retina XDR Tandem OLED tiên phong kết hợp sức mạnh phi thường từ chip Apple M4 thế hệ mới, đáp ứng hoàn hảo mọi tác vụ đồ họa chuyên sâu.",
+    "image": "",
+    "createdAt": "2026-09-15",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "11\" Ultra Retina XDR Tandem OLED 120Hz",
+    "chip": "Apple M4 9 nhân",
+    "camera": "12MP Wide sau, LiDAR Scanner, 12MP Ultra Wide trước",
+    "battery": "31.29 Wh (~10 giờ lướt web)",
+    "connectivity": "Wi-Fi 6E / 5G, Bluetooth 5.3",
+    "os": "iPadOS 18",
+    "color": [
+      "#e2e4e8",
+      "#1c1d1f"
+    ],
+    "rating": 4.9,
+    "isNew": true,
+    "imported": 36,
+    "sold": 18,
+    "variants": [
+      {
+        "sku": "SP010-BAC_ANH_KIM-8GB-256GB",
+        "color": "Bạc Ánh Kim",
+        "ram": "8GB",
+        "rom": "256GB",
+        "cost": 25200000,
+        "price": 28990000,
+        "stock": 12
+      },
+      {
+        "sku": "SP010-DEN_KHONG_GIAN-8GB-512GB",
+        "color": "Đen Không Gian",
+        "ram": "8GB",
+        "rom": "512GB",
+        "cost": 29500000,
+        "price": 34490000,
+        "stock": 6
+      }
+    ]
+  },
+  {
+    "id": 11,
+    "code": "SP011",
+    "name": "iPad Air 6",
+    "brand": "Apple",
+    "category": "Máy tính bảng",
+    "description": "iPad Air 6 nâng cấp vượt bậc với chip Apple M2 mạnh mẽ, màn hình Liquid Retina tuyệt đẹp sắc nét, camera trước Center Stage góc siêu rộng nằm ở cạnh ngang tối ưu cho gọi video và học tập trực tuyến.",
+    "image": "",
+    "createdAt": "2026-09-15",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "11\" Liquid Retina IPS LED True Tone",
+    "chip": "Apple M2 mạnh mẽ",
+    "camera": "12MP Wide sau, 12MP Ultra Wide trước Center Stage",
+    "battery": "28.93 Wh (~10 giờ liên tục)",
+    "connectivity": "Wi-Fi 6E, Bluetooth 5.3",
+    "os": "iPadOS 18",
+    "color": [
+      "#757575",
+      "#64b5f6"
+    ],
+    "rating": 4.8,
+    "imported": 58,
+    "sold": 26,
+    "variants": [
+      {
+        "sku": "SP011-XAM_KHONG_GIAN-8GB-128GB",
+        "color": "Xám Không Gian",
+        "ram": "8GB",
+        "rom": "128GB",
+        "cost": 14500000,
+        "price": 16990000,
+        "stock": 15
+      },
+      {
+        "sku": "SP011-XANH_DUONG-8GB-128GB",
+        "color": "Xanh Dương",
+        "ram": "8GB",
+        "rom": "128GB",
+        "cost": 14500000,
+        "price": 16990000,
+        "stock": 10
+      },
+      {
+        "sku": "SP011-TIM_PASTEL-8GB-256GB",
+        "color": "Tím Pastel",
+        "ram": "8GB",
+        "rom": "256GB",
+        "cost": 16800000,
+        "price": 19490000,
+        "stock": 7
+      }
+    ]
+  },
+  {
+    "id": 12,
+    "code": "SP012",
+    "name": "Samsung Galaxy Tab S10+",
+    "brand": "Samsung",
+    "category": "Máy tính bảng",
+    "description": "Galaxy Tab S10+ sở hữu màn hình Dynamic AMOLED 2X 12.4\" phủ lớp chống chói cao cấp, chip MediaTek Dimensity 9300+ tiến trình 4nm, kèm bút S-Pen kháng nước chuẩn IP68 và quyền năng Galaxy AI vượt trội.",
+    "image": "",
+    "createdAt": "2026-09-23",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "12.4\" Dynamic AMOLED 2X 120Hz chống chói",
+    "chip": "MediaTek Dimensity 9300+ (Kèm bút S-Pen)",
+    "camera": "13MP + 8MP Ultra Wide sau, 12MP trước",
+    "battery": "10090 mAh, Sạc siêu nhanh 45W",
+    "connectivity": "5G, Wi-Fi 7, Bluetooth 5.3",
+    "os": "Android 14 (One UI 6.1.1, Galaxy AI)",
+    "color": [
+      "#686b73",
+      "#e5e7eb"
+    ],
+    "rating": 4.8,
+    "imported": 22,
+    "sold": 18,
+    "variants": [
+      {
+        "sku": "SP012-XAM_MOONSTONE-12GB-256GB",
+        "color": "Xám Moonstone",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 21000000,
+        "price": 24990000,
+        "stock": 2
+      },
+      {
+        "sku": "SP012-BAC_PLATINUM-12GB-512GB",
+        "color": "Bạc Platinum",
+        "ram": "12GB",
+        "rom": "512GB",
+        "cost": 24500000,
+        "price": 28490000,
+        "stock": 2
+      }
+    ]
+  },
+  {
+    "id": 13,
+    "code": "SP013",
+    "name": "Xiaomi Pad 6 Pro",
+    "brand": "Xiaomi",
+    "category": "Máy tính bảng",
+    "description": "Máy tính bảng Xiaomi Pad 6 Pro mang đến màn hình 11\" tần số quét mượt mà 144Hz chuẩn màu 2.8K, vi xử lý Snapdragon 8+ Gen 1 mạnh mẽ, hệ thống 4 loa Dolby Atmos đỉnh cao và sạc siêu tốc 67W.",
+    "image": "",
+    "createdAt": "2026-09-17",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "RAM",
+      "ROM"
+    ],
+    "screen": "11\" LCD 2.8K 144Hz HDR10+ Dolby Vision",
+    "chip": "Snapdragon 8+ Gen 1",
+    "camera": "50MP sau, 20MP trước",
+    "battery": "8600 mAh, Sạc nhanh 67W",
+    "connectivity": "Wi-Fi 6, Bluetooth 5.3",
+    "os": "Xiaomi HyperOS",
+    "color": [
+      "#37474f",
+      "#80deea"
+    ],
+    "rating": 4.7,
+    "imported": 55,
+    "sold": 30,
+    "variants": [
+      {
+        "sku": "SP013-DEN_TITAN-8GB-128GB",
+        "color": "Đen Titan",
+        "ram": "8GB",
+        "rom": "128GB",
+        "cost": 7200000,
+        "price": 8990000,
+        "stock": 16
+      },
+      {
+        "sku": "SP013-XANH_BANG-12GB-256GB",
+        "color": "Xanh Băng",
+        "ram": "12GB",
+        "rom": "256GB",
+        "cost": 8800000,
+        "price": 10990000,
+        "stock": 9
+      }
+    ]
+  },
+  {
+    "id": 14,
+    "code": "SP014",
+    "name": "AirPods Pro 2",
+    "brand": "Apple",
+    "category": "Tai nghe",
+    "description": "Tai nghe AirPods Pro 2 cổng sạc USB-C trang bị chip Apple H2 mang lại khả năng chống ồn chủ động ANC tốt hơn gấp 2 lần, chế độ Xuyên Âm Thích Ứng thông minh và chuẩn kháng bụi nước IP54 bền bỉ.",
+    "image": "",
+    "createdAt": "2026-09-16",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc"
+    ],
+    "battery": "6 giờ nghe liên tục (30 giờ kèm hộp sạc)",
+    "anc": "Chống ồn chủ động ANC thế hệ 2 gấp 2 lần",
+    "bluetooth": "Bluetooth 5.3, Chip Apple H2",
+    "port": "USB-C, Hỗ trợ sạc MagSafe, Apple Watch Charger",
+    "waterproof": "IP54 (Cả tai nghe và hộp sạc)",
+    "color": [
+      "#ffffff",
+      "#e0e0e0"
+    ],
+    "rating": 4.9,
+    "imported": 45,
+    "sold": 45,
+    "variants": [
+      {
+        "sku": "SP014-TRANG",
+        "color": "Trắng",
+        "ram": null,
+        "rom": null,
+        "cost": 4700000,
+        "price": 5690000,
+        "stock": 0
+      }
+    ]
+  },
+  {
+    "id": 15,
+    "code": "SP015",
+    "name": "Galaxy Buds3 Pro",
+    "brand": "Samsung",
+    "category": "Tai nghe",
+    "description": "Tai nghe không dây Galaxy Buds3 Pro tái định nghĩa thiết kế với dải đèn Blade Lights hiện đại, âm thanh Hi-Fi 24-bit đỉnh cao cùng bộ khử tiếng ồn thích ứng AI thích ứng linh hoạt theo môi trường xung quanh.",
+    "image": "",
+    "createdAt": "2026-09-22",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc"
+    ],
+    "battery": "7 giờ nghe (30 giờ kèm hộp sạc)",
+    "anc": "Chống ồn thích ứng AI, Âm thanh Hi-Fi 24-bit",
+    "bluetooth": "Bluetooth 5.4, SSC Codec",
+    "port": "USB-C, Sạc không dây Qi",
+    "waterproof": "IP57 chuẩn cao cấp",
+    "color": [
+      "#cfd8dc",
+      "#ffffff"
+    ],
+    "rating": 4.8,
+    "isNew": true,
+    "imported": 60,
+    "sold": 28,
+    "variants": [
+      {
+        "sku": "SP015-BAC_TITAN",
+        "color": "Bạc Titan",
+        "ram": null,
+        "rom": null,
+        "cost": 4200000,
+        "price": 4990000,
+        "stock": 18
+      },
+      {
+        "sku": "SP015-TRANG_MAY",
+        "color": "Trắng Mây",
+        "ram": null,
+        "rom": null,
+        "cost": 4200000,
+        "price": 4990000,
+        "stock": 14
+      }
+    ]
+  },
+  {
+    "id": 16,
+    "code": "SP016",
+    "name": "Sony WF-1000XM5",
+    "brand": "Sony",
+    "category": "Tai nghe",
+    "description": "Sony WF-1000XM5 là đỉnh cao tai nghe chống ồn với 2 bộ xử lý chuyên dụng V2 và QN2e, màng loa Dynamic Driver X tái tạo âm thanh trung thực chuẩn Hi-Res Audio Wireless LDAC và micro định hướng AI đàm thoại rõ nét.",
+    "image": "",
+    "createdAt": "2026-09-19",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc"
+    ],
+    "battery": "8 giờ tai nghe (24 giờ kèm hộp sạc, sạc nhanh 3 phút được 60 phút)",
+    "anc": "Bộ xử lý V2 tích hợp & QN2e chống ồn đỉnh cao hàng đầu thế giới",
+    "bluetooth": "Bluetooth 5.3, Hỗ trợ LDAC, DSEE Extreme",
+    "port": "USB-C, Sạc không dây Qi",
+    "waterproof": "IPX4",
+    "color": [
+      "#212121",
+      "#e0e0e0"
+    ],
+    "rating": 4.9,
+    "imported": 20,
+    "sold": 20,
+    "variants": [
+      {
+        "sku": "SP016-DEN_NHAM",
+        "color": "Đen Nhám",
+        "ram": null,
+        "rom": null,
+        "cost": 5100000,
+        "price": 5990000,
+        "stock": 0
+      },
+      {
+        "sku": "SP016-BAC_BACH_KIM",
+        "color": "Bạc Bạch Kim",
+        "ram": null,
+        "rom": null,
+        "cost": 5100000,
+        "price": 5990000,
+        "stock": 0
+      }
+    ]
+  },
+  {
+    "id": 17,
+    "code": "SP017",
+    "name": "Apple Watch Series 10",
+    "brand": "Apple",
+    "category": "Đồng hồ thông minh",
+    "description": "Apple Watch Series 10 sở hữu màn hình OLED góc rộng lớn nhất và mỏng nhất từng có trên Apple Watch, sạc nhanh ấn tượng 80% trong 30 phút cùng các cảm biến theo dõi ngưng thở khi ngủ và đo độ sâu chuẩn xác.",
+    "image": "",
+    "createdAt": "2026-09-20",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "ROM"
+    ],
+    "screen": "42mm / 46mm OLED Retina góc nhìn rộng",
+    "caseSize": "42mm / 46mm",
+    "battery": "18 giờ sử dụng tiêu chuẩn (36 giờ tiết kiệm pin)",
+    "waterproof": "Chống nước 50m (WR50), chứng nhận lặn nông 6m",
+    "sensors": "Cảm biến nhiệt độ nước, đo độ sâu, ECG, SpO2, phát hiện ngưng thở khi ngủ",
+    "color": [
+      "#141517",
+      "#d8dade"
+    ],
+    "rating": 4.8,
+    "isNew": true,
+    "imported": 37,
+    "sold": 32,
+    "variants": [
+      {
+        "sku": "SP017-NHOM_DEN_BONG-64GB",
+        "color": "Nhôm Đen Bóng",
+        "ram": null,
+        "rom": "64GB",
+        "cost": 9200000,
+        "price": 10990000,
+        "stock": 3
+      },
+      {
+        "sku": "SP017-NHOM_BAC-64GB",
+        "color": "Nhôm Bạc",
+        "ram": null,
+        "rom": "64GB",
+        "cost": 9200000,
+        "price": 10990000,
+        "stock": 2
+      }
+    ]
+  },
+  {
+    "id": 18,
+    "code": "SP018",
+    "name": "Samsung Galaxy Watch7",
+    "brand": "Samsung",
+    "category": "Đồng hồ thông minh",
+    "description": "Galaxy Watch7 trang bị vi xử lý 3nm mạnh mẽ vượt trội, cảm biến BioActive tiên tiến nhất hỗ trợ chấm điểm năng lượng Energy Score của Galaxy AI và định vị GPS tần số kép cực kỳ chính xác khi luyện tập ngoài trời.",
+    "image": "",
+    "createdAt": "2026-09-21",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc",
+      "ROM"
+    ],
+    "screen": "40mm / 44mm Super AMOLED Sapphire",
+    "caseSize": "40mm / 44mm",
+    "battery": "40 giờ ở chế độ tiêu chuẩn",
+    "waterproof": "5ATM + IP68, Chuẩn độ bền quân đội MIL-STD-810H",
+    "sensors": "Cảm biến BioActive thế hệ mới, đo nhịp tim, huyết áp, ECG, phân tích thành phần cơ thể BIA",
+    "color": [
+      "#4b5320",
+      "#e0dcd3"
+    ],
+    "rating": 4.7,
+    "imported": 21,
+    "sold": 21,
+    "variants": [
+      {
+        "sku": "SP018-XANH_QUAN_DOI-32GB",
+        "color": "Xanh Quân Đội",
+        "ram": null,
+        "rom": "32GB",
+        "cost": 5500000,
+        "price": 6990000,
+        "stock": 0
+      },
+      {
+        "sku": "SP018-BAC_KEM-32GB",
+        "color": "Bạc Kem",
+        "ram": null,
+        "rom": "32GB",
+        "cost": 5500000,
+        "price": 6990000,
+        "stock": 0
+      }
+    ]
+  },
+  {
+    "id": 19,
+    "code": "SP019",
+    "name": "Sạc nhanh Apple MagSafe 25W",
+    "brand": "Apple",
+    "category": "Phụ kiện",
+    "description": "Đế sạc MagSafe 25W chính hãng Apple hỗ trợ chuẩn sạc không dây thế hệ mới Qi2, cho phép sạc không dây siêu nhanh 50% chỉ trong 30 phút cho iPhone 16 series, cáp bện dù chống rối siêu bền bỉ.",
+    "image": "",
+    "createdAt": "2026-09-20",
+    "isDeleted": false,
+    "attributes": [
+      "Quy cách"
+    ],
+    "power": "25W Max (Hỗ trợ chuẩn Qi2)",
+    "port": "Cáp bện tích hợp đầu cắm USB-C",
+    "cableLength": "Độ dài cáp 1 mét / 2 mét",
+    "standard": "Chuẩn không dây Qi2 & MagSafe chính hãng",
+    "color": [
+      "#ffffff",
+      "#e0e0e0"
+    ],
+    "rating": 4.8,
+    "imported": 110,
+    "sold": 65,
+    "variants": [
+      {
+        "sku": "SP019-TRANG_1M",
+        "color": "Trắng 1m",
+        "ram": null,
+        "rom": null,
+        "cost": 850000,
+        "price": 1190000,
+        "stock": 25
+      },
+      {
+        "sku": "SP019-TRANG_2M",
+        "color": "Trắng 2m",
+        "ram": null,
+        "rom": null,
+        "cost": 1100000,
+        "price": 1490000,
+        "stock": 20
+      }
+    ]
+  },
+  {
+    "id": 20,
+    "code": "SP020",
+    "name": "Củ sạc Anker GaN 65W",
+    "brand": "Anker",
+    "category": "Phụ kiện",
+    "description": "Củ sạc nhanh Anker GaNPrime 65W thiết kế siêu nhỏ gọn chân gập tiện lợi, trang bị 2 cổng USB-C và 1 cổng USB-A cho phép sạc cùng lúc laptop, máy tính bảng và điện thoại với công nghệ an toàn ActiveShield 2.0.",
+    "image": "",
+    "createdAt": "2026-09-22",
+    "isDeleted": false,
+    "attributes": [
+      "Màu sắc"
+    ],
+    "power": "65W Max công nghệ GaNPrime",
+    "port": "2 cổng USB-C + 1 cổng USB-A",
+    "cableLength": "Chân gập tiện lợi, kích thước nhỏ gọn",
+    "standard": "Power Delivery 3.0, PPS, Quick Charge 4.0+",
+    "color": [
+      "#212121",
+      "#e0e0e0"
+    ],
+    "rating": 4.9,
+    "imported": 100,
+    "sold": 55,
+    "variants": [
+      {
+        "sku": "SP020-DEN_NHAM",
+        "color": "Đen Nhám",
+        "ram": null,
+        "rom": null,
+        "cost": 580000,
+        "price": 790000,
+        "stock": 25
+      },
+      {
+        "sku": "SP020-TRANG_BAC",
+        "color": "Trắng Bạc",
+        "ram": null,
+        "rom": null,
+        "cost": 580000,
+        "price": 790000,
+        "stock": 20
+      }
+    ]
+  }
 ];
 
 // Chuẩn hóa và tự động tính basePrice, stock cho danh sách sản phẩm mẫu
 defaultProducts.forEach(p => {
-        if (p.variants && p.variants.length > 0) {
-                p.basePrice = Math.min(...p.variants.map(v => v.price));
-                p.stock = p.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
-                p.price = p.basePrice; // Alias tương thích
-                p.cost = Math.min(...p.variants.map(v => v.cost || 0));
-        }
+  if (p.variants && p.variants.length > 0) {
+    // Đồng bộ tên trường giá vốn trên sản phẩm và từng biến thể để tương thích các màn quản trị.
+    p.variants.forEach(v => {
+      v.costPrice = Number(v.costPrice ?? v.importPrice ?? v.cost) || 0;
+      v.importPrice = v.costPrice;
+    });
+    const prices = p.variants.map(v => Number(v.price) || 0).filter(pr => pr > 0);
+    p.basePrice = prices.length > 0 ? Math.min(...prices) : (Number(p.price) || 0);
+    p.stock = p.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+    p.price = p.basePrice; // Alias tương thích
+    const costs = p.variants.map(v => Number(v.cost) || 0).filter(c => c > 0);
+    p.cost = costs.length > 0 ? Math.min(...costs) : (Number(p.cost) || 0);
+    p.costPrice = p.cost;
+    p.importPrice = p.cost;
+  }
 });
+
+// Alias chuẩn hóa theo đề bài
+const DEFAULT_PRODUCTS = defaultProducts;
 
 // ==========================================================================
 // 3. ĐƠN HÀNG MẪU (CHUẨN HÓA LƯU THEO SKU BIẾN THỂ)
 // ==========================================================================
 const defaultOrders = [
-        {
-                id: 'DH24101',
-                customer: 'Nguyễn Minh Anh',
-                date: '02/10/2026',
-                total: 34990000,
-                status: 'Mới đặt',
-                pay: 'Chuyển khoản',
-                items: [
-                        { sku: 'SP001-TITANDEN-8GB-256GB', productId: 1, name: 'iPhone 16 Pro Max (Titan Đen - 8GB/256GB)', price: 34990000, qty: 1 }
-                ]
-        },
-        {
-                id: 'DH24100',
-                customer: 'Trần Quốc Bảo',
-                date: '02/10/2026',
-                total: 7080000,
-                status: 'Đã xác nhận',
-                pay: 'Tiền mặt',
-                items: [
-                        { sku: 'SP009-TRANG-STD', productId: 9, name: 'AirPods Pro 2 USB-C (Trắng)', price: 5990000, qty: 1 },
-                        { sku: 'SP012-TRANG-1M', productId: 12, name: 'Sạc nhanh MagSafe 25W (Trắng 1 mét)', price: 1090000, qty: 1 }
-                ]
-        },
-        {
-                id: 'DH24099',
-                customer: 'Lê Thu Hà',
-                date: '01/10/2026',
-                total: 21990000,
-                status: 'Đang giao',
-                pay: 'Thẻ tín dụng',
-                items: [
-                        { sku: 'SP005-XANHMAYA-12GB-256GB', productId: 5, name: 'Galaxy Z Flip6 (Xanh Maya - 12GB/256GB)', price: 21990000, qty: 1 }
-                ]
-        },
-        {
-                id: 'DH24098',
-                customer: 'Phạm Đức Long',
-                date: '30/09/2026',
-                total: 18990000,
-                status: 'Đã giao',
-                pay: 'Tiền mặt',
-                items: [
-                        { sku: 'SP003-HONG-6GB-128GB', productId: 3, name: 'iPhone 15 (Hồng Pastel - 6GB/128GB)', price: 18990000, qty: 1 }
-                ]
-        },
-        {
-                id: 'DH24097',
-                customer: 'Võ Thanh Tâm',
-                date: '29/09/2026',
-                total: 33490000,
-                status: 'Đã giao',
-                pay: 'Chuyển khoản',
-                items: [
-                        { sku: 'SP002-DENTITAN-12GB-512GB', productId: 2, name: 'Samsung Galaxy S25 Ultra (Đen Titan - 12GB/512GB)', price: 33490000, qty: 1 }
-                ]
-        },
-        {
-                id: 'DH24096',
-                customer: 'Đặng Hoàng Nam',
-                date: '28/09/2026',
-                total: 11990000,
-                status: 'Đã huỷ',
-                pay: 'Thẻ tín dụng',
-                items: [
-                        { sku: 'SP010-DENBONG-64GB', productId: 10, name: 'Apple Watch Series 10 (Nhôm Đen Bóng - 64GB)', price: 11990000, qty: 1 }
-                ]
-        },
-        {
-                id: 'DH24095',
-                customer: 'Bùi Khánh Linh',
-                date: '27/09/2026',
-                total: 28990000,
-                status: 'Đã giao',
-                pay: 'Chuyển khoản',
-                items: [
-                        { sku: 'SP008-BAC-8GB-256GB', productId: 8, name: 'iPad Pro M4 11 inch Wi-Fi (Bạc Ánh Kim - 8GB/256GB)', price: 28990000, qty: 1 }
-                ]
-        }
+  {
+    id: 'DH24101',
+    customer: 'Nguyễn Minh Anh',
+    customerEmail: 'minhanh@mail.com',
+    phone: '0901234567',
+    date: '02/10/2026',
+    total: 34990000,
+    status: 'Chờ xác nhận',
+    pay: 'Chuyển khoản',
+    address: '45 Lê Lợi, P. Bến Nghé, Quận 1, TP.HCM (Nhà riêng)',
+    items: [
+      { sku: 'SP001-TITAN_DEN-8GB-256GB', productId: 1, name: 'iPhone 16 Pro Max (Titan Đen - 8GB/256GB)', price: 34990000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24102',
+    customer: 'Nguyễn Minh Anh',
+    customerEmail: 'minhanh@mail.com',
+    phone: '0901234567',
+    date: '25/09/2026',
+    receivedDate: '27/09/2026',
+    total: 18990000,
+    status: 'Đã giao',
+    pay: 'Tiền mặt',
+    address: '45 Lê Lợi, P. Bến Nghé, Quận 1, TP.HCM (Nhà riêng)',
+    items: [
+      { sku: 'SP002-HONG_PASTEL-8GB-128GB', productId: 2, name: 'iPhone 16 (Hồng Pastel - 8GB/128GB)', price: 18990000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24100',
+    customer: 'Trần Quốc Bảo',
+    customerEmail: 'quocbao@mail.com',
+    phone: '0912345678',
+    date: '02/10/2026',
+    total: 6880000,
+    status: 'Đã xác nhận',
+    pay: 'Tiền mặt',
+    address: '88 Nguyễn Thị Minh Khai, P. 6, Quận 3, TP.HCM',
+    items: [
+      { sku: 'SP014-TRANG', productId: 14, name: 'AirPods Pro 2 (Trắng)', price: 5690000, qty: 1 },
+      { sku: 'SP019-TRANG_1M', productId: 19, name: 'Sạc nhanh Apple MagSafe 25W (Trắng 1m)', price: 1190000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24099',
+    customer: 'Lê Thu Hà',
+    customerEmail: 'thuha@mail.com',
+    phone: '0933456789',
+    date: '01/10/2026',
+    total: 21990000,
+    status: 'Đang giao',
+    pay: 'Thẻ tín dụng',
+    address: '15 Thảo Điền, P. Thảo Điền, TP. Thủ Đức, TP.HCM',
+    items: [
+      { sku: 'SP004-XANH_MAYA-12GB-256GB', productId: 4, name: 'Samsung Galaxy Z Flip6 (Xanh Maya - 12GB/256GB)', price: 21990000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24098',
+    customer: 'Phạm Đức Long',
+    customerEmail: 'duclong@mail.com',
+    phone: '0944567890',
+    date: '30/09/2026',
+    receivedDate: '02/10/2026',
+    total: 18990000,
+    status: 'Đã giao',
+    pay: 'Tiền mặt',
+    address: '128 Trần Hưng Đạo, Quận 5, TP.HCM',
+    items: [
+      { sku: 'SP002-HONG_PASTEL-8GB-128GB', productId: 2, name: 'iPhone 16 (Hồng Pastel - 8GB/128GB)', price: 18990000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24097',
+    customer: 'Võ Thanh Tâm',
+    customerEmail: 'thanhtam@mail.com',
+    phone: '0977678901',
+    date: '29/09/2026',
+    receivedDate: '01/10/2026',
+    total: 33490000,
+    status: 'Đã giao',
+    pay: 'Chuyển khoản',
+    address: '205 Hai Bà Trưng, P. 6, Quận 3, TP.HCM',
+    items: [
+      { sku: 'SP003-DEN_TITAN-12GB-512GB', productId: 3, name: 'Samsung Galaxy S25 Ultra (Đen Titan - 12GB/512GB)', price: 33490000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24096',
+    customer: 'Đặng Hoàng Nam',
+    customerEmail: 'hoangnam@mail.com',
+    phone: '0988789012',
+    date: '28/09/2026',
+    total: 10990000,
+    status: 'Đã huỷ',
+    pay: 'Thẻ tín dụng',
+    address: '42 Nguyễn Huệ, Quận 1, TP.HCM',
+    items: [
+      { sku: 'SP017-NHOM_DEN_BONG-64GB', productId: 17, name: 'Apple Watch Series 10 (Nhôm Đen Bóng - 64GB)', price: 10990000, qty: 1 }
+    ]
+  },
+  {
+    id: 'DH24095',
+    customer: 'Bùi Khánh Linh',
+    customerEmail: 'khanhlinh@mail.com',
+    phone: '0966554433',
+    date: '27/09/2026',
+    receivedDate: '29/09/2026',
+    total: 28990000,
+    status: 'Đã giao',
+    pay: 'Chuyển khoản',
+    address: '10 Nguyễn Trãi, Quận 1, TP.HCM',
+    items: [
+      { sku: 'SP010-BAC_ANH_KIM-8GB-256GB', productId: 10, name: 'iPad Pro M4 (Bạc Ánh Kim - 8GB/256GB)', price: 28990000, qty: 1 }
+    ]
+  }
 ];
 
 // ==========================================================================
 // 4. DANH SÁCH KHÁCH HÀNG & PHIẾU NHẬP
 // ==========================================================================
 const defaultCustomers = [
-        { id: 'KH001', name: 'Nguyễn Minh Anh', email: 'minhanh@mail.com', phone: '0901 234 567', joined: '12/03/2025', orders: 8, locked: false },
-        { id: 'KH002', name: 'Trần Quốc Bảo', email: 'quocbao@mail.com', phone: '0912 345 678', joined: '28/05/2025', orders: 3, locked: false },
-        { id: 'KH003', name: 'Lê Thu Hà', email: 'thuha@mail.com', phone: '0933 456 789', joined: '02/07/2025', orders: 5, locked: false },
-        { id: 'KH004', name: 'Phạm Đức Long', email: 'duclong@mail.com', phone: '0944 567 890', joined: '19/08/2025', orders: 1, locked: true },
-        { id: 'KH005', name: 'Võ Thanh Tâm', email: 'thanhtam@mail.com', phone: '0977 678 901', joined: '04/01/2026', orders: 12, locked: false },
-        { id: 'KH006', name: 'Đặng Hoàng Nam', email: 'hoangnam@mail.com', phone: '0988 789 012', joined: '15/02/2026', orders: 2, locked: false },
+  {
+    id: 'KH001',
+    name: 'Nguyễn Minh Anh',
+    email: 'minhanh@mail.com',
+    phone: '0901234567',
+    joined: '12/03/2025',
+    orders: 8,
+    locked: false,
+    addresses: [
+      {
+        id: 'addr_1',
+        label: 'Nhà riêng',
+        receiverName: 'Nguyễn Minh Anh',
+        receiverPhone: '0901234567',
+        detail: '45 Lê Lợi, P. Bến Nghé, Quận 1, TP.HCM',
+        isDefault: true
+      },
+      {
+        id: 'addr_2',
+        label: 'Công ty',
+        receiverName: 'Nguyễn Minh Anh',
+        receiverPhone: '0901234567',
+        detail: 'Tòa nhà Bitexco, 2 Hải Triều, P. Bến Nghé, Quận 1, TP.HCM',
+        isDefault: false
+      }
+    ]
+  },
+  {
+    id: 'KH002',
+    name: 'Trần Quốc Bảo',
+    email: 'quocbao@mail.com',
+    phone: '0912345678',
+    joined: '28/05/2025',
+    orders: 3,
+    locked: false,
+    addresses: [
+      {
+        id: 'addr_3',
+        label: 'Nhà riêng',
+        receiverName: 'Trần Quốc Bảo',
+        receiverPhone: '0912345678',
+        detail: '88 Nguyễn Thị Minh Khai, P. 6, Quận 3, TP.HCM',
+        isDefault: true
+      }
+    ]
+  },
+  {
+    id: 'KH003',
+    name: 'Lê Thu Hà',
+    email: 'thuha@mail.com',
+    phone: '0933456789',
+    joined: '02/07/2025',
+    orders: 5,
+    locked: false,
+    addresses: [
+      {
+        id: 'addr_4',
+        label: 'Nhà riêng',
+        receiverName: 'Lê Thu Hà',
+        receiverPhone: '0933456789',
+        detail: '15 Thảo Điền, P. Thảo Điền, TP. Thủ Đức, TP.HCM',
+        isDefault: true
+      }
+    ]
+  },
+  {
+    id: 'KH004',
+    name: 'Phạm Đức Long',
+    email: 'duclong@mail.com',
+    phone: '0944567890',
+    joined: '19/08/2025',
+    orders: 1,
+    locked: true,
+    addresses: []
+  },
+  {
+    id: 'KH005',
+    name: 'Võ Thanh Tâm',
+    email: 'thanhtam@mail.com',
+    phone: '0977678901',
+    joined: '04/01/2026',
+    orders: 12,
+    locked: false,
+    addresses: [
+      {
+        id: 'addr_5',
+        label: 'Nhà riêng',
+        receiverName: 'Võ Thanh Tâm',
+        receiverPhone: '0977678901',
+        detail: '205 Hai Bà Trưng, P. 6, Quận 3, TP.HCM',
+        isDefault: true
+      }
+    ]
+  },
+  {
+    id: 'KH006',
+    name: 'Đặng Hoàng Nam',
+    email: 'hoangnam@mail.com',
+    phone: '0988789012',
+    joined: '15/02/2026',
+    orders: 2,
+    locked: false,
+    addresses: []
+  }
 ];
 
 const defaultReceipts = [
-        {
-                id: 'PN0012',
-                date: '28/09/2026',
-                lines: 3,
-                qty: 85,
-                total: 1862000000,
-                status: 'Hoàn thành',
-                items: [
-                        { sku: 'SP001-TITANDEN-8GB-256GB', name: 'iPhone 16 Pro Max - Titan Đen 256GB', cost: 30200000, qty: 25 },
-                        { sku: 'SP002-XANHTITAN-12GB-256GB', name: 'Galaxy S25 Ultra - Xanh Titan 256GB', cost: 26000000, qty: 20 },
-                        { sku: 'SP009-TRANG-STD', name: 'AirPods Pro 2 USB-C', cost: 4700000, qty: 40 }
-                ]
-        },
-        {
-                id: 'PN0011',
-                date: '20/09/2026',
-                lines: 2,
-                qty: 40,
-                total: 904000000,
-                status: 'Hoàn thành',
-                items: [
-                        { sku: 'SP003-HONG-6GB-128GB', name: 'iPhone 15 - Hồng 128GB', cost: 16400000, qty: 20 },
-                        { sku: 'SP008-BAC-8GB-256GB', name: 'iPad Pro M4 - Bạc 256GB', cost: 25200000, qty: 20 }
-                ]
-        },
-        {
-                id: 'PN0010',
-                date: '11/09/2026',
-                lines: 2,
-                qty: 120,
-                total: 1215000000,
-                status: 'Hoàn thành',
-                items: [
-                        { sku: 'SP012-TRANG-1M', name: 'Sạc nhanh MagSafe 25W - 1m', cost: 720000, qty: 100 },
-                        { sku: 'SP010-DENBONG-64GB', name: 'Apple Watch Series 10 - 64GB', cost: 9900000, qty: 20 }
-                ]
-        },
-        {
-                id: 'PN0009',
-                date: '03/10/2026',
-                lines: 2,
-                qty: 30,
-                total: 612000000,
-                status: 'Nháp',
-                items: [
-                        { sku: 'SP005-XANHMAYA-12GB-256GB', name: 'Galaxy Z Flip6 - 256GB', cost: 18700000, qty: 15 },
-                        { sku: 'SP006-TRANGNGOC-16GB-512GB', name: 'OPPO Find X8 Pro - 512GB', cost: 24100000, qty: 15 }
-                ]
-        }
+  {
+    id: 'PN003',
+    date: '28/09/2026',
+    lines: 3,
+    qty: 65,
+    total: 1369000000,
+    status: 'Hoàn thành',
+    items: [
+      { sku: 'SP001-TITAN_DEN-8GB-256GB', name: 'iPhone 16 Pro Max - Titan Đen 256GB', cost: 30200000, qty: 25 },
+      { sku: 'SP003-XANH_TITAN-12GB-256GB', name: 'Galaxy S25 Ultra - Xanh Titan 256GB', cost: 26000000, qty: 20 },
+      { sku: 'SP014-TRANG', name: 'AirPods Pro 2', cost: 4700000, qty: 20 }
+    ]
+  },
+  {
+    id: 'PN002',
+    date: '20/09/2026',
+    lines: 2,
+    qty: 40,
+    total: 834000000,
+    status: 'Hoàn thành',
+    items: [
+      { sku: 'SP002-HONG_PASTEL-8GB-128GB', name: 'iPhone 16 - Hồng Pastel 128GB', cost: 16500000, qty: 20 },
+      { sku: 'SP010-BAC_ANH_KIM-8GB-256GB', name: 'iPad Pro M4 - Bạc Ánh Kim 256GB', cost: 25200000, qty: 20 }
+    ]
+  },
+  {
+    id: 'PN001',
+    date: '11/09/2026',
+    lines: 2,
+    qty: 80,
+    total: 235000000,
+    status: 'Hoàn thành',
+    items: [
+      { sku: 'SP019-TRANG_1M', name: 'Sạc nhanh MagSafe 25W - 1m', cost: 850000, qty: 60 },
+      { sku: 'SP017-NHOM_DEN_BONG-64GB', name: 'Apple Watch Series 10 - Nhôm Đen Bóng 64GB', cost: 9200000, qty: 20 }
+    ]
+  },
+  {
+    id: 'PN004',
+    date: '03/10/2026',
+    lines: 2,
+    qty: 30,
+    total: 570000000,
+    status: 'Chờ duyệt',
+    items: [
+      { sku: 'SP004-XANH_MAYA-12GB-256GB', name: 'Galaxy Z Flip6 - Xanh Maya 256GB', cost: 18500000, qty: 15 },
+      { sku: 'SP006-TRANG_NGOC_TRAI-12GB-256GB', name: 'OPPO Find X8 Pro - Trắng Ngọc Trai 256GB', cost: 19500000, qty: 15 }
+    ]
+  }
 ];
 
 // ==========================================================================
 // 5. CÁC HÀM HELPER TRUY XUẤT LOCALSTORAGE & BẢO TOÀN DỮ LIỆU
 // ==========================================================================
 function getStorage(key, fallback) {
-        try {
-                const val = localStorage.getItem(key);
-                return val ? JSON.parse(val) : fallback;
-        } catch (e) {
-                console.error(`[LocalStorage] Lỗi đọc khóa "${key}":`, e);
-                return fallback;
-        }
+  try {
+    const val = localStorage.getItem(key);
+    return val ? JSON.parse(val) : fallback;
+  } catch (e) {
+    console.error(`[LocalStorage] Lỗi đọc khóa "${key}":`, e);
+    return fallback;
+  }
 }
 
 function setStorage(key, val) {
-        try {
-                localStorage.setItem(key, JSON.stringify(val));
-        } catch (e) {
-                console.error(`[LocalStorage] Lỗi lưu khóa "${key}":`, e);
-        }
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {
+    console.error(`[LocalStorage] Lỗi lưu khóa "${key}":`, e);
+  }
 }
 
 /**
@@ -517,236 +1401,506 @@ function setStorage(key, val) {
  * - Tính lại stock = Sum(variant.stock)
  */
 function normalizeProduct(p) {
-        if (!p) return null;
-        p.isDeleted = Boolean(p.isDeleted);
-        p.attributes = Array.isArray(p.attributes) ? p.attributes : ['Màu sắc', 'RAM', 'ROM'];
+  if (!p) return null;
+  p.isDeleted = Boolean(p.isDeleted);
+  p.isVisible = p.isVisible !== false;
+  p.attributes = Array.isArray(p.attributes) ? p.attributes : ['Màu sắc', 'RAM', 'ROM'];
 
-        if (!Array.isArray(p.variants) || p.variants.length === 0) {
-                // Nếu dữ liệu cũ chưa có variants, sinh biến thể mặc định
-                const defaultSku = `${p.code || 'SP00' + p.id}-STD`;
-                p.variants = [
-                        {
-                                sku: defaultSku,
-                                color: Array.isArray(p.color) ? 'Tiêu chuẩn' : (p.color || 'Tiêu chuẩn'),
-                                ram: p.ram || 'Tiêu chuẩn',
-                                rom: p.rom || 'Tiêu chuẩn',
-                                cost: p.cost || Math.round((p.price || 10000000) * 0.85),
-                                price: p.price || 10000000,
-                                stock: typeof p.stock === 'number' ? p.stock : 10
-                        }
-                ];
+  if (!Array.isArray(p.variants) || p.variants.length === 0) {
+    const defaultSku = `${p.code || 'SP00' + p.id}-STD`;
+    p.variants = [
+      {
+        sku: defaultSku,
+        color: Array.isArray(p.color) ? 'Tiêu chuẩn' : (p.color || 'Tiêu chuẩn'),
+        ram: p.ram || '',
+        rom: p.rom || '',
+        cost: p.cost || p.costPrice || p.importPrice || Math.round((p.price || 10000000) * 0.85),
+        price: p.price || 10000000,
+        stock: typeof p.stock === 'number' ? p.stock : 10
+      }
+    ];
+  }
+
+  // Luôn quét lại basePrice và tồn kho thực tế
+  p.variants.forEach(v => {
+    // Chuẩn hóa giá vốn theo dữ liệu cũ/mới mà không làm mất giá trị đang lưu.
+    v.cost = Number(v.cost ?? v.costPrice ?? v.importPrice) || 0;
+    v.costPrice = v.cost;
+    v.importPrice = v.cost;
+    v.price = Number(v.price) || 0;
+    v.stock = Number(v.stock) || 0;
+  });
+  const prices = p.variants.map(v => Number(v.price) || 0).filter(pr => pr > 0);
+  p.basePrice = prices.length > 0 ? Math.min(...prices) : (Number(p.price) || 0);
+  p.price = p.basePrice; // Alias cho các bộ lọc cũ
+  const costs = p.variants.map(v => Number(v.cost) || 0).filter(c => c > 0);
+  p.cost = costs.length > 0
+    ? Math.min(...costs)
+    : (Number(p.cost ?? p.costPrice ?? p.importPrice) || 0);
+  p.costPrice = p.cost; // Đảm bảo trường costPrice luôn sẵn sàng cho quản trị
+  p.importPrice = p.cost;
+  p.rating = Number(p.rating ?? 5);
+  const productSold = Math.max(0, Math.floor(Number(p.sold ?? p.soldCount ?? 0) || 0));
+  const existingVariantSold = p.variants.map(v => Number(v.sold));
+  const hasConsistentVariantSales = existingVariantSold.every(Number.isFinite) &&
+    existingVariantSold.reduce((sum, value) => sum + value, 0) === productSold;
+
+  if (!hasConsistentVariantSales) {
+    const totalVariantStock = p.variants.reduce((sum, v) => sum + v.stock, 0);
+    let remainingSold = productSold;
+    p.variants.forEach((v, index) => {
+      const share = index === p.variants.length - 1
+        ? remainingSold
+        : totalVariantStock > 0
+          ? Math.floor(productSold * v.stock / totalVariantStock)
+          : Math.floor(productSold / p.variants.length);
+      v.sold = share;
+      remainingSold -= share;
+    });
+  } else {
+    p.variants.forEach((v, index) => {
+      v.sold = Math.max(0, Math.floor(existingVariantSold[index]));
+    });
+  }
+
+  p.variants.forEach(v => {
+    v.imported = v.stock + v.sold;
+  });
+  p.stock = p.variants.reduce((sum, v) => sum + v.stock, 0);
+  p.imported = p.variants.reduce((sum, v) => sum + v.imported, 0);
+  p.sold = p.variants.reduce((sum, v) => sum + v.sold, 0);
+  p.soldCount = p.sold;
+
+  return p;
+}
+
+const DATA_VERSION = 'techno_v2.5_order_status_refactor';
+
+/**
+ * Làm sạch và tự động khôi phục LocalStorage (initDefaultData)
+ * Tự động kiểm tra phiên bản và tính toàn vẹn của dữ liệu:
+ * - 20 sản phẩm chuẩn (12 tồn ổn định 15-50, 5 tồn thấp 1-5, 3 hết hàng 0)
+ * - Danh mục có thuộc tính status: active / inactive
+ * - Danh sách khách hàng với mảng địa chỉ addresses riêng
+ * - Đơn hàng chuẩn hóa có email/phone phục vụ phân quyền lịch sử
+ */
+function initDefaultData(forceReset = false) {
+  try {
+    const currentVer = localStorage.getItem('techno_data_version');
+    const rawProds = getStorage('techno_products', null);
+    const rawCusts = getStorage('techno_customers', null);
+    const rawCats = getStorage('techno_categories', null);
+
+    let needReset = forceReset || currentVer !== DATA_VERSION || !Array.isArray(rawProds) || rawProds.length < 20;
+
+    if (!needReset && rawCusts) {
+      if (!Array.isArray(rawCusts) || rawCusts.some(c => !Array.isArray(c.addresses))) {
+        needReset = true;
+      }
+    }
+
+    if (!needReset && rawCats) {
+      if (!Array.isArray(rawCats) || rawCats.some(c => typeof c !== 'object' || !c.status)) {
+        needReset = true;
+      }
+    }
+
+    if (!needReset && rawProds) {
+      // Kiểm tra có đủ các mặt hàng hết hàng mẫu SP014, SP016, SP018
+      const sp014 = rawProds.find(p => p.id === 14 || p.code === 'SP014');
+      if (sp014 && sp014.variants && sp014.variants[0] && sp014.variants[0].stock !== 0) {
+        needReset = true;
+      }
+    }
+
+    if (needReset) {
+      console.log('[TechnoStore] Đồng bộ Mock Data v2.5: Cập nhật luồng trạng thái đơn hàng chuẩn mới...');
+      localStorage.setItem('techno_data_version', DATA_VERSION);
+      localStorage.removeItem('techno_products');
+      localStorage.removeItem('techno_categories');
+      localStorage.removeItem('techno_orders');
+      localStorage.removeItem('techno_receipts');
+      localStorage.removeItem('techno_customers');
+      localStorage.removeItem('techno_buy_now');
+      localStorage.removeItem('techno_admin');
+
+      setStorage('techno_products', defaultProducts);
+      setStorage('techno_categories', defaultCategories);
+      setStorage('techno_orders', defaultOrders);
+      setStorage('techno_receipts', defaultReceipts);
+      setStorage('techno_customers', defaultCustomers);
+
+      const existingCart = getStorage('techno_cart', null);
+      if (!existingCart || !Array.isArray(existingCart) || existingCart.length === 0) {
+        setStorage('techno_cart', [
+          { sku: 'SP001-TITAN_DEN-8GB-256GB', productId: 1, qty: 1 }
+        ]);
+      }
+    } else {
+      // Tự động quét và chuẩn hóa các đơn hàng cũ còn lưu trong LocalStorage nếu có
+      const storedOrders = getStorage('techno_orders', null);
+      if (Array.isArray(storedOrders)) {
+        let hasOrderMigrated = false;
+        storedOrders.forEach(o => {
+          if (o.status === 'Mới đặt') {
+            o.status = 'Chờ xác nhận';
+            hasOrderMigrated = true;
+          }
+        });
+        if (hasOrderMigrated) {
+          setStorage('techno_orders', storedOrders);
         }
+      }
+    }
 
-        // Luôn quét lại basePrice và tồn kho thực tế
-        const prices = p.variants.map(v => Number(v.price) || 0);
-        p.basePrice = Math.min(...prices);
-        p.price = p.basePrice; // Alias cho các bộ lọc cũ
-        p.cost = Math.min(...p.variants.map(v => Number(v.cost) || 0));
-        p.stock = p.variants.reduce((sum, v) => sum + (Number(v.stock) || 0), 0);
+    if (localStorage.getItem('techno_inventory_schema') !== 'sku_v1') {
+      const products = getStorage('techno_products', defaultProducts).map(normalizeProduct);
+      const orders = getStorage('techno_orders', defaultOrders);
+      const orderedBySku = new Map();
 
-        return p;
+      orders.forEach(order => {
+        if (order.status === 'Đã huỷ' || order.status === 'Đã hủy') return;
+        (order.items || []).forEach(item => {
+          if (!item.sku) return;
+          orderedBySku.set(item.sku, (orderedBySku.get(item.sku) || 0) + (Number(item.qty) || 0));
+        });
+      });
+
+      products.forEach(product => {
+        const orderedQty = product.variants.reduce((sum, variant) => sum + (orderedBySku.get(variant.sku) || 0), 0);
+        const totalSold = Math.max(product.sold, orderedQty);
+        let remainingSold = totalSold - orderedQty;
+        const totalStock = product.variants.reduce((sum, variant) => sum + variant.stock, 0);
+
+        product.variants.forEach((variant, index) => {
+          const orderSold = orderedBySku.get(variant.sku) || 0;
+          const extraSold = index === product.variants.length - 1
+            ? remainingSold
+            : totalStock > 0
+              ? Math.floor((totalSold - orderedQty) * variant.stock / totalStock)
+              : Math.floor((totalSold - orderedQty) / product.variants.length);
+          variant.sold = orderSold + extraSold;
+          remainingSold -= extraSold;
+          variant.imported = variant.stock + variant.sold;
+        });
+
+        product.sold = product.variants.reduce((sum, variant) => sum + variant.sold, 0);
+        product.soldCount = product.sold;
+        product.imported = product.variants.reduce((sum, variant) => sum + variant.imported, 0);
+      });
+
+      const receipts = getStorage('techno_receipts', defaultReceipts);
+      const receivedBySku = new Map();
+      receipts.filter(receipt => receipt.status === 'Hoàn thành').forEach(receipt => {
+        (receipt.items || []).forEach(item => {
+          receivedBySku.set(item.sku, (receivedBySku.get(item.sku) || 0) + (Number(item.qty) || 0));
+        });
+      });
+      const openingItems = [];
+      products.forEach(product => product.variants.forEach(variant => {
+        const openingQty = variant.imported - (receivedBySku.get(variant.sku) || 0);
+        if (openingQty < 0) {
+          console.error(`[TechnoStore] Phiếu nhập vượt tổng nhập của SKU ${variant.sku}.`);
+          return;
+        }
+        if (openingQty > 0) {
+          openingItems.push({
+            sku: variant.sku,
+            name: `${product.name} - ${variant.color}`,
+            cost: Number(variant.cost) || 0,
+            qty: openingQty
+          });
+        }
+      }));
+      if (openingItems.length > 0 && !receipts.some(receipt => receipt.id === 'PN0000')) {
+        const openingQty = openingItems.reduce((sum, item) => sum + item.qty, 0);
+        receipts.push({
+          id: 'PN0000',
+          date: '01/09/2026',
+          lines: openingItems.length,
+          qty: openingQty,
+          total: openingItems.reduce((sum, item) => sum + item.qty * item.cost, 0),
+          status: 'Hoàn thành',
+          items: openingItems,
+          source: 'opening-balance'
+        });
+        setStorage('techno_receipts', receipts);
+      }
+      setStorage('techno_products', products);
+      localStorage.setItem('techno_inventory_schema', 'sku_v1');
+    }
+
+    if (localStorage.getItem('techno_receipt_totals_schema') !== 'receipt_totals_v1') {
+      const receipts = getStorage('techno_receipts', defaultReceipts);
+      let hasChanges = false;
+      receipts.forEach(receipt => {
+        if (!Array.isArray(receipt.items)) return;
+        const total = receipt.items.reduce((sum, item) =>
+          sum + (Number(item.cost) || 0) * (Number(item.qty) || 0), 0);
+        const qty = receipt.items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+        if (receipt.total !== total || receipt.qty !== qty || receipt.lines !== receipt.items.length) {
+          receipt.total = total;
+          receipt.qty = qty;
+          receipt.lines = receipt.items.length;
+          hasChanges = true;
+        }
+      });
+      if (hasChanges) setStorage('techno_receipts', receipts);
+      localStorage.setItem('techno_receipt_totals_schema', 'receipt_totals_v1');
+    }
+
+    if (localStorage.getItem('techno_order_received_dates_schema') !== 'received_dates_v1') {
+      const orders = getStorage('techno_orders', defaultOrders);
+      let hasChanges = false;
+      orders.forEach(order => {
+        if (order.status === 'Đã giao' && !order.receivedDate) {
+          const fixtureOrder = defaultOrders.find(fixture => fixture.id === order.id);
+          if (fixtureOrder && fixtureOrder.receivedDate) {
+            order.receivedDate = fixtureOrder.receivedDate;
+            hasChanges = true;
+          }
+        } else if (order.status !== 'Đã giao' && order.receivedDate) {
+          delete order.receivedDate;
+          hasChanges = true;
+        }
+      });
+      if (hasChanges) setStorage('techno_orders', orders);
+      localStorage.setItem('techno_order_received_dates_schema', 'received_dates_v1');
+    }
+  } catch (e) {
+    console.error('[TechnoStore] Lỗi initDefaultData:', e);
+  }
 }
 
 // Getters và Setters cho Products
 function getProducts() {
-        const raw = getStorage('techno_products', null);
-        if (!raw) {
-                // Khởi tạo lần đầu
-                setStorage('techno_products', defaultProducts);
-                return defaultProducts.map(normalizeProduct);
-        }
-        return raw.map(normalizeProduct);
+  initDefaultData();
+  const raw = getStorage('techno_products', defaultProducts);
+  return raw.map(normalizeProduct);
 }
 
 function saveProducts(data) {
-        const normalized = data.map(normalizeProduct);
-        setStorage('techno_products', normalized);
+  const normalized = data.map(normalizeProduct);
+  setStorage('techno_products', normalized);
 }
 
 /**
  * Lấy danh sách sản phẩm hiển thị phía Khách hàng (bỏ các sp đã bị Xóa mềm)
  */
 function getActiveProducts() {
-        return getProducts().filter(p => !p.isDeleted);
+  return getProducts().filter(p => !p.isDeleted && p.isVisible);
 }
 
 // Getters và Setters cho Orders, Customers, Receipts, Categories
 function getOrders() {
-        const raw = getStorage('techno_orders', defaultOrders);
-        // Chuẩn hóa item trong đơn hàng (nếu là dạng cũ [id, qty] thì map sang object đầy đủ)
-        const allProducts = getProducts();
-        return raw.map(order => {
-                if (Array.isArray(order.items)) {
-                        order.items = order.items.map(it => {
-                                if (Array.isArray(it)) {
-                                        const [pid, q] = it;
-                                        const p = allProducts.find(x => x.id === pid);
-                                        const firstVariant = (p && p.variants && p.variants[0]) ? p.variants[0] : null;
-                                        return {
-                                                sku: firstVariant ? firstVariant.sku : `SP00${pid}-STD`,
-                                                productId: pid,
-                                                name: p ? p.name : 'Sản phẩm',
-                                                price: firstVariant ? firstVariant.price : (p ? p.price : 0),
-                                                qty: q
-                                        };
-                                }
-                                return it;
-                        });
-                }
-                return order;
-        });
+  const raw = getStorage('techno_orders', defaultOrders);
+  const allProducts = getProducts();
+  return raw.map(order => {
+    if (Array.isArray(order.items)) {
+      order.items = order.items.map(it => {
+        if (Array.isArray(it)) {
+          const [pid, q] = it;
+          const p = allProducts.find(x => x.id === pid);
+          const firstVariant = (p && p.variants && p.variants[0]) ? p.variants[0] : null;
+          return {
+            sku: firstVariant ? firstVariant.sku : `SP00${pid}-STD`,
+            productId: pid,
+            name: p ? p.name : 'Sản phẩm',
+            price: firstVariant ? firstVariant.price : (p ? p.price : 0),
+            qty: q
+          };
+        }
+        return it;
+      });
+    }
+    return order;
+  });
 }
 function saveOrders(data) {
-        setStorage('techno_orders', data);
+  setStorage('techno_orders', data);
 }
 
 function getCustomers() {
-        return getStorage('techno_customers', defaultCustomers);
+  return getStorage('techno_customers', defaultCustomers);
 }
 function saveCustomers(data) {
-        setStorage('techno_customers', data);
+  setStorage('techno_customers', data);
+}
+
+/**
+ * Đồng bộ số đơn chưa bị hủy cho từng khách hàng từ danh sách đơn hàng thực tế.
+ * @param {Array} orderList - Danh sách đơn hàng cần dùng để tính số lượng.
+ */
+function syncCustomerOrderCounts(orderList = getOrders()) {
+  const customers = getCustomers();
+  const countableOrders = orderList.filter(order => order.status !== 'Đã huỷ' && order.status !== 'Đã hủy');
+  let hasChanges = false;
+
+  customers.forEach(customer => {
+    const customerEmail = (customer.email || '').trim().toLowerCase();
+    const customerPhone = (customer.phone || '').replace(/\D/g, '');
+    const orderCount = countableOrders.filter(order => {
+      const orderEmail = (order.customerEmail || '').trim().toLowerCase();
+      const orderPhone = (order.phone || '').replace(/\D/g, '');
+      return Boolean(
+        (customer.id && order.customerId && String(customer.id) === String(order.customerId)) ||
+        (customerEmail && orderEmail && customerEmail === orderEmail) ||
+        (customerPhone && orderPhone && customerPhone === orderPhone)
+      );
+    }).length;
+
+    if (Number(customer.orders) !== orderCount) {
+      customer.orders = orderCount;
+      hasChanges = true;
+    }
+  });
+
+  if (hasChanges) saveCustomers(customers);
+  return customers;
 }
 
 function getReceipts() {
-        return getStorage('techno_receipts', defaultReceipts);
+  const receipts = getStorage('techno_receipts', defaultReceipts);
+  return receipts.map(r => {
+    let id = r.id;
+    if (id && id.startsWith('PN') && id.length > 5) {
+      const match = id.match(/\d+/);
+      if (match) {
+        id = 'PN' + String(parseInt(match[0], 10)).padStart(3, '0');
+      }
+    }
+    let status = r.status === 'Nháp' ? 'Chờ duyệt' : r.status;
+    return { ...r, id, status };
+  });
 }
 function saveReceipts(data) {
-        setStorage('techno_receipts', data);
+  setStorage('techno_receipts', data);
 }
 
 function getCategories() {
-        return getStorage('techno_categories', defaultCategories);
+  initDefaultData();
+  const raw = getStorage('techno_categories', defaultCategories);
+  if (!Array.isArray(raw)) return defaultCategories;
+  return raw.map((c, i) => {
+    if (typeof c === 'string') {
+      return {
+        id: `DM${String(i + 1).padStart(3, '0')}`,
+        name: c,
+        type: i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo',
+        status: 'active'
+      };
+    }
+    return {
+      id: c.id || `DM${String(i + 1).padStart(3, '0')}`,
+      name: c.name || '',
+      type: c.type || (i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo'),
+      status: c.status || 'active'
+    };
+  });
 }
+
+function getActiveCategories() {
+  return getCategories().filter(c => c.status === 'active').map(c => c.name);
+}
+
 function saveCategories(data) {
-        setStorage('techno_categories', data);
+  setStorage('techno_categories', data);
 }
 
 // ==========================================================================
-// 6. CÁC HÀM TỰ ĐỘNG SINH KHÓA CHÍNH (AUTO-ID GENERATION)
-// Nghiệp vụ: Quét max ID cũ + 1 (tính cả sản phẩm đã xóa mềm)
+// 6. HELPER TÌM KIẾM BIẾN THỂ & SINH MÃ TỰ ĐỘNG
 // ==========================================================================
-
-/**
- * Tự động sinh Mã Sản phẩm (SPxxx) và ID số kế tiếp
- * @returns {{ id: number, code: string }}
- */
-function generateNextProductId() {
-        const products = getProducts(); // Quét tất cả, kể cả isDeleted = true
-        let maxNum = 0;
-
-        products.forEach(p => {
-                // Trích xuất số từ code hoặc id
-                if (typeof p.id === 'number' && p.id > maxNum) {
-                        maxNum = p.id;
-                }
-                if (p.code && /^SP\d+$/i.test(p.code)) {
-                        const numPart = parseInt(p.code.replace(/^SP/i, ''), 10);
-                        if (!isNaN(numPart) && numPart > maxNum) {
-                                maxNum = numPart;
-                        }
-                }
-        });
-
-        const nextId = maxNum + 1;
-        const nextCode = 'SP' + String(nextId).padStart(3, '0');
-        return { id: nextId, code: nextCode };
-}
-
-/**
- * Tự động sinh Mã Phiếu nhập kế tiếp (PNxxxx)
- * @returns {string} Mã phiếu nhập (VD: PN0013)
- */
-function generateNextReceiptId() {
-        const receipts = getReceipts();
-        let maxNum = 0;
-
-        receipts.forEach(r => {
-                if (r.id && /^PN\d+$/i.test(r.id)) {
-                        const num = parseInt(r.id.replace(/^PN/i, ''), 10);
-                        if (!isNaN(num) && num > maxNum) {
-                                maxNum = num;
-                        }
-                }
-        });
-
-        const nextNum = maxNum + 1;
-        return 'PN' + String(nextNum).padStart(4, '0');
-}
-
-/**
- * Tự động sinh Mã Đơn hàng kế tiếp (DH24xxx)
- * @returns {string} Mã đơn hàng (VD: DH24102)
- */
-function generateNextOrderId() {
-        const orders = getOrders();
-        let maxNum = 24100;
-
-        orders.forEach(o => {
-                if (o.id && /^DH\d+$/i.test(o.id)) {
-                        const num = parseInt(o.id.replace(/^DH/i, ''), 10);
-                        if (!isNaN(num) && num > maxNum) {
-                                maxNum = num;
-                        }
-                }
-        });
-
-        const nextNum = maxNum + 1;
-        return 'DH' + nextNum;
-}
-
-/**
- * Tự động sinh mã SKU chuẩn cho biến thể
- * @param {string} productCode - Mã SP (VD: "SP001")
- * @param {string} color - Màu sắc (VD: "Titan Đen")
- * @param {string} ram - Dung lượng RAM (VD: "8GB")
- * @param {string} rom - Dung lượng ROM (VD: "256GB")
- * @returns {string} SKU chuẩn (VD: "SP001-TITAN_DEN-8GB-256GB")
- */
-function generateVariantSku(productCode, color, ram, rom) {
-        const c = slugifySkuPart(color);
-        const r = slugifySkuPart(ram);
-        const m = slugifySkuPart(rom);
-        return `${productCode}-${c}-${r}-${m}`.toUpperCase();
-}
-
-/**
- * Tìm biến thể theo SKU trong toàn bộ kho dữ liệu
- * @param {string} sku - Mã SKU
- * @returns {{ product: Object, variant: Object } | null}
- */
 function findVariantBySku(sku) {
-        if (!sku) return null;
-        const products = getProducts();
-        for (const prod of products) {
-                if (Array.isArray(prod.variants)) {
-                        const v = prod.variants.find(item => item.sku === sku);
-                        if (v) {
-                                return { product: prod, variant: v };
-                        }
-                }
-        }
-        return null;
+  if (!sku) return null;
+  const products = getProducts();
+  for (const p of products) {
+    if (p.variants && Array.isArray(p.variants)) {
+      const v = p.variants.find(x => x.sku === sku);
+      if (v) return { product: p, variant: v };
+    }
+  }
+  return null;
+}
+
+function generateSku(productCode, color, ram, rom) {
+  const pCode = productCode ? productCode.toUpperCase().trim() : 'SP000';
+  const cSlug = slugifySkuPart(color);
+
+  let parts = [pCode, cSlug];
+  if (ram && ram !== 'Tiêu chuẩn') parts.push(slugifySkuPart(ram));
+  if (rom && rom !== 'Tiêu chuẩn') parts.push(slugifySkuPart(rom));
+
+  return parts.join('-');
+}
+
+function generateNextProductId() {
+  const products = getProducts();
+  const maxId = products.reduce((max, p) => Math.max(max, Number(p.id) || 0), 0);
+  return maxId + 1;
+}
+
+function generateNextProductCode() {
+  const nextId = generateNextProductId();
+  return 'SP' + String(nextId).padStart(3, '0');
+}
+
+function generateNextOrderId() {
+  const orders = getOrders();
+  let maxNum = 24100;
+  orders.forEach(o => {
+    if (o.id && o.id.startsWith('DH')) {
+      const num = parseInt(o.id.replace('DH', ''), 10);
+      if (!isNaN(num) && num > maxNum) maxNum = num;
+    }
+  });
+  return 'DH' + (maxNum + 1);
+}
+
+function generateNextReceiptId() {
+  const receipts = getReceipts();
+  let maxNum = 12;
+  receipts.forEach(r => {
+    if (r.id && r.id.startsWith('PN')) {
+      const num = parseInt(r.id.replace('PN', ''), 10);
+      if (!isNaN(num) && num > maxNum) maxNum = num;
+    }
+  });
+  return 'PN' + String(maxNum + 1).padStart(3, '0');
 }
 
 // ==========================================================================
-// 7. QUẢN LÝ GIỎ HÀNG THEO SKU (SKU-BASED CART MANAGEMENT)
-// Nghiệp vụ: Giỏ hàng lưu trữ mảng các item theo sku duy nhất.
-// VD: iPhone 16 Pro Max 256GB Titan Đen và 512GB Titan Trắng là 2 item riêng biệt.
+// 7. QUẢN LÝ GIỎ HÀNG (SHOPPING CART THEO SKU) & MUA NGAY (BUY NOW)
 // ==========================================================================
-
 function getCart() {
-        const raw = getStorage('techno_cart', [
-                { sku: 'SP001-TITANDEN-8GB-256GB', productId: 1, qty: 1 },
-                { sku: 'SP009-TRANG-STD', productId: 9, qty: 1 }
-        ]);
-        // Lọc bỏ các item có SKU không còn tồn tại trong Data
-        return raw.filter(item => Boolean(findVariantBySku(item.sku)));
+  // Đọc giỏ riêng của tài khoản đã đăng nhập, còn khách vãng lai dùng khóa chung.
+  const user = getCurrentUser();
+  const storageKey = user && user.id ? `techno_cart_${user.id}` : 'techno_cart';
+  const fallback = [];
+  const raw = getStorage(storageKey, fallback);
+  return raw.filter(item => Boolean(findVariantBySku(item.sku)));
 }
 
 function saveCart(cart) {
-        setStorage('techno_cart', cart);
-        // Phát sự kiện toàn cục để cập nhật số đếm giỏ hàng trên Header & Badge
-        window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { count: getCartCount() } }));
+  // Ghi giỏ vào đúng phạm vi người dùng để không trộn dữ liệu giữa các tài khoản.
+  const user = getCurrentUser();
+  const storageKey = user && user.id ? `techno_cart_${user.id}` : 'techno_cart';
+  setStorage(storageKey, cart);
+  window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { count: getCartCount() } }));
+}
+
+/**
+ * Quản lý dữ liệu mua ngay tạm thời (Buy Now Item)
+ */
+function getBuyNow() {
+  return getStorage('techno_buy_now', null);
+}
+
+function setBuyNow(item) {
+  setStorage('techno_buy_now', item);
+}
+
+function clearBuyNow() {
+  localStorage.removeItem('techno_buy_now');
 }
 
 /**
@@ -756,118 +1910,261 @@ function saveCart(cart) {
  * @returns {{ success: boolean, message: string }}
  */
 function addToCart(skuOrId, qty = 1) {
-        let sku = skuOrId;
-        let targetProduct = null;
-        let targetVariant = null;
+  let sku = skuOrId;
+  let targetProduct = null;
+  let targetVariant = null;
 
-        // Hỗ trợ tương thích ngược nếu gọi hàm bằng productId
-        if (typeof skuOrId === 'number') {
-                const prod = getProducts().find(p => p.id === skuOrId && !p.isDeleted);
-                if (!prod) return { success: false, message: 'Không tìm thấy sản phẩm!' };
-                // Lấy biến thể còn hàng đầu tiên
-                const v = prod.variants.find(x => x.stock > 0) || prod.variants[0];
-                if (!v) return { success: false, message: 'Sản phẩm này chưa có phiên bản khả dụng!' };
-                sku = v.sku;
-                targetProduct = prod;
-                targetVariant = v;
-        } else {
-                const found = findVariantBySku(sku);
-                if (!found) return { success: false, message: 'Phiên bản sản phẩm không tồn tại!' };
-                targetProduct = found.product;
-                targetVariant = found.variant;
-        }
+  if (typeof skuOrId === 'number') {
+    const prod = getProducts().find(p => p.id === skuOrId && !p.isDeleted && p.isVisible);
+    if (!prod) return { success: false, message: 'Không tìm thấy sản phẩm!' };
+    const v = prod.variants.find(x => x.stock > 0) || prod.variants[0];
+    if (!v) return { success: false, message: 'Sản phẩm này chưa có phiên bản khả dụng!' };
+    sku = v.sku;
+    targetProduct = prod;
+    targetVariant = v;
+  } else {
+    const found = findVariantBySku(sku);
+    if (!found) return { success: false, message: 'Phiên bản sản phẩm không tồn tại!' };
+    targetProduct = found.product;
+    targetVariant = found.variant;
+  }
 
-        // Ràng buộc 1: Kiểm tra trạng thái tồn kho thực tế
-        if (targetVariant.stock <= 0) {
-                return { success: false, message: 'Phiên bản này hiện đã hết hàng, vui lòng chọn phiên bản khác!' };
-        }
+  if (!targetProduct.isVisible || targetProduct.isDeleted) {
+    return { success: false, message: 'Sản phẩm hiện không còn được kinh doanh.' };
+  }
 
-        const cart = getCart();
-        const existing = cart.find(item => item.sku === sku);
-        const currentInCart = existing ? existing.qty : 0;
-        const newTotalQty = currentInCart + qty;
+  if (targetVariant.stock <= 0) {
+    return { success: false, message: 'Phiên bản này hiện đã hết hàng, vui lòng chọn phiên bản khác!' };
+  }
 
-        // Ràng buộc 2: Kiểm tra tổng số lượng mua không vượt quá tồn kho
-        if (newTotalQty > targetVariant.stock) {
-                return {
-                        success: false,
-                        message: `Tồn kho chỉ còn ${targetVariant.stock} sản phẩm. Bạn đã có ${currentInCart} trong giỏ hàng!`
-                };
-        }
+  const cart = getCart();
+  const existing = cart.find(item => item.sku === sku);
+  const currentInCart = existing ? existing.qty : 0;
+  const newTotalQty = currentInCart + qty;
 
-        if (existing) {
-                existing.qty = newTotalQty;
-        } else {
-                cart.push({
-                        sku: sku,
-                        productId: targetProduct.id,
-                        qty: qty
-                });
-        }
+  if (newTotalQty > targetVariant.stock) {
+    return {
+      success: false,
+      message: `Tồn kho chỉ còn ${targetVariant.stock} sản phẩm. Bạn đã có ${currentInCart} trong giỏ hàng!`
+    };
+  }
 
-        saveCart(cart);
-        return { success: true, message: 'Đã thêm vào giỏ hàng thành công!' };
+  if (existing) {
+    existing.qty = newTotalQty;
+  } else {
+    cart.push({
+      sku: sku,
+      productId: targetProduct.id,
+      qty: qty
+    });
+  }
+
+  saveCart(cart);
+  return { success: true, message: 'Đã thêm vào giỏ hàng thành công!' };
 }
 
-/**
- * Cập nhật số lượng của một SKU trong giỏ hàng
- */
 function setCartQty(sku, qty) {
-        let cart = getCart();
-        if (qty <= 0) {
-                cart = cart.filter(item => item.sku !== sku);
-        } else {
-                const item = cart.find(i => i.sku === sku);
-                if (item) {
-                        const found = findVariantBySku(sku);
-                        const maxStock = found ? found.variant.stock : 999;
-                        item.qty = Math.min(qty, maxStock);
-                }
-        }
-        saveCart(cart);
+  let cart = getCart();
+  if (qty <= 0) {
+    cart = cart.filter(item => item.sku !== sku);
+  } else {
+    const item = cart.find(i => i.sku === sku);
+    if (item) {
+      const found = findVariantBySku(sku);
+      const maxStock = found ? found.variant.stock : 999;
+      item.qty = Math.min(qty, maxStock);
+    }
+  }
+  saveCart(cart);
 }
 
-/**
- * Xóa một SKU khỏi giỏ hàng
- */
 function removeFromCart(sku) {
-        let cart = getCart();
-        cart = cart.filter(item => item.sku !== sku);
-        saveCart(cart);
+  let cart = getCart();
+  cart = cart.filter(item => item.sku !== sku);
+  saveCart(cart);
 }
 
 function clearCart() {
-        saveCart([]);
+  saveCart([]);
 }
 
 function getCartCount() {
-        const cart = getCart();
-        return cart.reduce((total, item) => total + (item.qty || 0), 0);
+  const cart = getCart();
+  return cart.reduce((total, item) => total + (item.qty || 0), 0);
 }
 
 // ==========================================================================
 // 8. TRẠNG THÁI XÁC THỰC (CUSTOMER & ADMIN AUTH)
 // ==========================================================================
 function getCurrentUser() {
-        return getStorage('techno_user', null);
+  return getStorage('techno_user', null);
 }
 
 function setCurrentUser(user) {
-        setStorage('techno_user', user);
+  // Gộp giỏ khách vào giỏ tài khoản trước khi chuyển sang chế độ lưu trữ cá nhân.
+  if (user && user.id) {
+    const guestCart = getStorage('techno_cart', []);
+    if (Array.isArray(guestCart) && guestCart.length > 0) {
+      const storageKey = `techno_cart_${user.id}`;
+      const personalCart = getStorage(storageKey, []);
+      const mergedCart = Array.isArray(personalCart) ? personalCart : [];
+      guestCart.forEach(item => {
+        const found = findVariantBySku(item.sku);
+        if (!found || !found.product.isVisible || found.product.isDeleted) return;
+        const stock = Number(found.variant.stock) || 0;
+        if (stock <= 0) return;
+        const existing = mergedCart.find(cartItem => cartItem.sku === item.sku);
+        const nextQty = (Number(existing ? existing.qty : 0) || 0) + (Number(item.qty) || 0);
+        if (existing) {
+          existing.qty = Math.min(nextQty, stock);
+        } else {
+          mergedCart.push({
+            sku: item.sku,
+            productId: found.product.id,
+            qty: Math.min(Number(item.qty) || 0, stock)
+          });
+        }
+      });
+      setStorage(storageKey, mergedCart.filter(item => item.qty > 0));
+      localStorage.removeItem('techno_cart');
+    }
+  }
+  setStorage('techno_user', user);
+  // Đồng bộ số lượng giỏ hàng theo tài khoản vừa đăng nhập.
+  window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { count: getCartCount() } }));
 }
 
 function logoutUser() {
-        localStorage.removeItem('techno_user');
+  localStorage.removeItem('techno_user');
+  localStorage.removeItem('techno_cart');
+  localStorage.removeItem('techno_buy_now');
+  window.dispatchEvent(new CustomEvent('cartUpdated', { detail: { count: 0 } }));
+  const badge = document.getElementById('headerCartCount');
+  if (badge) {
+    badge.textContent = '0';
+    badge.style.display = 'none';
+  }
 }
 
 function getAdminUser() {
-        return getStorage('techno_admin', null);
+  return getStorage('techno_admin', null);
 }
 
 function setAdminUser(status) {
-        setStorage('techno_admin', status);
+  setStorage('techno_admin', status);
 }
 
 function logoutAdmin() {
-        localStorage.removeItem('techno_admin');
+  localStorage.removeItem('techno_admin');
 }
+
+/**
+ * Lấy lịch sử đơn hàng của người dùng hiện tại đang đăng nhập
+ */
+function getOrdersForCurrentUser() {
+  const user = getCurrentUser();
+  if (!user) return [];
+  const allOrders = getOrders();
+  return allOrders.filter(o => {
+    if (user.id && o.customerId && String(user.id) === String(o.customerId)) return true;
+
+    const uEmail = (user.email || '').trim().toLowerCase();
+    const uPhone = (user.phone || '').replace(/\D/g, '');
+
+    const oEmail = (o.customerEmail || '').trim().toLowerCase();
+    const oPhone = (o.phone || '').replace(/\D/g, '');
+
+    if (uEmail && oEmail && uEmail === oEmail) return true;
+    if (uPhone && oPhone && uPhone === oPhone) return true;
+    return false;
+  });
+}
+
+// ==========================================================================
+// 9. CÁC HÀM TIỆN ÍCH BỔ SUNG
+// ==========================================================================
+
+function applyOrderInventory(items, direction, requireVisible = false) {
+  if (!Array.isArray(items) || ![1, -1].includes(direction)) {
+    return { success: false, message: 'Dữ liệu cập nhật tồn kho không hợp lệ.' };
+  }
+
+  const products = getProducts();
+  const quantitiesBySku = new Map();
+  for (const item of items) {
+    const quantity = Number(item.qty);
+    if (!item.sku || !Number.isSafeInteger(quantity) || quantity <= 0) {
+      return { success: false, message: `Không tìm thấy SKU hợp lệ "${item.sku || ''}" để cập nhật kho.` };
+    }
+    quantitiesBySku.set(item.sku, (quantitiesBySku.get(item.sku) || 0) + quantity);
+  }
+
+  const changes = [];
+  for (const [sku, quantity] of quantitiesBySku) {
+    const product = products.find(entry => entry.variants.some(variant => variant.sku === sku));
+    const variant = product && product.variants.find(entry => entry.sku === sku);
+    if (!variant) return { success: false, message: `Không tìm thấy SKU hợp lệ "${sku}" để cập nhật kho.` };
+    if (direction === 1 && requireVisible && (!product.isVisible || product.isDeleted)) {
+      return { success: false, message: `Sản phẩm của SKU ${sku} hiện không còn được kinh doanh.` };
+    }
+    if (direction === 1 && variant.stock < quantity) {
+      return { success: false, message: `SKU ${sku} chỉ còn ${variant.stock} sản phẩm trong kho.` };
+    }
+    if (direction === -1 && variant.sold < quantity) {
+      return { success: false, message: `Số lượng đã bán của SKU ${sku} không đủ để hoàn kho.` };
+    }
+    changes.push({ variant, quantity });
+  }
+
+  changes.forEach(({ variant, quantity }) => {
+    variant.stock -= direction * quantity;
+    variant.sold += direction * quantity;
+    variant.imported = variant.stock + variant.sold;
+  });
+  products.forEach(product => {
+    product.stock = product.variants.reduce((sum, variant) => sum + variant.stock, 0);
+    product.sold = product.variants.reduce((sum, variant) => sum + variant.sold, 0);
+    product.soldCount = product.sold;
+    product.imported = product.variants.reduce((sum, variant) => sum + variant.imported, 0);
+  });
+  saveProducts(products);
+  return { success: true, message: '' };
+}
+
+/**
+ * Định dạng ngày hiện tại chuẩn DD/MM/YYYY (hoặc từ đối tượng Date / chuỗi YYYY-MM-DD)
+ */
+function formatCurrentDate(dateInput) {
+  let d;
+  if (!dateInput) {
+    d = new Date();
+  } else if (dateInput instanceof Date) {
+    d = dateInput;
+  } else if (typeof dateInput === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(dateInput)) {
+    const [y, m, day] = dateInput.split('-').map(Number);
+    d = new Date(y, m - 1, day);
+  } else if (typeof dateInput === 'string' && /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(dateInput)) {
+    return dateInput;
+  } else {
+    d = new Date(dateInput);
+  }
+
+  if (isNaN(d.getTime())) d = new Date();
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+// Tự động khởi tạo dữ liệu chuẩn ngay khi nạp file
+initDefaultData();
+
+// Xuất biến toàn cục
+window.DEFAULT_PRODUCTS = defaultProducts;
+window.initDefaultData = initDefaultData;
+window.getBuyNow = getBuyNow;
+window.setBuyNow = setBuyNow;
+window.clearBuyNow = clearBuyNow;
+window.getOrdersForCurrentUser = getOrdersForCurrentUser;
+window.applyOrderInventory = applyOrderInventory;
+window.formatCurrentDate = formatCurrentDate;
