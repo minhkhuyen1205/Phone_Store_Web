@@ -8,8 +8,10 @@ class FilterController {
 
     this.category = options.category || 'Tất cả';
     this.brands = options.brands || [];
-    this.minPrice = options.minPrice || 0;
-    this.maxPrice = options.maxPrice || 50000000;
+    const initialMinPrice = Number(options.minPrice);
+    const initialMaxPrice = Number(options.maxPrice);
+    this.minPrice = Number.isFinite(initialMinPrice) ? Math.max(0, initialMinPrice) : 0;
+    this.maxPrice = Number.isFinite(initialMaxPrice) ? Math.max(0, initialMaxPrice) : 50000000;
     this.keyword = options.keyword || '';
     this.sortBy = options.sortBy || 'pop';
     this.page = options.page || 1;
@@ -167,7 +169,7 @@ class FilterController {
 
     if (priceRange) {
       priceRange.addEventListener('input', (e) => {
-        this.maxPrice = Number(e.target.value);
+        this.maxPrice = Math.max(0, Number(e.target.value) || 0);
         if (priceMaxInput) priceMaxInput.value = this.maxPrice;
         if (priceRangeLabel) priceRangeLabel.textContent = `${vnd(this.minPrice)} – ${vnd(this.maxPrice)}`;
         this.page = 1;
@@ -176,8 +178,12 @@ class FilterController {
     }
 
     if (priceMinInput) {
+      priceMinInput.addEventListener('input', (e) => {
+        if (Number(e.target.value) < 0) e.target.value = 0;
+      });
       priceMinInput.addEventListener('change', (e) => {
-        this.minPrice = Number(e.target.value) || 0;
+        this.minPrice = Math.max(0, Number(e.target.value) || 0);
+        e.target.value = this.minPrice;
         if (priceRangeLabel) priceRangeLabel.textContent = `${vnd(this.minPrice)} – ${vnd(this.maxPrice)}`;
         this.page = 1;
         this.applyFilters();
@@ -185,8 +191,13 @@ class FilterController {
     }
 
     if (priceMaxInput) {
+      priceMaxInput.addEventListener('input', (e) => {
+        if (Number(e.target.value) < 0) e.target.value = 0;
+      });
       priceMaxInput.addEventListener('change', (e) => {
-        this.maxPrice = Number(e.target.value) || 50000000;
+        const enteredPrice = e.target.value.trim() === '' ? 50000000 : Number(e.target.value);
+        this.maxPrice = Number.isFinite(enteredPrice) ? Math.max(0, enteredPrice) : 50000000;
+        e.target.value = this.maxPrice;
         if (priceRange) priceRange.value = this.maxPrice;
         if (priceRangeLabel) priceRangeLabel.textContent = `${vnd(this.minPrice)} – ${vnd(this.maxPrice)}`;
         this.page = 1;

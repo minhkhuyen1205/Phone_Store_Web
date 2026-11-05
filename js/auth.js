@@ -1,3 +1,286 @@
+/**
+ * Initialize Login & Register Page
+ */
+function initAuthPage(options = {}) {
+  const container = document.getElementById('authPageContent');
+  if (!container) return;
+
+  const basePath = options.basePath || '';
+  const customerPath = `${basePath}view/customer/`;
+  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
+
+  let mode = options.defaultMode || 'login'; // 'login' or 'register'
+  const allProds = typeof getProducts === 'function' ? getProducts() : [];
+  const heroProd = allProds[0] || null;
+
+  function render() {
+    const isLogin = mode === 'login';
+
+    container.innerHTML = `
+      <div class="auth-page-container">
+        <!-- Left Showcase Side -->
+        <div class="auth-showcase-side">
+          <div class="auth-showcase-inner">
+            <div class="auth-showcase-art">
+              ${heroProd ? renderProductImage(heroProd, 'width:100%;height:320px;') : ''}
+            </div>
+            <h2 class="auth-showcase-title">
+              Mua sắm công nghệ<br />theo cách của bạn.
+            </h2>
+            <p class="auth-showcase-subtitle">
+              Ưu đãi riêng cho thành viên TechnoStore.
+            </p>
+          </div>
+        </div>
+
+        <!-- Right Form Side -->
+        <div class="auth-form-side">
+          <form class="auth-form-box" onsubmit="handleAuthSubmit(event)">
+            <div>
+              <h1 class="auth-title">${isLogin ? 'Chào mừng trở lại' : 'Tạo tài khoản'}</h1>
+              <p class="auth-subtitle">
+                ${isLogin ? 'Đăng nhập để tiếp tục mua sắm.' : 'Chỉ mất chưa đến một phút.'}
+              </p>
+            </div>
+
+            ${!isLogin ? `
+              <div class="form-field" style="margin:0;">
+                <label class="form-label">Họ và tên *</label>
+                <input type="text" id="authNameInput" class="input-control" placeholder="Nguyễn Minh Anh" required />
+              </div>
+              <div class="form-field" style="margin:0;">
+                <label class="form-label">Số điện thoại *</label>
+                <input type="tel" id="authPhoneInput" class="input-control" placeholder="0901234567 (10 chữ số)" required pattern="0[0-9]{9}" />
+              </div>
+              <div class="form-field" style="margin:0;">
+                <label class="form-label">Email *</label>
+                <input type="email" id="authEmailInput" class="input-control" placeholder="email@vidu.com" required />
+              </div>
+            ` : `
+              <!-- BỎ TỰ ĐỘNG ĐIỀN ĐĂNG NHẬP: Để trống hoàn toàn ô input để người dùng tự nhập -->
+              <div class="form-field" style="margin:0;">
+                <label class="form-label">Email hoặc số điện thoại</label>
+                <input 
+                  type="text" 
+                  id="authIdentifierInput"
+                  class="input-control" 
+                  value="" 
+                  placeholder="Nhập email hoặc số điện thoại" 
+                  required 
+                  autocomplete="username"
+                />
+              </div>
+            `}
+
+            <div class="form-field" style="margin:0;">
+              <label class="form-label">Mật khẩu *</label>
+              <input 
+                type="password" 
+                id="authPasswordInput"
+                class="input-control" 
+                value="" 
+                placeholder="${isLogin ? 'Nhập mật khẩu' : 'Tối thiểu 6 ký tự'}" 
+                required 
+                ${!isLogin ? 'minlength="6"' : ''}
+                autocomplete="${isLogin ? 'current-password' : 'new-password'}"
+              />
+            </div>
+
+            ${!isLogin ? `
+              <div class="form-field" style="margin:0;">
+                <label class="form-label">Nhập lại mật khẩu *</label>
+                <input type="password" id="authRePasswordInput" class="input-control" placeholder="Nhập lại mật khẩu" required minlength="6" autocomplete="new-password" />
+              </div>
+            ` : ''}
+
+            ${isLogin ? `
+              <div class="auth-row-options">
+                <label class="checkbox-label">
+                  <input type="checkbox" checked />
+                  Ghi nhớ đăng nhập
+                </label>
+                <button type="button" class="auth-forgot-link" onclick="showCustomDialog('Vui lòng kiểm tra email hướng dẫn đặt lại mật khẩu từ hệ thống.', 'Quên mật khẩu', 'info')">
+                  Quên mật khẩu?
+                </button>
+              </div>
+            ` : `
+              <label class="checkbox-label">
+                <input type="checkbox" required checked />
+                Tôi đồng ý với điều khoản sử dụng
+              </label>
+            `}
+
+            <button type="submit" class="btn btn-primary btn-lg btn-full">
+              ${isLogin ? 'Đăng nhập' : 'Đăng ký'}
+            </button>
+
+            <p class="auth-switch-text">
+              ${isLogin ? 'Chưa có tài khoản?' : 'Đã có tài khoản?'}
+              <button type="button" class="auth-toggle-btn" onclick="toggleAuthMode()">
+                ${isLogin ? 'Đăng ký' : 'Đăng nhập'}
+              </button>
+            </p>
+          </form>
+        </div>
+      </div>
+    `;
+  }
+
+  window.toggleAuthMode = () => {
+    mode = mode === 'login' ? 'register' : 'login';
+    render();
+  };
+
+  /**
+   * XỬ LÝ ĐĂNG NHẬP & ĐĂNG KÝ THỰC TẾ TỪ CƠ SỞ DỮ LIỆU
+   * Sử dụng showCustomDialog thay thế toàn bộ alert mặc định
+   */
+  window.handleAuthSubmit = (e) => {
+    e.preventDefault();
+
+    if (mode === 'login') {
+      const idInput = document.getElementById('authIdentifierInput');
+      const passInput = document.getElementById('authPasswordInput');
+      const identifier = (idInput ? idInput.value : '').trim();
+      const password = (passInput ? passInput.value : '').trim();
+
+      if (!identifier || !password) {
+        showCustomDialog('Vui lòng nhập đầy đủ thông tin tài khoản và mật khẩu!', 'Thông báo', 'warning');
+        return;
+      }
+
+      // TASK 6: Chặn tài khoản Admin đăng nhập vào trang User
+      const normalizedIdentifier = identifier.toLowerCase();
+      const isAdminIdentifier = normalizedIdentifier === 'admin' || normalizedIdentifier === 'admin@technostore.vn';
+      const isAdminPassword = password === 'admin123' || password === '123';
+      if (isAdminIdentifier && isAdminPassword) {
+        // TASK 6: Hiển thị lỗi - không cho phép đăng nhập admin tại form User
+        showCustomDialog('Tài khoản không hợp lệ hoặc sai mật khẩu!', 'Đăng nhập thất bại', 'error');
+        return;
+      }
+
+      const customers = typeof getCustomers === 'function' ? getCustomers() : [];
+      const cleanId = identifier.replace(/\D/g, '');
+      const user = customers.find(c => {
+        const emailMatch = c.email && c.email.toLowerCase() === identifier.toLowerCase();
+        const phoneMatch = c.phone && c.phone.replace(/\D/g, '') === cleanId;
+        return emailMatch || phoneMatch;
+      });
+
+      const isPassValid = user && (user.password ? user.password === password : (password === 'password123' || password === '123456'));
+
+      if (!user || !isPassValid) {
+        showCustomDialog('Email hoặc mật khẩu không chính xác!', 'Đăng nhập thất bại', 'error');
+        return;
+      }
+
+      if (user.locked) {
+        showCustomDialog('Tài khoản của bạn đã bị tạm khóa. Vui lòng liên hệ quản trị viên!', 'Tài khoản bị khóa', 'error');
+        return;
+      }
+
+      setCurrentUser(user);
+
+      // Kiểm tra tham số chuyển hướng sau khi đăng nhập (ví dụ: quay lại giỏ hàng/thanh toán)
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get('redirect');
+      const targetUrl = redirectUrl
+        ? (redirectUrl.startsWith('http') || redirectUrl.startsWith('/') ? redirectUrl : `${customerPath}${redirectUrl}`)
+        : homeUrl;
+
+      showCustomDialog(`Đăng nhập thành công! Chào mừng <b>${user.name}</b> quay trở lại.`, 'Thành công', 'success', () => {
+        window.location.href = targetUrl;
+      });
+    } else {
+      // Đăng ký tài khoản khách hàng mới
+      const name = (document.getElementById('authNameInput')?.value || '').trim();
+      const phone = (document.getElementById('authPhoneInput')?.value || '').trim();
+      const email = (document.getElementById('authEmailInput')?.value || '').trim();
+      const password = (document.getElementById('authPasswordInput')?.value || '').trim();
+      const rePassword = (document.getElementById('authRePasswordInput')?.value || '').trim();
+
+      if (!name || !phone || !email || !password || !rePassword) {
+        showCustomDialog('Vui lòng điền đầy đủ tất cả các trường thông tin!', 'Thiếu thông tin', 'warning');
+        return;
+      }
+
+      // Kiểm tra định dạng số điện thoại 10 chữ số
+      const phoneRegex = /^0\d{9}$/;
+      const cleanPhone = phone.replace(/\s+/g, '');
+      if (!phoneRegex.test(cleanPhone)) {
+        showCustomDialog('Số điện thoại không hợp lệ! Vui lòng nhập đúng 10 chữ số (bắt đầu bằng số 0).', 'Lỗi số điện thoại', 'warning');
+        return;
+      }
+
+      // Kiểm tra định dạng email
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showCustomDialog('Địa chỉ email không đúng định dạng!', 'Lỗi email', 'warning');
+        return;
+      }
+
+      if (password.length < 6) {
+        showCustomDialog('Mật khẩu phải có tối thiểu 6 ký tự!', 'Mật khẩu yếu', 'warning');
+        return;
+      }
+
+      if (password !== rePassword) {
+        showCustomDialog('Mật khẩu nhập lại không khớp!', 'Lỗi nhập liệu', 'warning');
+        return;
+      }
+
+      const customers = typeof getCustomers === 'function' ? getCustomers() : [];
+      const exists = customers.some(c =>
+        (c.email && c.email.toLowerCase() === email.toLowerCase()) ||
+        (c.phone && c.phone.replace(/\D/g, '') === cleanPhone)
+      );
+
+      if (exists) {
+        showCustomDialog('Email hoặc số điện thoại này đã được đăng ký tài khoản trong hệ thống!', 'Đã tồn tại', 'warning');
+        return;
+      }
+
+      // Format ngày tham gia chuẩn DD/MM/YYYY
+      const now = new Date();
+      const d = String(now.getDate()).padStart(2, '0');
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const y = now.getFullYear();
+      const joinedFormatted = `${d}/${m}/${y}`;
+
+      const newCustomer = {
+        id: 'KH' + String(customers.length + 1).padStart(3, '0'),
+        name: name,
+        email: email,
+        phone: cleanPhone,
+        password: password,
+        joined: joinedFormatted,
+        orders: 0,
+        locked: false,
+        addresses: [] // Khởi tạo mảng địa chỉ rỗng cho tài khoản mới theo yêu cầu
+      };
+
+      customers.push(newCustomer);
+      saveCustomers(customers);
+      setCurrentUser(newCustomer);
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const redirectUrl = urlParams.get('redirect');
+      const targetUrl = redirectUrl
+        ? (redirectUrl.startsWith('http') || redirectUrl.startsWith('/') ? redirectUrl : `${customerPath}${redirectUrl}`)
+        : homeUrl;
+
+      showCustomDialog(`Chúc mừng <b>${newCustomer.name}</b> đã đăng ký tài khoản thành công!`, 'Đăng ký thành công', 'success', () => {
+        window.location.href = targetUrl;
+      });
+    }
+  };
+
+  render();
+}
+
+/**
+ * Initialize Profile Page & Address Management
+ */
 function initProfilePage(options = {}) {
   const container = document.getElementById('profilePageContent');
   if (!container) return;
@@ -111,9 +394,7 @@ function initProfilePage(options = {}) {
             qty = it.qty || 1;
           }
 
-          const imgHtml = (p && p.image)
-            ? `<img src="${p.image}" style="max-height: 48px; max-width: 100%; object-fit: contain;" alt="" />`
-            : (p && typeof renderDeviceArt === 'function' ? renderDeviceArt(p, 'height:48px; width:auto;') : '📦');
+          const imgHtml = p ? renderProductImage(p, 'width:48px;height:48px;') : '📦';
 
           return `
             <div class="order-item-mini-row">

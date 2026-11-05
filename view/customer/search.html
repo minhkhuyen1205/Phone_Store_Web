@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="../../css/components.css">
   <link rel="stylesheet" href="../../css/page/home.css">
   <link rel="stylesheet" href="../../css/page/search.css">
+  <link rel="stylesheet" href="../../css/responsive.css">
 </head>
 
 <body>
@@ -97,9 +98,9 @@
         <div>
           <div class="form-label">Khoảng giá</div>
           <div class="price-inputs-grid">
-            <input type="number" id="filterPriceMin" class="input-control" value="0" step="1000000" placeholder="Từ" />
+            <input type="number" id="filterPriceMin" class="input-control" min="0" value="0" step="1000000" placeholder="Từ" />
             <!-- Đồng bộ giới hạn mặc định với giá trị bộ lọc và thao tác Xoá lọc. -->
-            <input type="number" id="filterPriceMax" class="input-control" value="50000000" step="1000000"
+            <input type="number" id="filterPriceMax" class="input-control" min="0" value="50000000" step="1000000"
               placeholder="Đến" />
           </div>
           <input type="range" id="filterPriceRange" min="0" max="50000000" step="1000000" value="50000000"
@@ -124,6 +125,7 @@
 
   <!-- JavaScript Modules -->
   <script src="../../js/data.js"></script>
+  <script src="../../js/db-image.js"></script>
   <script src="../../js/components.js"></script>
   <script src="../../js/display.js"></script>
   <script src="../../js/search.js"></script>

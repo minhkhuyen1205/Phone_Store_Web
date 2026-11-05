@@ -58,7 +58,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Điện thoại",
     "description": "iPhone 16 Pro Max sở hữu màn hình Super Retina XDR 6.9\" viền siêu mỏng, chip Apple A18 Pro mạnh mẽ vượt trội cùng camera 48MP Fusion thế hệ mới. Khung viền Titan chuẩn hàng không vũ trụ siêu nhẹ và bền bỉ.",
-    "image": "",
+    "image": "assets/img/SP001.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -126,7 +126,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Điện thoại",
     "description": "iPhone 16 mang đến chip A18 Bionic tiên tiến, nút Điều Khiển Camera hoàn toàn mới và hệ thống Camera Fusion 48MP đột phá 2 trong 1. Hỗ trợ hệ sinh thái Apple Intelligence với thiết kế mặt lưng kính pha màu rực rỡ.",
-    "image": "",
+    "image": "assets/img/SP002.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -185,7 +185,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Điện thoại",
     "description": "Galaxy S25 Ultra trang bị chip Snapdragon 8 Elite đỉnh cao, camera 200MP bắt trọn từng chi tiết, tích hợp bút S-Pen thông minh và bộ tính năng Galaxy AI tiên tiến nhất hiện nay cùng khung viền Titan sang trọng.",
-    "image": "",
+    "image": "assets/img/SP003.png",
     "createdAt": "2026-09-22",
     "isDeleted": false,
     "attributes": [
@@ -244,7 +244,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Điện thoại",
     "description": "Điện thoại gập thời thượng Galaxy Z Flip6 với màn hình phụ FlexWindow thông minh, camera 50MP nâng cấp vượt bậc, vi xử lý Snapdragon 8 Gen 3 for Galaxy và viên pin 4000mAh bền bỉ suốt cả ngày.",
-    "image": "",
+    "image": "assets/img/SP004.png",
     "createdAt": "2026-09-18",
     "isDeleted": false,
     "attributes": [
@@ -302,7 +302,7 @@ const defaultProducts = [
     "brand": "Xiaomi",
     "category": "Điện thoại",
     "description": "Xiaomi 15 Ultra đồng chế tác cùng Leica với cụm camera tiềm vọng 200MP cực khủng, màn hình 2K AMOLED 120Hz siêu sáng, vi xử lý Snapdragon 8 Elite cùng viên pin silicon-carbon dung lượng 6000mAh.",
-    "image": "",
+    "image": "assets/img/SP005.png",
     "createdAt": "2026-09-25",
     "isDeleted": false,
     "attributes": [
@@ -352,7 +352,7 @@ const defaultProducts = [
     "brand": "OPPO",
     "category": "Điện thoại",
     "description": "OPPO Find X8 Pro thiết lập chuẩn mực mới về nhiếp ảnh với cụm camera kép tiềm vọng Hasselblad, chip MediaTek Dimensity 9400 thế hệ mới, phím chụp nhanh chuyên dụng và pin siêu trâu 5910mAh.",
-    "image": "",
+    "image": "assets/img/SP006.png",
     "createdAt": "2026-09-26",
     "isDeleted": false,
     "attributes": [
@@ -402,7 +402,7 @@ const defaultProducts = [
     "brand": "Vivo",
     "category": "Điện thoại",
     "description": "Vivo X100 Pro tích hợp cụm ống kính quang học ZEISS đỉnh cao với cảm biến 1-inch, vi xử lý Dimensity 9300 tối ưu hóa cùng chip xử lý hình ảnh V3 độc quyền cho trải nghiệm chụp ảnh như máy ảnh cơ.",
-    "image": "",
+    "image": "assets/img/SP007.png",
     "createdAt": "2026-09-24",
     "isDeleted": false,
     "attributes": [
@@ -451,7 +451,7 @@ const defaultProducts = [
     "brand": "Realme",
     "category": "Điện thoại",
     "description": "Sát thủ hiệu năng Realme GT 6 sở hữu màn hình sáng nhất thế giới 6000 nits, chip Snapdragon 8s Gen 3 xử lý mượt mà mọi tựa game, camera 50MP cảm biến Sony LYT-808 cao cấp và sạc siêu nhanh 120W.",
-    "image": "",
+    "image": "assets/img/SP008.png",
     "createdAt": "2026-09-21",
     "isDeleted": false,
     "attributes": [
@@ -500,7 +500,7 @@ const defaultProducts = [
     "brand": "ASUS",
     "category": "Điện thoại",
     "description": "Quái thú gaming ASUS ROG Phone 9 trang bị chip Snapdragon 8 Elite đỉnh nóc kịch trần, tần số quét kỷ lục 185Hz, hệ thống tản nhiệt buồng hơi GameCool 9 cùng màn hình AniMe Vision mặt lưng độc đáo.",
-    "image": "",
+    "image": "assets/img/SP009.png",
     "createdAt": "2026-09-27",
     "isDeleted": false,
     "attributes": [
@@ -550,7 +550,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Máy tính bảng",
     "description": "iPad Pro M4 thiết kế siêu mỏng kỷ lục 5.1mm, trang bị màn hình Ultra Retina XDR Tandem OLED tiên phong kết hợp sức mạnh phi thường từ chip Apple M4 thế hệ mới, đáp ứng hoàn hảo mọi tác vụ đồ họa chuyên sâu.",
-    "image": "",
+    "image": "assets/img/SP010.png",
     "createdAt": "2026-09-15",
     "isDeleted": false,
     "attributes": [
@@ -600,7 +600,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Máy tính bảng",
     "description": "iPad Air 6 nâng cấp vượt bậc với chip Apple M2 mạnh mẽ, màn hình Liquid Retina tuyệt đẹp sắc nét, camera trước Center Stage góc siêu rộng nằm ở cạnh ngang tối ưu cho gọi video và học tập trực tuyến.",
-    "image": "",
+    "image": "assets/img/SP011.png",
     "createdAt": "2026-09-15",
     "isDeleted": false,
     "attributes": [
@@ -658,7 +658,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Máy tính bảng",
     "description": "Galaxy Tab S10+ sở hữu màn hình Dynamic AMOLED 2X 12.4\" phủ lớp chống chói cao cấp, chip MediaTek Dimensity 9300+ tiến trình 4nm, kèm bút S-Pen kháng nước chuẩn IP68 và quyền năng Galaxy AI vượt trội.",
-    "image": "",
+    "image": "assets/img/SP012.png",
     "createdAt": "2026-09-23",
     "isDeleted": false,
     "attributes": [
@@ -707,7 +707,7 @@ const defaultProducts = [
     "brand": "Xiaomi",
     "category": "Máy tính bảng",
     "description": "Máy tính bảng Xiaomi Pad 6 Pro mang đến màn hình 11\" tần số quét mượt mà 144Hz chuẩn màu 2.8K, vi xử lý Snapdragon 8+ Gen 1 mạnh mẽ, hệ thống 4 loa Dolby Atmos đỉnh cao và sạc siêu tốc 67W.",
-    "image": "",
+    "image": "assets/img/SP013.png",
     "createdAt": "2026-09-17",
     "isDeleted": false,
     "attributes": [
@@ -756,7 +756,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Tai nghe",
     "description": "Tai nghe AirPods Pro 2 cổng sạc USB-C trang bị chip Apple H2 mang lại khả năng chống ồn chủ động ANC tốt hơn gấp 2 lần, chế độ Xuyên Âm Thích Ứng thông minh và chuẩn kháng bụi nước IP54 bền bỉ.",
-    "image": "",
+    "image": "assets/img/SP014.png",
     "createdAt": "2026-09-16",
     "isDeleted": false,
     "attributes": [
@@ -793,7 +793,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Tai nghe",
     "description": "Tai nghe không dây Galaxy Buds3 Pro tái định nghĩa thiết kế với dải đèn Blade Lights hiện đại, âm thanh Hi-Fi 24-bit đỉnh cao cùng bộ khử tiếng ồn thích ứng AI thích ứng linh hoạt theo môi trường xung quanh.",
-    "image": "",
+    "image": "assets/img/SP015.png",
     "createdAt": "2026-09-22",
     "isDeleted": false,
     "attributes": [
@@ -840,7 +840,7 @@ const defaultProducts = [
     "brand": "Sony",
     "category": "Tai nghe",
     "description": "Sony WF-1000XM5 là đỉnh cao tai nghe chống ồn với 2 bộ xử lý chuyên dụng V2 và QN2e, màng loa Dynamic Driver X tái tạo âm thanh trung thực chuẩn Hi-Res Audio Wireless LDAC và micro định hướng AI đàm thoại rõ nét.",
-    "image": "",
+    "image": "assets/img/SP016.png",
     "createdAt": "2026-09-19",
     "isDeleted": false,
     "attributes": [
@@ -886,7 +886,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Đồng hồ thông minh",
     "description": "Apple Watch Series 10 sở hữu màn hình OLED góc rộng lớn nhất và mỏng nhất từng có trên Apple Watch, sạc nhanh ấn tượng 80% trong 30 phút cùng các cảm biến theo dõi ngưng thở khi ngủ và đo độ sâu chuẩn xác.",
-    "image": "",
+    "image": "assets/img/SP017.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -934,7 +934,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Đồng hồ thông minh",
     "description": "Galaxy Watch7 trang bị vi xử lý 3nm mạnh mẽ vượt trội, cảm biến BioActive tiên tiến nhất hỗ trợ chấm điểm năng lượng Energy Score của Galaxy AI và định vị GPS tần số kép cực kỳ chính xác khi luyện tập ngoài trời.",
-    "image": "",
+    "image": "assets/img/SP018.png",
     "createdAt": "2026-09-21",
     "isDeleted": false,
     "attributes": [
@@ -981,7 +981,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Phụ kiện",
     "description": "Đế sạc MagSafe 25W chính hãng Apple hỗ trợ chuẩn sạc không dây thế hệ mới Qi2, cho phép sạc không dây siêu nhanh 50% chỉ trong 30 phút cho iPhone 16 series, cáp bện dù chống rối siêu bền bỉ.",
-    "image": "",
+    "image": "assets/img/SP019.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -1026,7 +1026,7 @@ const defaultProducts = [
     "brand": "Anker",
     "category": "Phụ kiện",
     "description": "Củ sạc nhanh Anker GaNPrime 65W thiết kế siêu nhỏ gọn chân gập tiện lợi, trang bị 2 cổng USB-C và 1 cổng USB-A cho phép sạc cùng lúc laptop, máy tính bảng và điện thoại với công nghệ an toàn ActiveShield 2.0.",
-    "image": "",
+    "image": "assets/img/SP020.png",
     "createdAt": "2026-09-22",
     "isDeleted": false,
     "attributes": [
@@ -1323,16 +1323,15 @@ const defaultCustomers = [
 
 const defaultReceipts = [
   {
-    id: 'PN003',
-    date: '28/09/2026',
-    lines: 3,
-    qty: 65,
-    total: 1369000000,
+    id: 'PN001',
+    date: '11/09/2026',
+    lines: 2,
+    qty: 80,
+    total: 235000000,
     status: 'Hoàn thành',
     items: [
-      { sku: 'SP001-TITAN_DEN-8GB-256GB', name: 'iPhone 16 Pro Max - Titan Đen 256GB', cost: 30200000, qty: 25 },
-      { sku: 'SP003-XANH_TITAN-12GB-256GB', name: 'Galaxy S25 Ultra - Xanh Titan 256GB', cost: 26000000, qty: 20 },
-      { sku: 'SP014-TRANG', name: 'AirPods Pro 2', cost: 4700000, qty: 20 }
+      { sku: 'SP019-TRANG_1M', name: 'Sạc nhanh MagSafe 25W - 1m', cost: 850000, qty: 60 },
+      { sku: 'SP017-NHOM_DEN_BONG-64GB', name: 'Apple Watch Series 10 - Nhôm Đen Bóng 64GB', cost: 9200000, qty: 20 }
     ]
   },
   {
@@ -1348,15 +1347,16 @@ const defaultReceipts = [
     ]
   },
   {
-    id: 'PN001',
-    date: '11/09/2026',
-    lines: 2,
-    qty: 80,
-    total: 235000000,
+    id: 'PN003',
+    date: '28/09/2026',
+    lines: 3,
+    qty: 65,
+    total: 1369000000,
     status: 'Hoàn thành',
     items: [
-      { sku: 'SP019-TRANG_1M', name: 'Sạc nhanh MagSafe 25W - 1m', cost: 850000, qty: 60 },
-      { sku: 'SP017-NHOM_DEN_BONG-64GB', name: 'Apple Watch Series 10 - Nhôm Đen Bóng 64GB', cost: 9200000, qty: 20 }
+      { sku: 'SP001-TITAN_DEN-8GB-256GB', name: 'iPhone 16 Pro Max - Titan Đen 256GB', cost: 30200000, qty: 25 },
+      { sku: 'SP003-XANH_TITAN-12GB-256GB', name: 'Galaxy S25 Ultra - Xanh Titan 256GB', cost: 26000000, qty: 20 },
+      { sku: 'SP014-TRANG', name: 'AirPods Pro 2', cost: 4700000, qty: 20 }
     ]
   },
   {
@@ -1394,6 +1394,25 @@ function setStorage(key, val) {
   }
 }
 
+function normalizeProductImagePath(image, code) {
+  const productCode = String(code || 'SP000').replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'SP000';
+  const imageValue = String(image || '').trim();
+  const pathMatch = imageValue.match(/^assets\/img\/([a-z0-9_-]+)\.(png|jpe?g|webp)$/i);
+  if (pathMatch) {
+    const baseName = pathMatch[1].toUpperCase();
+    if (baseName === productCode || baseName.startsWith(`${productCode}_`)) {
+      return `assets/img/${baseName}.${pathMatch[2].toLowerCase()}`;
+    }
+  }
+
+  const mimeType = imageValue.match(/^data:image\/(png|jpe?g|webp);/i);
+  const fileExtension = imageValue.match(/\.(png|jpe?g|webp)(?:[?#].*)?$/i);
+  const extension = mimeType
+    ? (mimeType[1].toLowerCase() === 'jpeg' ? 'jpg' : mimeType[1].toLowerCase())
+    : (fileExtension ? fileExtension[1].toLowerCase() : 'png');
+  return `assets/img/${productCode}.${extension}`;
+}
+
 /**
  * Tự động đồng bộ hóa và chuẩn hóa sản phẩm:
  * - Đảm bảo variants luôn là mảng hợp lệ
@@ -1402,6 +1421,9 @@ function setStorage(key, val) {
  */
 function normalizeProduct(p) {
   if (!p) return null;
+  p.image = normalizeProductImagePath(p.image || p.img, p.code);
+  p.imageId = String(p.code || '');
+  delete p.img;
   p.isDeleted = Boolean(p.isDeleted);
   p.isVisible = p.isVisible !== false;
   p.attributes = Array.isArray(p.attributes) ? p.attributes : ['Màu sắc', 'RAM', 'ROM'];
@@ -1420,6 +1442,10 @@ function normalizeProduct(p) {
       }
     ];
   }
+
+  p.variants.forEach(v => {
+    v.imageId = String(v.sku || '');
+  });
 
   // Luôn quét lại basePrice và tồn kho thực tế
   p.variants.forEach(v => {
@@ -1474,7 +1500,7 @@ function normalizeProduct(p) {
   return p;
 }
 
-const DATA_VERSION = 'techno_v2.5_order_status_refactor';
+const DATA_VERSION = 'techno_v2.6_admin_auth_sync';
 
 /**
  * Làm sạch và tự động khôi phục LocalStorage (initDefaultData)
@@ -1522,6 +1548,8 @@ function initDefaultData(forceReset = false) {
       localStorage.removeItem('techno_receipts');
       localStorage.removeItem('techno_buy_now');
       localStorage.removeItem('techno_admin');
+      localStorage.removeItem('techno_admin_session');
+      sessionStorage.removeItem('techno_admin_session');
 
       setStorage('techno_products', defaultProducts);
       setStorage('techno_categories', defaultCategories);
@@ -1675,7 +1703,17 @@ function initDefaultData(forceReset = false) {
 function getProducts() {
   initDefaultData();
   const raw = getStorage('techno_products', defaultProducts);
-  return raw.map(normalizeProduct);
+  const hasImageMigration = raw.some(product =>
+    product && (
+      product.image !== normalizeProductImagePath(product.image || product.img, product.code) ||
+      Object.prototype.hasOwnProperty.call(product, 'img') ||
+      product.imageId !== String(product.code || '') ||
+      (Array.isArray(product.variants) && product.variants.some(variant => variant.imageId !== String(variant.sku || '')))
+    )
+  );
+  const products = raw.map(normalizeProduct);
+  if (hasImageMigration) setStorage('techno_products', products);
+  return products;
 }
 
 function saveProducts(data) {
@@ -1770,7 +1808,7 @@ function getReceipts() {
     }
     let status = r.status === 'Nháp' ? 'Chờ duyệt' : r.status;
     return { ...r, id, status };
-  });
+  }).sort((a, b) => String(a.id).localeCompare(String(b.id), undefined, { numeric: true }));
 }
 function saveReceipts(data) {
   setStorage('techno_receipts', data);
@@ -2046,15 +2084,40 @@ function logoutUser() {
 }
 
 function getAdminUser() {
-  return getStorage('techno_admin', null);
+  try {
+    const sessionAuth = sessionStorage.getItem('techno_admin_session');
+    if (sessionAuth === 'true') return true;
+    const localAuth = localStorage.getItem('techno_admin_session');
+    if (localAuth === 'true') return true;
+    return false;
+  } catch (e) {
+    return false;
+  }
 }
 
-function setAdminUser(status) {
-  setStorage('techno_admin', status);
+function setAdminUser(status, remember = false) {
+  try {
+    if (status) {
+      sessionStorage.setItem('techno_admin_session', 'true');
+      if (remember) {
+        localStorage.setItem('techno_admin_session', 'true');
+      } else {
+        localStorage.removeItem('techno_admin_session');
+      }
+    } else {
+      logoutAdmin();
+    }
+  } catch (e) {
+    console.error('[AdminAuth] Error setting admin status:', e);
+  }
 }
 
 function logoutAdmin() {
-  localStorage.removeItem('techno_admin');
+  try {
+    sessionStorage.removeItem('techno_admin_session');
+    localStorage.removeItem('techno_admin_session');
+    localStorage.removeItem('techno_admin');
+  } catch (e) { }
 }
 
 /**

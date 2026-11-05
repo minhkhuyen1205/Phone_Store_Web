@@ -11,6 +11,7 @@
   <!-- CSS Stylesheets (Đã gộp base.css & components.css) -->
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/page/home.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
 
 <body>
@@ -194,9 +195,9 @@
           <div>
             <div class="form-label">Khoảng giá</div>
             <div class="price-inputs-grid">
-              <input type="number" id="filterPriceMin" class="input-control" value="0" step="1000000"
+              <input type="number" id="filterPriceMin" class="input-control" min="0" value="0" step="1000000"
                 placeholder="Từ" />
-              <input type="number" id="filterPriceMax" class="input-control" value="50000000" step="1000000"
+              <input type="number" id="filterPriceMax" class="input-control" min="0" value="50000000" step="1000000"
                 placeholder="Đến" />
             </div>
             <input type="range" id="filterPriceRange" min="0" max="50000000" step="1000000" value="50000000"
@@ -222,6 +223,7 @@
 
   <!-- JavaScript Modules -->
   <script src="js/data.js"></script>
+  <script src="js/db-image.js"></script>
   <script src="js/components.js"></script>
   <script src="js/display.js"></script>
   <script src="js/search.js"></script>
@@ -246,11 +248,7 @@
       const hero = getProducts().find(p => !p.isDeleted && (Number(p.stock) || 0) > 0) || getProducts()[0];
       const heroArt = document.getElementById('heroArtWrapper');
       if (heroArt && hero) {
-        if (hero.image) {
-          heroArt.innerHTML = `<img src="${hero.image}" style="max-height:360px; max-width:100%; object-fit:contain;" alt="${hero.name}" />`;
-        } else {
-          heroArt.innerHTML = renderDeviceArt(hero, 'height:360px; width:auto;');
-        }
+        heroArt.innerHTML = renderProductImage(hero, 'width:100%;height:360px;');
       }
       const heroPriceEl = document.getElementById('heroStartingPrice');
       if (heroPriceEl && hero) {
