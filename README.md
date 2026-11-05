@@ -48,14 +48,16 @@ TechnoStore/
 │   └── pages/               # Tách CSS theo từng trang cụ thể để định dạng bố cục (layout) riêng biệt
 │       ├── home.css         # Bố cục slider banner chính, lưới hiển thị danh mục và danh sách sản phẩm nổi bật của trang chủ.
 │       ├── detail.css       # Bố cục chia 2 cột của trang chi tiết: cột trái chứa ảnh lớn/thumbnail, cột phải chứa bảng thông số cấu hình và cụm nút mua hàng.
-│       ├── auth.css         # Bố cục canh giữa màn hình cho khối form đăng nhập/đăng ký và form cập nhật hồ sơ cá nhân.
+│       ├── login.css        # Giao diện đăng nhập và đăng ký.
+│       ├── auth.css         # Giao diện hồ sơ và thông tin khách hàng.
 │       ├── search.css       # Bố cục trang tìm kiếm: thanh bên (sidebar) chứa các bộ lọc (hãng, mức giá, sắp xếp) và lưới kết quả tìm kiếm bên phải.
 │       └── cart.css         # Bố cục bảng danh sách giỏ hàng, bảng tóm tắt tiền đơn hàng, form điền thông tin thanh toán (checkout) và bảng lịch sử mua hàng.
 │
 ├── js/                      
 │   ├── data.js              # Khởi tạo mảng dữ liệu mẫu (10-15 sản phẩm, tài khoản mẫu) và ghi vào localStorage nếu trình duyệt chưa có dữ liệu.
 │   ├── components.js        # Chứa các hàm JavaScript trả về chuỗi HTML tái sử dụng: renderNavbar(), renderFooter(), renderProductCard(product).
-│   ├── auth.js              # Xử lý sự kiện submit form đăng ký, form đăng nhập, lưu thông tin tài khoản đang hoạt động vào localStorage, xử lý đăng xuất.
+│   ├── login.js             # Xử lý đăng nhập, đăng ký và chuyển trang sau khi đăng nhập.
+│   ├── auth.js              # Xử lý hồ sơ, mật khẩu và sổ địa chỉ khách hàng.
 │   ├── display.js           # Đọc mảng sản phẩm từ localStorage, in ra lưới sản phẩm ở trang chủ, hiển thị chi tiết khi bấm vào một sản phẩm và tính toán thuật toán phân trang.
 │   ├── search.js            # Lắng nghe sự kiện ô tìm kiếm và các checkbox bộ lọc, dùng hàm .filter() trên mảng sản phẩm và gọi hàm in kết quả ra màn hình.
 │   ├── cart.js              # Xử lý thêm/sửa/xóa sản phẩm trong giỏ, cập nhật số lượng, tính tổng tiền tạm tính và đóng gói thành Object Đơn hàng lưu vào localStorage.

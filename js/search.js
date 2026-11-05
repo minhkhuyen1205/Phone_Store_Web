@@ -51,7 +51,7 @@ class FilterController {
       ...this.allProducts.map(p => p.brand).filter(Boolean),
       ...(Array.isArray(defaultBrands) ? defaultBrands : [])
     ]);
-    const brandList = Array.from(brandSet).sort();
+    const brandList = Array.from(brandSet).filter(brand => String(brand).trim().toLowerCase() !== 'google').sort();
 
     if (brandList.length === 0) return;
 

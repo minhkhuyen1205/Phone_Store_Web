@@ -85,6 +85,11 @@ function renderStoreHeader(containerId, options = {}) {
   const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
 
   const user = getCurrentUser();
+  const customer = user && typeof getCustomers === 'function' ? getCustomers().find(item => String(item.id) === String(user.id)) : null;
+  const escapeHeader = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const accountName = (customer && customer.name) || (user && (user.name || user.fullName || user.username)) || 'Tài khoản';
+  const initials = String(accountName).trim().split(/\s+/).filter(Boolean).slice(-2).map(part => part[0].toUpperCase()).join('') || 'KH';
+  const avatar = customer && /^data:image\/(png|jpeg|webp);base64,/i.test(customer.avatar || '') ? customer.avatar : '';
   const cartCount = getCartCount();
   const q = options.query || '';
 
@@ -124,10 +129,20 @@ function renderStoreHeader(containerId, options = {}) {
 
         <!-- Thao tác tài khoản và giỏ hàng -->
 <div class="header-actions">
-  <a href="${user ? customerPath + 'profile.html' : customerPath + 'login.html'}" class="user-btn">
-    <img src="${iconPath}con-nguoi.svg" class="icon icon-18" alt="Tài khoản" />
-    <span>${user ? (user.name || user.fullName || user.username || 'Tài khoản') : 'Đăng nhập'}</span>
-  </a>
+  ${user ? `
+  <div class="account-menu-wrap">
+    <button type="button" class="user-btn account-menu-trigger" aria-label="Tài khoản: ${escapeHeader(accountName)}" aria-expanded="false" aria-controls="accountDropdown">
+      <span class="account-avatar">${avatar ? `<img src="${escapeHeader(avatar)}" alt="" />` : escapeHeader(initials)}</span>
+      <span class="account-name">${escapeHeader(accountName)}</span>
+    </button>
+    <div class="account-dropdown" id="accountDropdown" hidden>
+      <a class="account-menu-item" href="${customerPath}profile.html?tab=info">Thông tin cá nhân</a>
+      <div class="account-menu-phone">SĐT: ${escapeHeader((customer && customer.phone) || user.phone || 'Chưa cập nhật')}</div>
+      <div class="account-menu-divider"></div>
+      <button class="account-menu-logout" type="button">Đăng xuất</button>
+    </div>
+  </div>` : `
+  <a href="${customerPath}login.html" class="user-btn"><img src="${iconPath}con-nguoi.svg" class="icon icon-18" alt="" /><span>Đăng nhập</span></a>`}
 
           <a href="${customerPath}cart.html" class="cart-btn" aria-label="Giỏ hàng">
             <img src="${iconPath}gio-hang.svg" class="icon icon-20" alt="Giỏ hàng" />
@@ -139,6 +154,28 @@ function renderStoreHeader(containerId, options = {}) {
       </div>
     </header>
   `;
+
+  const accountWrap = container.querySelector('.account-menu-wrap');
+  if (accountWrap) {
+    const trigger = accountWrap.querySelector('.account-menu-trigger');
+    const dropdown = accountWrap.querySelector('.account-dropdown');
+    const setOpen = open => { dropdown.hidden = !open; trigger.setAttribute('aria-expanded', String(open)); };
+    trigger.addEventListener('click', () => setOpen(dropdown.hidden));
+    accountWrap.addEventListener('pointerenter', event => { if (event.pointerType === 'mouse') setOpen(true); });
+    accountWrap.addEventListener('pointerleave', event => { if (event.pointerType === 'mouse' && !accountWrap.contains(document.activeElement)) setOpen(false); });
+    accountWrap.addEventListener('focusout', event => { if (!accountWrap.contains(event.relatedTarget) && !accountWrap.matches(':hover')) setOpen(false); });
+    document.addEventListener('click', event => { if (!accountWrap.contains(event.target)) setOpen(false); });
+    accountWrap.addEventListener('keydown', event => { if (event.key === 'Escape') { setOpen(false); trigger.focus(); } });
+    accountWrap.querySelector('.account-menu-logout').addEventListener('click', () => { logoutUser(); window.location.href = homeUrl; });
+    window.addEventListener('profileAvatarUpdated', event => {
+      if (String(event.detail.id) !== String(user.id)) return;
+      const avatarElement = accountWrap.querySelector('.account-avatar');
+      const image = document.createElement('img');
+      image.src = event.detail.avatar;
+      image.alt = '';
+      avatarElement.replaceChildren(image);
+    });
+  }
 
   // Lắng nghe sự kiện thay đổi giỏ hàng.
   window.addEventListener('cartUpdated', (e) => {

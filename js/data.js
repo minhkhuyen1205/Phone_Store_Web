@@ -1489,6 +1489,7 @@ function initDefaultData(forceReset = false) {
     const currentVer = localStorage.getItem('techno_data_version');
     const rawProds = getStorage('techno_products', null);
     const rawCusts = getStorage('techno_customers', null);
+    const existingOrders = getStorage('techno_orders', null);
     const rawCats = getStorage('techno_categories', null);
 
     let needReset = forceReset || currentVer !== DATA_VERSION || !Array.isArray(rawProds) || rawProds.length < 20;
@@ -1518,17 +1519,15 @@ function initDefaultData(forceReset = false) {
       localStorage.setItem('techno_data_version', DATA_VERSION);
       localStorage.removeItem('techno_products');
       localStorage.removeItem('techno_categories');
-      localStorage.removeItem('techno_orders');
       localStorage.removeItem('techno_receipts');
-      localStorage.removeItem('techno_customers');
       localStorage.removeItem('techno_buy_now');
       localStorage.removeItem('techno_admin');
 
       setStorage('techno_products', defaultProducts);
       setStorage('techno_categories', defaultCategories);
-      setStorage('techno_orders', defaultOrders);
+      setStorage('techno_orders', !forceReset && Array.isArray(existingOrders) ? existingOrders : defaultOrders);
       setStorage('techno_receipts', defaultReceipts);
-      setStorage('techno_customers', defaultCustomers);
+      setStorage('techno_customers', !forceReset && Array.isArray(rawCusts) ? rawCusts.map(c => ({ ...c, addresses: Array.isArray(c.addresses) ? c.addresses : [] })) : defaultCustomers);
 
       const existingCart = getStorage('techno_cart', null);
       if (!existingCart || !Array.isArray(existingCart) || existingCart.length === 0) {

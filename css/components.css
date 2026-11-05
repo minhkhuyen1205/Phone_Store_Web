@@ -941,6 +941,24 @@ input[type="range"] {
   background-color: var(--color-surface);
 }
 
+a.user-btn {
+  border: 1px solid rgba(26, 109, 255, .25);
+  background: rgba(26, 109, 255, .035);
+  box-shadow: 0 2px 8px rgba(26, 109, 255, .07);
+  transition: background-color .2s, border-color .2s, box-shadow .2s;
+}
+
+a.user-btn:hover {
+  background: rgba(26, 109, 255, .09);
+  border-color: rgba(26, 109, 255, .45);
+  box-shadow: 0 4px 12px rgba(26, 109, 255, .13);
+}
+
+a.user-btn:focus-visible {
+  outline: 2px solid #1a6dff;
+  outline-offset: 3px;
+}
+
 .cart-btn {
   position: relative;
   display: grid;
@@ -1173,3 +1191,20 @@ input[type="range"] {
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(37, 99, 235, 0.28);
 }
+.account-menu-wrap{position:relative}
+.account-menu-trigger{border:0;cursor:pointer;font:inherit}
+.account-dropdown{position:absolute;right:0;top:calc(100% + 8px);width:230px;padding:7px;background:#fff;border:1px solid #e1e8f2;border-radius:14px;box-shadow:0 14px 35px rgba(24,44,78,.17);z-index:60}
+.account-dropdown[hidden]{display:none}
+.account-dropdown::before{content:"";position:absolute;left:0;right:0;top:-10px;height:10px}
+.account-menu-item,.account-menu-phone,.account-menu-logout{display:block;width:100%;padding:11px 12px;border:0;border-radius:9px;font-size:14px;text-align:left;line-height:1.35}
+.account-menu-item{color:#233650;text-decoration:none;font-weight:600}
+.account-menu-item:hover,.account-menu-item:focus-visible{background:#eff5ff;color:#0a58e6}
+.account-menu-phone{color:#68798f;overflow-wrap:anywhere}
+.account-menu-divider{height:1px;background:#e6ebf2;margin:5px 4px}
+.account-menu-logout{background:#fff1f1;color:#c62828;font-weight:700;cursor:pointer}
+.account-menu-logout:hover,.account-menu-logout:focus-visible{background:#ffe1e1;color:#a31616}
+.account-menu-trigger:focus-visible,.account-menu-item:focus-visible,.account-menu-logout:focus-visible{outline:2px solid #1a6dff;outline-offset:2px}
+.account-avatar{display:grid;place-items:center;width:32px;height:32px;flex:none;overflow:hidden;border-radius:50%;background:#1a6dff;color:#fff;font-size:12px;font-weight:700}
+.account-avatar img{display:block;width:100%;height:100%;object-fit:cover}
+.account-name{display:block;max-width:125px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:600px){.account-menu-trigger{width:40px;justify-content:center;padding:0}.account-name{display:none}}
