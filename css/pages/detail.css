@@ -61,13 +61,24 @@
 
 .gallery-thumbs-row {
   margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.gallery-thumbs-row::-webkit-scrollbar {
+  display: none;
 }
 
 .gallery-thumb-item {
   display: grid;
+  flex: 0 0 calc((100% - 36px) / 4);
+  min-width: 112px;
+  max-width: 184px;
   place-items: center;
   border-radius: var(--radius-lg);
   background-color: var(--color-surface);
@@ -75,6 +86,7 @@
   cursor: pointer;
   border: 2px solid transparent;
   transition: border-color var(--transition-fast);
+  scroll-snap-align: start;
 }
 
 .gallery-thumb-item.active {
