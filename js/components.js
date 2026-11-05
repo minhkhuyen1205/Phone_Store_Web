@@ -1,73 +1,84 @@
-/**
- 
- * @param {Object} p - Thông tin sản phẩm
- * @param {string} className - Lớp CSS hoặc kiểu chiều cao tùy chọn
- */
-function renderDeviceArt(p, customStyle = '') {
-  if (!p) return '';
-  const a = (p.color && p.color[0]) || '#d9d4cb';
-  const b = (p.color && p.color[1]) || '#8c867b';
-  const id = `g${p.id || 1}`;
-  const tablet = p.category === 'Máy tính bảng';
-  const watch = p.category === 'Đồng hồ thông minh';
-  const small = p.category === 'Tai nghe' || p.category === 'Phụ kiện';
+function getProductImageUrl(imagePath) {
+  const image = String(imagePath || '').trim();
+  if (!image) return '';
+  if (/^(?:https?:|data:|blob:|file:)/i.test(image)) return image;
 
-  let innerSvg = '';
+  const componentsScript = Array.from(document.scripts).find(script =>
+    script.src && script.src.includes('/js/components.js')
+  );
+  const appRoot = componentsScript
+    ? componentsScript.src.slice(0, componentsScript.src.lastIndexOf('/js/components.js') + 1)
+    : document.baseURI;
+  return new URL(image.replace(/^\/+/, ''), appRoot).href;
+}
 
-  if (small) {
-    innerSvg = `
-      <g>
-        <rect x="62" y="70" width="76" height="96" rx="30" fill="url(#${id})" />
-        <circle cx="100" cy="118" r="18" fill="#fff" opacity="0.55" />
-      </g>
-    `;
-  } else if (watch) {
-    innerSvg = `
-      <g>
-        <rect x="78" y="22" width="44" height="40" rx="8" fill="${b}" />
-        <rect x="78" y="178" width="44" height="40" rx="8" fill="${b}" />
-        <rect x="54" y="58" width="92" height="124" rx="30" fill="url(#${id})" />
-        <rect x="62" y="66" width="76" height="108" rx="24" fill="url(#${id}s)" />
-        <text x="100" y="128" text-anchor="middle" fill="#fff" font-size="24" font-weight="600" font-family="Inter, sans-serif">10:09</text>
-      </g>
-    `;
-  } else if (tablet) {
-    innerSvg = `
-      <g>
-        <rect x="22" y="48" width="156" height="136" rx="16" fill="url(#${id})" />
-        <rect x="29" y="55" width="142" height="122" rx="10" fill="url(#${id}s)" />
-        <circle cx="100" cy="116" r="30" fill="#1a6dff" opacity="0.35" />
-      </g>
-    `;
-  } else {
-    // Điện thoại
-    innerSvg = `
-      <g>
-        <rect x="52" y="18" width="96" height="196" rx="20" fill="url(#${id})" />
-        <rect x="58" y="24" width="84" height="184" rx="15" fill="url(#${id}s)" />
-        <circle cx="100" cy="125" r="34" fill="#1a6dff" opacity="0.35" />
-        <circle cx="82" cy="108" r="22" fill="#6ea5ff" opacity="0.25" />
-        <rect x="86" y="30" width="28" height="7" rx="3.5" fill="#000" opacity="0.7" />
-      </g>
-    `;
+function renderProductImage(product, frameStyle = '', imageId = null, fallbackPath = null) {
+  if (!product) return '';
+  const imagePath = fallbackPath || product.image || product.img || `assets/img/${product.code || 'SP000'}.png`;
+  const imageUrl = getProductImageUrl(imagePath);
+  const storageId = imageId || product.imageId || product.code;
+  return `
+    <span class="product-image-frame" style="${frameStyle}">
+      <img src="${imageUrl}" data-fallback-src="${imageUrl}" data-image-id="${storageId || ''}" alt="${product.name || ''}" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+      <span class="product-image-placeholder" hidden aria-hidden="true">▧</span>
+    </span>
+  `;
+}
+
+function hydrateProductImages(root = document) {
+  const images = [];
+  if (root instanceof HTMLImageElement && root.dataset.imageId) images.push(root);
+  if (root.querySelectorAll) {
+    images.push(...root.querySelectorAll('img[data-image-id]:not([data-image-hydrated])'));
   }
 
-  return `
-    <svg viewBox="0 0 200 240" style="${customStyle}" role="img" aria-label="${p.name}">
-      <defs>
-        <linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="${a}" />
-          <stop offset="100%" stop-color="${b}" />
-        </linearGradient>
-        <linearGradient id="${id}s" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stop-color="#0b1220" />
-          <stop offset="100%" stop-color="#1a3a7a" />
-        </linearGradient>
-      </defs>
-      <ellipse cx="100" cy="222" rx="60" ry="7" fill="#0b1220" opacity="0.08" />
-      ${innerSvg}
-    </svg>
-  `;
+  images.forEach(async image => {
+    image.dataset.imageHydrated = 'true';
+    const imageId = image.dataset.imageId;
+    const fallbackUrl = image.dataset.fallbackSrc || image.src;
+    try {
+      const storedImageUrl = await getImageFromIndexedDB(imageId);
+      if (image.isConnected && image.dataset.imageId === imageId && storedImageUrl) {
+        image.src = storedImageUrl;
+        image.hidden = false;
+        if (image.nextElementSibling) image.nextElementSibling.hidden = true;
+      } else if (image.isConnected && image.dataset.imageId === imageId && image.src !== fallbackUrl) {
+        image.src = fallbackUrl;
+      }
+    } catch (error) {
+      console.error(`[TechnoStore] Không thể tải ảnh "${imageId}" từ IndexedDB:`, error);
+      if (image.isConnected && image.dataset.imageId === imageId && image.src !== fallbackUrl) {
+        image.src = fallbackUrl;
+      }
+    }
+  });
+}
+
+function refreshProductImage(image) {
+  if (!image) return;
+  delete image.dataset.imageHydrated;
+  hydrateProductImages(image);
+}
+
+function refreshProductImagesById(imageId) {
+  document.querySelectorAll('img[data-image-id]').forEach(image => {
+    if (image.dataset.imageId === imageId) refreshProductImage(image);
+  });
+}
+
+window.hydrateProductImages = hydrateProductImages;
+window.refreshProductImage = refreshProductImage;
+window.refreshProductImagesById = refreshProductImagesById;
+
+if (typeof MutationObserver !== 'undefined' && document.documentElement) {
+  const productImageObserver = new MutationObserver(records => {
+    records.forEach(record => {
+      record.addedNodes.forEach(node => {
+        if (node.nodeType === Node.ELEMENT_NODE) hydrateProductImages(node);
+      });
+    });
+  });
+  productImageObserver.observe(document.documentElement, { childList: true, subtree: true });
 }
 
 /**
