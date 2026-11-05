@@ -5,6 +5,9 @@ let selectedVariant = null;
 let selectedQty = 1;
 let currentDetailTab = 'spec';
 let lastSelectedGroup = 'color';
+let productGalleryImages = [];
+let activeGalleryImageIndex = 0;
+let galleryLoadToken = 0;
 
 /**
  * Khởi tạo trang Chi tiết Sản phẩm
@@ -32,6 +35,8 @@ function initDetailPage() {
   selectedVariant = null;
   selectedQty = 1;
   lastSelectedGroup = 'color';
+  productGalleryImages = [];
+  activeGalleryImageIndex = 0;
 
   syncVariantSelection();
   loadProductDetails(currentProduct, allProducts);
@@ -49,26 +54,8 @@ function loadProductDetails(p, allProducts) {
   if (crumbCat) crumbCat.textContent = p.category;
   if (crumbName) crumbName.textContent = p.name;
 
-  // 2. Hình ảnh sản phẩm (Ưu tiên ảnh upload thật, fallback về SVG Device Art)
-  const galleryMain = document.getElementById('galleryMainArt');
-  if (galleryMain) {
-    if (p.image) {
-      galleryMain.innerHTML = `<img src="${p.image}" style="max-height: 380px; max-width: 100%; object-fit: contain;" alt="${p.name}" />`;
-    } else {
-      galleryMain.innerHTML = renderDeviceArt(p, 'height:380px; width:auto;');
-    }
-  }
-
-  // Gallery Thumbs
-  const thumbsContainer = document.getElementById('galleryThumbs');
-  if (thumbsContainer) {
-    const thumbsHtml = [0, 1, 2, 3].map(i => `
-      <div class="gallery-thumb-item ${i === 0 ? 'active' : ''}" onclick="selectThumb(this)">
-        ${p.image ? `<img src="${p.image}" style="max-height: 70px; max-width: 100%; object-fit: contain;" alt="" />` : renderDeviceArt(p, 'height:72px; width:auto;')}
-      </div>
-    `).join('');
-    thumbsContainer.innerHTML = thumbsHtml;
-  }
+  // 2. Gallery ảnh sản phẩm và ảnh riêng theo SKU.
+  initializeProductGallery(p);
 
   // 3. Tên và Thông tin Meta
   const titleEl = document.getElementById('productTitle');
@@ -102,6 +89,84 @@ function loadProductDetails(p, allProducts) {
     });
   } else {
     if (relatedSection) relatedSection.style.display = 'none';
+  }
+}
+
+function initializeProductGallery(product) {
+  const productImageId = product.imageId || product.code;
+  productGalleryImages = [{
+    id: productImageId,
+    fallbackPath: product.image,
+    label: product.name
+  }];
+  activeGalleryImageIndex = 0;
+  renderProductGallery();
+
+  const requestToken = ++galleryLoadToken;
+  Promise.all((product.variants || []).map(async variant => {
+    const imageId = variant.imageId || variant.sku;
+    try {
+      const hasStoredImage = await hasImageInIndexedDB(imageId);
+      if (hasStoredImage) {
+        return {
+          id: imageId,
+          fallbackPath: variant.image || product.image,
+          label: `${product.name} ${variant.color || ''}`.trim()
+        };
+      }
+    } catch (error) {
+      console.error(`[TechnoStore] Không thể kiểm tra ảnh phiên bản "${imageId}":`, error);
+    }
+    return null;
+  })).then(variantImages => {
+    if (requestToken !== galleryLoadToken || currentProduct !== product) return;
+    productGalleryImages = [
+      productGalleryImages[0],
+      ...variantImages.filter(Boolean)
+    ];
+    renderProductGallery();
+    updateProductGalleryForVariant(false);
+  });
+}
+
+function renderProductGallery(scrollActiveThumb = false) {
+  const galleryMain = document.getElementById('galleryMainArt');
+  const thumbsContainer = document.getElementById('galleryThumbs');
+  if (!galleryMain || !thumbsContainer || !currentProduct || productGalleryImages.length === 0) return;
+
+  const activeImage = productGalleryImages[activeGalleryImageIndex] || productGalleryImages[0];
+  galleryMain.innerHTML = renderProductImage(
+    currentProduct,
+    'width:100%;height:380px;',
+    activeImage.id,
+    activeImage.fallbackPath
+  );
+  thumbsContainer.innerHTML = productGalleryImages.map((image, index) => `
+    <button type="button" class="gallery-thumb-item ${index === activeGalleryImageIndex ? 'active' : ''}"
+      data-gallery-index="${index}" aria-label="Xem ảnh ${index + 1}: ${image.label}"
+      onclick="selectThumb(this)">
+      ${renderProductImage(currentProduct, 'width:100%;height:70px;', image.id, image.fallbackPath)}
+    </button>
+  `).join('');
+
+  if (scrollActiveThumb) {
+    thumbsContainer.querySelector('.gallery-thumb-item.active')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+  }
+}
+
+function updateProductGalleryForVariant(scrollActiveThumb = true) {
+  const activeSku = selectedVariant && (selectedVariant.imageId || selectedVariant.sku);
+  const nextIndex = activeSku
+    ? productGalleryImages.findIndex(image => image.id === activeSku)
+    : 0;
+  const resolvedIndex = nextIndex >= 0 ? nextIndex : 0;
+  if (resolvedIndex !== activeGalleryImageIndex) {
+    activeGalleryImageIndex = resolvedIndex;
+    renderProductGallery(scrollActiveThumb);
+  } else if (scrollActiveThumb) {
+    document.querySelector('.gallery-thumb-item.active')
+      ?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
   }
 }
 
@@ -373,6 +438,7 @@ function syncVariantSelection() {
   if (qtyValEl) qtyValEl.textContent = selectedQty;
 
   renderVariantSelectionChips(currentProduct);
+  updateProductGalleryForVariant();
   updateVariantDisplay();
   renderSpecsTable(currentProduct);
 }
@@ -701,8 +767,10 @@ function changeDetailQty(delta) {
 }
 
 function selectThumb(el) {
-  document.querySelectorAll('.gallery-thumb-item').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
+  const index = Number(el.dataset.galleryIndex);
+  if (!Number.isInteger(index) || !productGalleryImages[index]) return;
+  activeGalleryImageIndex = index;
+  renderProductGallery();
 }
 
 /**
