@@ -87,6 +87,7 @@ function initAdminPortal(options = {}) {
   const adminPageSize = 10;
   const currentPageByTab = {
     users: 1,
+    cats: 1,
     products: 1,
     receipts: 1,
     pricing: 1,
@@ -122,7 +123,7 @@ function initAdminPortal(options = {}) {
     const rangeText = page.total === 0
       ? 'Hiển thị 0 kết quả'
       : `Hiển thị ${(page.currentPage - 1) * adminPageSize + 1} - ${Math.min(page.currentPage * adminPageSize, page.total)} trong ${page.total} ${unitName}`;
-    const paginationButtons = page.totalPages <= 1 ? '' : `
+    const paginationButtons = page.total === 0 ? '' : `
       <div style="display: flex; align-items: center; gap: 4px;">
         <button type="button" onclick="changeAdminPage('${tab}', ${page.currentPage - 1})" ${page.currentPage === 1 ? 'disabled' : ''} aria-label="Trang trước" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid var(--color-line); border-radius: 6px; background: var(--color-white); cursor: ${page.currentPage === 1 ? 'not-allowed' : 'pointer'}; opacity: ${page.currentPage === 1 ? '0.45' : '1'};">
           <img src="${iconPath}chevron-left.svg" class="icon icon-16" alt="Trang trước" />
@@ -847,6 +848,7 @@ function initAdminPortal(options = {}) {
       const q = catSearchQuery.toLowerCase();
       list = list.filter(item => item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q));
     }
+    const page = paginateAdminList('cats', list);
 
     const catObj = editingCategory
       ? categories.map((c, i) => typeof c === 'string' ? { id: `DM0${i + 1}`, name: c, type: i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo', status: 'active' } : c)
@@ -887,14 +889,12 @@ function initAdminPortal(options = {}) {
             </tr>
           </thead>
           <tbody id="catTableBody">
-            ${generateCatRows(list)}
+            ${generateCatRows(page.items)}
           </tbody>
         </table>
       </div>
 
-      <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--color-ink-3); margin-top: 12px;">
-        <span id="catCountLabel">Hiển thị ${list.length} bản ghi</span>
-      </div>
+      ${renderAdminPagination('cats', list, 'danh mục')}
 
       <!-- Modal Thêm/Sửa Danh mục -->
       ${showCategoryModal ? `
@@ -2704,25 +2704,21 @@ function initAdminPortal(options = {}) {
 
   window.handleCatSearch = (val) => {
     catSearchQuery = val;
-    const tbody = document.getElementById('catTableBody');
-    const countLabel = document.getElementById('catCountLabel');
-    if (tbody) {
-      categories = getCategories();
-      let list = categories.map((c, i) => {
-        const name = typeof c === 'string' ? c : (c.name || '');
-        const id = (typeof c === 'object' && c.id) ? c.id : `DM0${i + 1}`;
-        const type = (typeof c === 'object' && c.type) ? c.type : (i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo');
-        const status = (typeof c === 'object' && c.status) ? c.status : 'active';
-        const count = products.filter(p => !p.isDeleted && p.category === name).length;
-        return { id, name, type, status, count };
-      });
-      if (catSearchQuery) {
-        const q = catSearchQuery.toLowerCase();
-        list = list.filter(item => item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q));
-      }
-      tbody.innerHTML = generateCatRows(list);
-      if (countLabel) countLabel.textContent = `Hiển thị ${list.length} bản ghi`;
+    currentPageByTab.cats = 1;
+    categories = getCategories();
+    let list = categories.map((c, i) => {
+      const name = typeof c === 'string' ? c : (c.name || '');
+      const id = (typeof c === 'object' && c.id) ? c.id : `DM0${i + 1}`;
+      const type = (typeof c === 'object' && c.type) ? c.type : (i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo');
+      const status = (typeof c === 'object' && c.status) ? c.status : 'active';
+      const count = products.filter(p => !p.isDeleted && p.category === name).length;
+      return { id, name, type, status, count };
+    });
+    if (catSearchQuery) {
+      const q = catSearchQuery.toLowerCase();
+      list = list.filter(item => item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q));
     }
+    refreshAdminTable('cats', list, 'catTableBody', generateCatRows, 'danh mục');
   };
 
   window.handleReceiptSearch = (val) => {
