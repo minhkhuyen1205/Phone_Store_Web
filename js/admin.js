@@ -44,7 +44,14 @@ function initAdminPortal(options = {}) {
   let editingProductId = null; // null nếu là thêm mới, có ID nếu là chỉnh sửa
   let formProductCode = '';
   let formVariants = [];
-  let formImageBase64 = '';
+  let formImagePath = '';
+  let formImagePreview = '';
+  let formProductImageDraft = null;
+  let formVariantImageDrafts = new Map();
+  let formVariantImageSources = new WeakMap();
+  let removedVariantImageIds = new Set();
+  let formImageSessionId = 0;
+  let isSavingProductForm = false;
   let formSelectedCategory = ''; // Danh mục đang được chọn trong Form Thêm/Sửa sản phẩm
 
   let editingCategory = null;
@@ -172,6 +179,30 @@ function initAdminPortal(options = {}) {
    * - Neu SP cha khop tu khoa -> Tra ve tat ca bien the
    * - Neu tu khoa chi khop bien the con -> Chi tra ve bien the khop do
    */
+  function testWordBoundary(text, regex, cleanKeyword) {
+    if (!text) return false;
+    const s = String(text);
+    if (regex.test(s)) return true;
+    // Thay thế ký tự gạch dưới bằng khoảng trắng để các thành phần SKU (VD: HONG_PASTEL) trở thành các từ độc lập
+    const sSpaced = s.replace(/_/g, ' ');
+    if (regex.test(sSpaced)) return true;
+    // Hỗ trợ tìm kiếm tiếng Việt không dấu (VD: gõ HONG khớp Hồng Pastel nhưng tuyệt đối không bắt nhầm vào KHONG)
+    if (typeof slugifySkuPart === 'function') {
+      const sUnsigned = slugifySkuPart(s).replace(/_/g, ' ');
+      const kwUnsigned = slugifySkuPart(cleanKeyword).replace(/_/g, ' ');
+      const regexUnsigned = new RegExp('\\b' + kwUnsigned + '\\b', 'i');
+      if (regexUnsigned.test(sUnsigned)) return true;
+    }
+    return false;
+  }
+
+  /**
+   * Thuật toán tìm kiếm theo nguyên từ (Regex Word Boundary \b)
+   * const regex = new RegExp('\\b' + keyword + '\\b', 'i');
+   * Lọc sạch danh sách biến thể con:
+   * - Nếu SP cha khớp từ khoá -> Trả về tất cả biến thể
+   * - Nếu từ khoá chỉ khớp biến thể con -> Chỉ trả về biến thể khớp đó
+   */
   function getFilteredProductWithVariants(product, keyword) {
     if (!keyword || !keyword.trim()) {
       return { matches: true, parentMatched: true, variants: product.variants || [] };
@@ -179,20 +210,20 @@ function initAdminPortal(options = {}) {
     const cleanKeyword = keyword.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const regex = new RegExp('\\b' + cleanKeyword + '\\b', 'i');
 
-    const parentMatched = regex.test(product.name || '') ||
-                          regex.test(product.code || '') ||
-                          regex.test(product.brand || '') ||
-                          regex.test(product.category || '');
+    const parentMatched = testWordBoundary(product.name, regex, cleanKeyword) ||
+      testWordBoundary(product.code, regex, cleanKeyword) ||
+      testWordBoundary(product.brand, regex, cleanKeyword) ||
+      testWordBoundary(product.category, regex, cleanKeyword);
 
     if (parentMatched) {
       return { matches: true, parentMatched: true, variants: product.variants || [] };
     }
 
     const matchedVariants = (product.variants || []).filter(v => {
-      return regex.test(v.sku || '') ||
-             regex.test(v.color || '') ||
-             regex.test(v.ram || '') ||
-             regex.test(v.rom || '');
+      return testWordBoundary(v.sku, regex, cleanKeyword) ||
+        testWordBoundary(v.color, regex, cleanKeyword) ||
+        testWordBoundary(v.ram, regex, cleanKeyword) ||
+        testWordBoundary(v.rom, regex, cleanKeyword);
     });
 
     if (matchedVariants.length > 0) {
@@ -225,34 +256,219 @@ function initAdminPortal(options = {}) {
     renderShell();
   }
 
+  function clearFormImageDrafts() {
+    formImageSessionId += 1;
+    formVariantImageDrafts.forEach(draft => URL.revokeObjectURL(draft.previewUrl));
+    formVariantImageDrafts.clear();
+    formVariantImageSources = new WeakMap();
+    removedVariantImageIds.clear();
+    formProductImageDraft = null;
+    isSavingProductForm = false;
+  }
+
+  function initializeFormImageDrafts(variants) {
+    clearFormImageDrafts();
+    variants.forEach(variant => {
+      formVariantImageSources.set(variant, variant.imageId || variant.sku || null);
+    });
+  }
+
+  function applyFormVariantImagePreviews() {
+    formVariants.forEach((variant, index) => {
+      const image = document.querySelector(`#variantRow_${index} img[data-image-id]`);
+      if (!image) return;
+
+      const draft = formVariantImageDrafts.get(variant);
+      const sourceId = formVariantImageSources.get(variant) || variant.imageId || variant.sku;
+      image.dataset.imageId = sourceId || '';
+      image.hidden = false;
+      if (image.nextElementSibling) image.nextElementSibling.hidden = true;
+      if (draft) {
+        image.dataset.imageHydrated = 'true';
+        image.src = draft.previewUrl;
+      } else {
+        refreshProductImage(image);
+      }
+    });
+  }
+
   function renderLogin() {
     container.innerHTML = `
-      <div class="admin-login-layout">
-        <form class="admin-login-card pop" onsubmit="handleAdminLogin(event)">
-          <div class="admin-login-icon-box">
-            <img src="${iconPath}bao-ve.svg" class="icon icon-24" alt="" />
-          </div>
-          <h1 style="margin-top: 20px; text-align: center; font-size: 24px; font-weight: 700;">Đăng nhập quản trị</h1>
-          <p style="margin-top: 4px; text-align: center; font-size: 14px; color: var(--color-ink-3);">Khu vực dành riêng cho chủ cửa hàng</p>
-
-          <div style="margin-top: 28px; display: flex; flex-direction: column; gap: 16px;">
-            <div class="form-field" style="margin:0;">
-              <label class="form-label">Tên đăng nhập</label>
-              <input type="text" class="input-control" value="" required />
+      <div class="admin-login-page">
+        <div class="admin-login-split">
+          <!-- Cột trái: Brand Hero Panel -->
+          <div class="admin-login-brand-panel">
+            <div class="brand-panel-header">
+              <div class="brand-panel-logo">
+                <div class="brand-logo-icon">
+                  <img src="${iconPath}dien-thoai.svg" class="icon icon-26" alt="TechnoAdmin" />
+                </div>
+                <div class="brand-logo-text">Techno<span class="accent">Admin</span></div>
+              </div>
+              <span class="brand-system-badge">v2.6 Portal</span>
             </div>
-            <div class="form-field" style="margin:0;">
-              <label class="form-label">Mật khẩu</label>
-              <input type="password" class="input-control" value="" required />
+
+            <div class="brand-panel-content">
+              <div class="brand-pill-tag">
+                <span class="tag-sparkle">✦</span> Hệ thống quản trị nội bộ
+              </div>
+              <h2 class="brand-hero-title">
+                Quản trị bán hàng &<br />
+                <span class="hero-highlight">thương mại điện tử</span><br />
+                thế hệ mới
+              </h2>
+              <p class="brand-hero-desc">
+                Quản trị danh mục sản phẩm, ma trận biến thể SKU, bảng giá niêm yết, luân chuyển kho bãi và xử lý đơn hàng tập trung tốc độ cao.
+              </p>
+
+              <div class="brand-hero-illustration">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 280" width="100%" style="max-height: 220px;" fill="none">
+                  <defs>
+                    <linearGradient id="cardGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+                      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
+                    </linearGradient>
+                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.5"/>
+                      <stop offset="100%" stop-color="#1a6dff" stop-opacity="0.0"/>
+                    </linearGradient>
+                    <filter id="glow">
+                      <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.25"/>
+                    </filter>
+                  </defs>
+
+                  <!-- Dashboard Card Mockup -->
+                  <g filter="url(#glow)">
+                    <rect x="24" y="24" width="310" height="210" rx="16" fill="url(#cardGrad)" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
+                    <!-- Window Controls -->
+                    <circle cx="48" cy="46" r="4.5" fill="#f87171"/>
+                    <circle cx="62" cy="46" r="4.5" fill="#fbbf24"/>
+                    <circle cx="76" cy="46" r="4.5" fill="#34d399"/>
+                    <rect x="100" y="42" width="120" height="8" rx="4" fill="rgba(255,255,255,0.15)"/>
+
+                    <!-- Stat Chips -->
+                    <rect x="42" y="66" width="78" height="42" rx="8" fill="rgba(255,255,255,0.1)"/>
+                    <text x="52" y="81" fill="rgba(255,255,255,0.7)" font-size="8.5" font-family="system-ui" font-weight="500">Doanh thu</text>
+                    <text x="52" y="98" fill="#ffffff" font-size="11" font-family="system-ui" font-weight="700">128.5M₫</text>
+
+                    <rect x="128" y="66" width="78" height="42" rx="8" fill="rgba(255,255,255,0.1)"/>
+                    <text x="138" y="81" fill="rgba(255,255,255,0.7)" font-size="8.5" font-family="system-ui" font-weight="500">Đơn hàng</text>
+                    <text x="138" y="98" fill="#7dd3fc" font-size="11" font-family="system-ui" font-weight="700">+48 đơn</text>
+
+                    <rect x="214" y="66" width="105" height="42" rx="8" fill="rgba(255,255,255,0.1)"/>
+                    <text x="224" y="81" fill="rgba(255,255,255,0.7)" font-size="8.5" font-family="system-ui" font-weight="500">Tồn kho</text>
+                    <text x="224" y="98" fill="#86efac" font-size="11" font-family="system-ui" font-weight="700">1,420 SKU</text>
+
+                    <!-- Chart Line & Area -->
+                    <path d="M 44 210 L 44 175 Q 85 140 120 170 T 190 145 T 260 125 T 315 130 L 315 210 Z" fill="url(#chartGrad)"/>
+                    <path d="M 44 175 Q 85 140 120 170 T 190 145 T 260 125 T 315 130" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+                    <circle cx="260" cy="125" r="4" fill="#ffffff" stroke="#0284c7" stroke-width="2.5"/>
+                  </g>
+
+                  <!-- Phone Device Frame -->
+                  <g filter="url(#glow)">
+                    <rect x="350" y="36" width="140" height="225" rx="20" fill="#0f172a" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+                    <rect x="395" y="46" width="50" height="10" rx="5" fill="#1e293b"/>
+                    <!-- App Card in Phone -->
+                    <rect x="362" y="70" width="116" height="46" rx="10" fill="rgba(255,255,255,0.08)"/>
+                    <circle cx="380" cy="93" r="10" fill="#1a6dff"/>
+                    <rect x="398" y="85" width="65" height="5" rx="2.5" fill="#ffffff"/>
+                    <rect x="398" y="95" width="45" height="4" rx="2" fill="#7dd3fc"/>
+
+                    <rect x="362" y="126" width="116" height="72" rx="10" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)"/>
+                    <rect x="372" y="136" width="34" height="34" rx="6" fill="rgba(255,255,255,0.1)"/>
+                    <rect x="414" y="140" width="52" height="5" rx="2.5" fill="#ffffff"/>
+                    <rect x="414" y="150" width="38" height="4" rx="2" fill="#38bdf8"/>
+                    <rect x="414" y="160" width="44" height="4" rx="2" fill="rgba(255,255,255,0.4)"/>
+
+                    <rect x="370" y="208" width="100" height="22" rx="7" fill="#1a6dff"/>
+                    <text x="420" y="222" fill="#ffffff" font-size="9" font-family="system-ui" font-weight="600" text-anchor="middle">Xác nhận đơn</text>
+                  </g>
+                </svg>
+              </div>
+
+              <div class="brand-features-list">
+                <span class="feature-item"><span class="feature-dot"></span>Quản lý Matrix SKU</span>
+                <span class="feature-item"><span class="feature-dot"></span>Đóng băng tồn kho</span>
+                <span class="feature-item"><span class="feature-dot"></span>Bảo mật đa tầng</span>
+              </div>
             </div>
-            <button type="submit" class="btn btn-dark btn-lg btn-full" style="margin-top: 8px;">
-              Đăng nhập
-            </button>
+
+            <div class="brand-panel-footer">
+              © 2026 TechnoStore. Nền tảng quản trị phân quyền nội bộ.
+            </div>
           </div>
 
-          <a href="${homeUrl}" style="margin-top: 20px; display: block; text-align: center; font-size: 14px; color: var(--color-ink-3);">
-            ← Về trang cửa hàng
-          </a>
-        </form>
+          <!-- Cột phải: Form đăng nhập -->
+          <div class="admin-login-form-panel">
+            <div class="admin-login-card-modern">
+              <div class="form-header">
+                <div class="form-badge-pill">
+                  <img src="${iconPath}bao-ve.svg" class="icon icon-14" alt="" />
+                  Khu vực quản trị bảo mật
+                </div>
+                <h1 class="form-title">Đăng nhập Quản trị</h1>
+                <p class="form-subtitle">Vui lòng nhập thông tin để truy cập bảng điều khiển</p>
+              </div>
+
+              <form class="admin-login-form" onsubmit="handleAdminLogin(event)">
+                <div class="form-field-modern">
+                  <label class="field-label" for="adminIdentifierInput">Tên đăng nhập</label>
+                  <div class="field-input-wrap">
+                    <span class="field-icon">
+                      <img src="${iconPath}con-nguoi.svg" class="icon icon-18" alt="" />
+                    </span>
+                    <input
+                      type="text"
+                      id="adminIdentifierInput"
+                      class="field-input-control"
+                      placeholder="Tên đăng nhập"
+                      autocomplete="username"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="form-field-modern">
+                  <label class="field-label" for="adminPasswordInput">Mật khẩu</label>
+                  <div class="field-input-wrap">
+                    <span class="field-icon">
+                      <img src="${iconPath}lock.svg" class="icon icon-18" alt="" />
+                    </span>
+                    <input
+                      type="password"
+                      id="adminPasswordInput"
+                      class="field-input-control"
+                      placeholder="Mật khẩu"
+                      autocomplete="current-password"
+                      required
+                    />
+                    <button type="button" class="field-toggle-pwd" onclick="toggleAdminPasswordVisibility(this)" title="Hiện/ẩn mật khẩu">
+                      <img src="${iconPath}view.svg" class="icon icon-18" alt="" />
+                    </button>
+                  </div>
+                </div>
+
+                <div class="form-options-row">
+                  <label class="remember-checkbox-label">
+                    <input type="checkbox" id="adminRememberMe" />
+                    Ghi nhớ đăng nhập
+                  </label>
+                  <span class="support-hint">Hỗ trợ kỹ thuật</span>
+                </div>
+
+                <button type="submit" class="btn-admin-login-submit">
+                  Đăng nhập quản trị
+                  <span class="arrow-icon">→</span>
+                </button>
+              </form>
+
+              <div class="form-card-footer">
+                <a href="${homeUrl}" class="back-to-store-link">← Quay lại trang cửa hàng</a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
   }
@@ -277,8 +493,10 @@ function initAdminPortal(options = {}) {
         <aside class="admin-sidebar">
           <!-- TASK 4: Click vào logo/tiêu đề Techno Admin điều hướng về trang Tổng quan Admin thay vì trang User -->
           <a href="javascript:void(0)" onclick="switchAdminTab('dash')" class="admin-sidebar-logo" title="Trang tổng quan Admin">
-            <img src="${iconPath}dien-thoai.svg" class="icon icon-32" alt="" />
-            Techno<span class="brand-accent">Admin</span>
+            <span class="admin-sidebar-logo-icon">
+              <img src="${iconPath}dien-thoai.svg" class="icon icon-28" alt="" />
+            </span>
+            <span class="admin-sidebar-logo-text">Techno<span class="brand-accent">Admin</span></span>
           </a>
 
           <nav class="admin-nav-list">
@@ -449,7 +667,7 @@ function initAdminPortal(options = {}) {
 
       return `
       <tr style="${r.locked ? 'background-color: rgba(245, 246, 249, 0.6); opacity: 0.7;' : ''} cursor: pointer;" ondblclick="handleCustomerDblClick('${r.id}')" title="Nhấn đúp để xem chi tiết khách hàng">
-        <td><span>${r.id}</span></td>
+        <td><span class="admin-code-cell">${r.id}</span></td>
         <td>
           <div style="font-weight: 600; color: var(--color-ink);">${r.name}</div>
         </td>
@@ -591,7 +809,7 @@ function initAdminPortal(options = {}) {
     }
     return list.map(r => `
       <tr>
-        <td><span style="font-family: var(--font-mono); font-size: 12px;">${r.id}</span></td>
+        <td><span class="admin-code-cell">${r.id}</span></td>
         <td><b style="color: var(--color-ink);">${r.name}</b></td>
         <td>${r.type}</td>
         <td class="text-center">${r.count}</td>
@@ -751,17 +969,17 @@ function initAdminPortal(options = {}) {
           if (hasRam && hasRom) specStr = ` - ${v.ram}/${v.rom}`;
           else if (hasRom) specStr = ` - ${v.rom}`;
           else if (hasRam) specStr = ` - ${v.ram}`;
-          return `<span class="sku-badge-pill" title="${v.color || 'Mặc định'}${specStr} - Tồn: ${v.stock}">${v.sku}</span>`;
+          return `<span class="variant-sku-display" title="${v.color || 'Mặc định'}${specStr} - Tồn: ${v.stock}">${v.sku}</span>`;
         }).join(' ')
-        : `<span class="sku-badge-pill">${p.code}-STD</span>`;
+        : `<span class="variant-sku-display">${p.code}-STD</span>`;
 
       return `
         <tr style="${p.isVisible ? '' : 'opacity: 0.5;'}">
-          <td><span style="font-size: 13px; color: var(--color-ink);">${p.code}</span></td>
+          <td><span class="admin-code-cell">${p.code}</span></td>
           <td>
             <div style="display: flex; align-items: center; gap: 12px; text-align: left;">
               <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--color-surface); display: grid; place-items: center; flex-shrink: 0; overflow: hidden;">
-                ${p.image ? `<img src="${p.image}" style="max-width:100%; max-height:100%; object-fit:contain;" alt="" />` : renderDeviceArt(p, 'height:38px; width:auto;')}
+                ${renderProductImage(p, 'width:48px;height:48px;')}
               </div>
               <div>
                 <div style="font-weight: 600; color: var(--color-ink);">${p.name} <span style="font-weight: 400; font-size: 12px; color: var(--color-ink-3);">· ${variantCount} Phiên bản</span></div>
@@ -777,13 +995,13 @@ function initAdminPortal(options = {}) {
           <td class="text-center">
             <b style="font-size: 15px; color: ${p.stock === 0 ? '#dc2626' : p.stock <= 5 ? '#d97706' : 'var(--color-ink)'};">${p.stock}</b>
           </td>
-          <td style="max-width: 200px;">
-            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+          <td class="product-sku-cell">
+            <div class="product-sku-list">
               ${skuPreview}
             </div>
           </td>
           <td class="text-center">
-            <div style="display: flex; justify-content: center; gap: 4px;">
+            <div class="product-row-actions">
               <label class="admin-visibility-switch" title="${p.isVisible ? 'Đang hiển thị' : 'Đang ẩn'}">
                 <input
                   type="checkbox"
@@ -860,7 +1078,7 @@ function initAdminPortal(options = {}) {
       </div>
 
       <div class="table-responsive">
-        <table class="data-table">
+        <table class="data-table product-list-table">
           <thead>
             <tr>
               <th>Mã SP</th>
@@ -1010,7 +1228,7 @@ function initAdminPortal(options = {}) {
       return `
         <tr>
           <th>Màu sắc / Phân loại</th>
-          <th>Mã SKU (Khóa chính)</th>
+          <th>Mã SKU</th>
           <th class="text-center">Tồn kho</th>
           <th class="text-center">Thao tác</th>
         </tr>
@@ -1020,7 +1238,7 @@ function initAdminPortal(options = {}) {
       return `
         <tr>
           <th>Màu sắc / Quy cách</th>
-          <th>Mã SKU (Khóa chính)</th>
+          <th>Mã SKU</th>
           <th class="text-center">Tồn kho</th>
           <th class="text-center">Thao tác</th>
         </tr>
@@ -1031,7 +1249,7 @@ function initAdminPortal(options = {}) {
         <tr>
           <th>Màu sắc</th>
           <th>ROM / Bộ nhớ trong</th>
-          <th>Mã SKU (Khóa chính)</th>
+          <th>Mã SKU</th>
           <th class="text-center">Tồn kho</th>
           <th class="text-center">Thao tác</th>
         </tr>
@@ -1043,7 +1261,7 @@ function initAdminPortal(options = {}) {
         <th>Màu sắc</th>
         <th>RAM</th>
         <th>ROM</th>
-        <th>Mã SKU (Khóa chính)</th>
+        <th>Mã SKU</th>
         <th class="text-center">Tồn kho</th>
         <th class="text-center">Thao tác</th>
       </tr>
@@ -1057,6 +1275,7 @@ function initAdminPortal(options = {}) {
     const isHeadphone = cat === 'Tai nghe';
     const isAccessory = cat === 'Phụ kiện';
     const isWatch = cat === 'Đồng hồ thông minh';
+    const currentProduct = products.find(product => product.id === editingProductId);
 
     let colorPlaceholder = 'Màu (Titan Đen)';
     if (isHeadphone) colorPlaceholder = 'Màu (Trắng / Đen)';
@@ -1136,12 +1355,28 @@ function initAdminPortal(options = {}) {
           />
         </td>
         <td class="text-center">
-          <div style="display: flex; justify-content: center; gap: 4px;">
+          <div class="variant-row-actions">
+            ${renderProductImage(
+              { code: formProductCode, name: v.color || 'Ảnh phiên bản', image: currentProduct && currentProduct.image },
+              'width:32px;height:32px;',
+              formVariantImageSources.get(v) || v.imageId || v.sku
+            )}
+            <input
+              type="file"
+              id="variantImageInput_${index}"
+              class="variant-image-file-input"
+              accept="image/png,image/jpeg,image/webp"
+              onchange="handleVariantImageSelect(event, ${index})"
+            />
+            <button type="button" class="action-icon-btn" title="Tải ảnh cho phiên bản này"
+              onclick="document.getElementById('variantImageInput_${index}').click()">
+              <img src="${iconPath}upload.svg" class="icon icon-16" alt="Tải ảnh" />
+            </button>
             ${formVariants.length > 1 ? `
               <button type="button" class="action-icon-btn danger" title="Xoá phiên bản này" onclick="handleRemoveVariantRow(${index})">
                 <img src="${iconPath}xoa.svg" class="icon icon-16" alt="Xoá" />
               </button>
-            ` : '<span style="color:var(--color-ink-3); font-size:12px;">Bắt buộc</span>'}
+            ` : '<span class="variant-required-note">Bắt buộc</span>'}
           </div>
         </td>
       </tr>
@@ -1165,6 +1400,7 @@ function initAdminPortal(options = {}) {
     const tbody = document.getElementById('variantMatrixBody');
     if (tbody) {
       tbody.innerHTML = formVariants.map((v, i) => renderVariantRowHtml(v, i, cat)).join('');
+      applyFormVariantImagePreviews();
     }
   };
 
@@ -1281,7 +1517,7 @@ function initAdminPortal(options = {}) {
                 Hình ảnh sản phẩm
               </h2>
               <p style="font-size: 12px; color: var(--color-ink-3); margin-bottom: 16px;">
-                Tải ảnh từ máy tính (FileReader đọc base64 xem trước ngay lập tức)
+              Tải ảnh từ máy tính
               </p>
 
               <div class="image-upload-wrapper" id="imageUploadWrapper">
@@ -1289,24 +1525,21 @@ function initAdminPortal(options = {}) {
                   type="file" 
                   id="productImageInput" 
                   class="image-upload-input" 
-                  accept="image/*" 
+                  accept="image/png,image/jpeg,image/webp"
                   onchange="handleImageFileSelect(event)" 
                 />
-                <div id="imagePreviewContainer" style="display: ${formImageBase64 ? 'block' : 'none'};">
-                  <img src="${formImageBase64}" id="imagePreviewImg" class="image-preview-thumb" alt="Xem trước" />
+                <div id="imagePreviewContainer" style="display: ${formImagePreview ? 'block' : 'none'};">
+                  <img src="${formImagePreview}" id="imagePreviewImg" class="image-preview-thumb" data-image-id="${formProductCode}" alt="Xem trước" onerror="this.hidden=true;this.nextElementSibling.hidden=false" />
+                  <span class="product-image-placeholder" hidden aria-hidden="true">▧</span>
                   <div style="font-size: 12px; color: var(--color-brand-600); margin-top: 8px; font-weight: 500;">
                     Nhấn vào đây để đổi ảnh khác
                   </div>
                 </div>
-                <div id="imageUploadPlaceholder" style="display: ${formImageBase64 ? 'none' : 'block'};">
+                <div id="imageUploadPlaceholder" style="display: ${formImagePreview ? 'none' : 'block'};">
                   <img src="${iconPath}them.svg" class="icon icon-24" style="margin: 0 auto 8px;" alt="" />
                   <div style="font-weight: 600; color: var(--color-ink);">Bấm để chọn ảnh từ máy</div>
                   <div style="font-size: 12px; color: var(--color-ink-3); margin-top: 4px;">PNG, JPG, WebP</div>
                 </div>
-              </div>
-
-              <div style="margin-top: 16px; font-size: 12px; color: var(--color-ink-3); line-height: 1.5;">
-                * Nếu không tải ảnh, hệ thống sẽ tự động vẽ đồ họa SVG Device Art cho sản phẩm.
               </div>
             </section>
           </div>
@@ -1368,7 +1601,7 @@ function initAdminPortal(options = {}) {
     }
     return list.map(r => `
       <tr>
-        <td><b style="font-family: var(--font-mono); font-size: 12px; color: var(--color-ink);">${r.id}</b></td>
+        <td><span class="admin-code-cell">${r.id}</span></td>
         <td>${r.date}</td>
         <td class="text-center">${r.lines || (r.items ? r.items.length : 1)}</td>
         <td class="text-center"><b style="color: var(--color-ink);">${r.qty}</b></td>
@@ -1632,9 +1865,9 @@ function initAdminPortal(options = {}) {
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px; max-height: 280px; overflow-y: auto;">
                   ${editingReceiptItems.map((item, idx) => {
-                    const c = Number(item.cost) || 0;
-                    const q = Number(item.qty) || 0;
-                    return `
+          const c = Number(item.cost) || 0;
+          const q = Number(item.qty) || 0;
+          return `
                       <div id="editReceiptRow_${idx}" style="display: grid; gap: 12px; grid-template-columns: 2fr 1.2fr 1fr 1fr; align-items: center; background: var(--color-surface); padding: 10px 14px; border-radius: var(--radius-md);">
                         <div>
                           <div style="font-weight: 600; font-size: 13px; color: var(--color-ink);">${item.name}</div>
@@ -1670,7 +1903,7 @@ function initAdminPortal(options = {}) {
                         </div>
                       </div>
                     `;
-                  }).join('')}
+        }).join('')}
                 </div>
                 <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-line); padding-top: 14px;">
                   <div style="font-size: 13px; color: var(--color-ink-2);">
@@ -1723,14 +1956,14 @@ function initAdminPortal(options = {}) {
                   </thead>
                   <tbody>
                     ${(selectedReceiptModal.items || []).map(it => {
-      const cost = Number(it.cost) || 0;
-      const qty = Number(it.qty) || 0;
-      const lineTotal = cost * qty;
-      return `
+        const cost = Number(it.cost) || 0;
+        const qty = Number(it.qty) || 0;
+        const lineTotal = cost * qty;
+        return `
                         <tr>
                           <td><b style="color: var(--color-ink);">${it.name || 'Sản phẩm'}</b></td>
                           <td>
-                            <span class="sku-badge-pill" style="font-size: 11px;">
+                            <span class="variant-sku-display">
                               ${it.sku || 'SKU-STD'}
                             </span>
                           </td>
@@ -1739,7 +1972,7 @@ function initAdminPortal(options = {}) {
                           <td class="text-right"><b style="color: var(--color-brand-700);">${vnd(lineTotal)}</b></td>
                         </tr>
                       `;
-    }).join('')}
+      }).join('')}
                   </tbody>
                 </table>
               </div>
@@ -1780,12 +2013,13 @@ function initAdminPortal(options = {}) {
     return list;
   }
 
-  function renderPricing() {
-    const list = getPricingList();
-    const page = paginateAdminList('pricing', list);
+  function generatePricingRows(items) {
+    if (!items || items.length === 0) {
+      return '<tr><td colspan="6" class="text-center" style="padding: 24px; color: var(--color-ink-3);">Không tìm thấy sản phẩm nào phù hợp.</td></tr>';
+    }
     const iconPath_p = `${basePath}assets/icon/`;
 
-    const rowsHtml = page.items.map(p => {
+    return items.map(p => {
       const isExpanded = Boolean(expandedPricing[p.id]);
       const isEditing = editingPricingId === p.id;
       // Áp dụng thuật toán lọc biến thể con theo từ khóa tìm kiếm (tái sử dụng từ Task 1)
@@ -1865,7 +2099,7 @@ function initAdminPortal(options = {}) {
           onclick="togglePricingAccordion(${p.id})"
           style="cursor: pointer;"
         >
-          <td><span style="font-size: 13px; color: var(--color-ink);">${p.code}</span></td>
+          <td><span class="admin-code-cell">${p.code}</span></td>
           <td>
             <div style="display: flex; align-items: center; gap: 10px; text-align: left;">
               <span class="accordion-caret" style="font-size:12px; color:var(--color-brand-500); transition:transform 0.2s; display:inline-block; transform: ${isExpanded ? 'rotate(90deg)' : 'rotate(0deg)'};">&#9658;</span>
@@ -1944,18 +2178,24 @@ function initAdminPortal(options = {}) {
         ` : ''}
       `;
     }).join('');
+  }
+
+  function renderPricing() {
+    const list = getPricingList();
+    const page = paginateAdminList('pricing', list);
+    const iconPath_p = `${basePath}assets/icon/`;
 
     return `
-      <div class="admin-toolbar">
+      <div class="admin-toolbar pricing-toolbar">
         <div class="admin-search-wrap">
           <img src="${iconPath_p}tim-kiem.svg" class="icon icon-16" alt="" />
-          <input 
-            type="text" 
-            id="pricingSearchInput" 
-            placeholder="Tìm theo mã SP, tên, SKU, màu sắc..." 
-            class="input-control" 
-            value="${pricingSearchQuery}" 
-            oninput="handlePricingSearch(this.value)" 
+          <input
+            type="text"
+            id="pricingSearchInput"
+            placeholder="Tìm theo mã SP, tên, SKU, màu sắc..."
+            class="input-control"
+            value="${pricingSearchQuery}"
+            oninput="handlePricingSearch(this.value)"
           />
         </div>
         <div style="width: 220px;">
@@ -1983,8 +2223,8 @@ function initAdminPortal(options = {}) {
               <th class="text-center">Thao tác</th>
             </tr>
           </thead>
-          <tbody>
-            ${rowsHtml || '<tr><td colspan="6" class="text-center" style="padding: 24px; color: var(--color-ink-3);">Không tìm thấy sản phẩm nào phù hợp.</td></tr>'}
+          <tbody id="pricingTableBody">
+            ${generatePricingRows(page.items)}
           </tbody>
         </table>
       </div>
@@ -2005,7 +2245,7 @@ function initAdminPortal(options = {}) {
     const statuses = ['Chờ xác nhận', 'Đã xác nhận', 'Đang giao', 'Đã giao', 'Đã huỷ'];
     return list.map(o => `
       <tr>
-        <td><b style="font-family: var(--font-mono); font-size: 12px; color: var(--color-ink);">#${o.id}</b></td>
+        <td><span class="admin-code-cell">#${o.id}</span></td>
         <td>
           <div style="font-weight: 500; color: var(--color-ink);">${o.customer}</div>
         </td>
@@ -2152,7 +2392,7 @@ function initAdminPortal(options = {}) {
       return `
                     <div style="display: flex; align-items: center; gap: 12px; padding: 12px; border-bottom: 1px solid var(--color-line);">
                       <div style="width: 48px; height: 48px; border-radius: var(--radius-md); background: var(--color-surface); display: grid; place-items: center; flex-shrink: 0; overflow:hidden;">
-                        ${found && found.product.image ? `<img src="${found.product.image}" style="max-height:100%;" alt="" />` : (found ? renderDeviceArt(found.product, 'height:40px; width:auto;') : '📦')}
+                        ${found ? renderProductImage(found.product, 'width:48px;height:48px;') : '📦'}
                       </div>
                       <div style="flex: 1; font-size: 14px;">
                         <div style="font-weight: 600; color: var(--color-ink);">${name}</div>
@@ -2272,7 +2512,7 @@ function initAdminPortal(options = {}) {
         return `
           <tr class="inventory-variant-row">
             <td></td>
-            <td><span style="font-family:var(--font-mono);font-size:12px;">${variant.sku}</span><span style="color:var(--color-ink-3);"> · ${variant.color || 'Mặc định'}${specs}</span></td>
+            <td><span class="variant-sku-display">${variant.sku}</span><span style="color:var(--color-ink-3); margin-left: 6px;">· ${variant.color || 'Mặc định'}${specs}</span></td>
             <td class="text-center">${variant.imported}</td>
             <td class="text-center">${variant.sold}</td>
             <!-- TASK 3: Số tồn kho phiên bản con hiển thị màu xanh dương -->
@@ -2283,7 +2523,7 @@ function initAdminPortal(options = {}) {
       }).join('') : '';
       return `
         <tr class="inventory-product-row" onclick="toggleStockAccordion(${product.id})" aria-expanded="${expanded}">
-          <td><span style="font-family:var(--font-mono);font-size:12px;">${product.code}</span></td>
+          <td><span class="admin-code-cell">${product.code}</span></td>
           <td>
             <!-- TASK 2: Màu caret xanh giống tab Giá bán, đổi SKU → Phiên bản -->
             <span class="accordion-caret" style="display:inline-block;transform:rotate(${expanded ? '90deg' : '0deg'});transition:transform .2s;color:var(--color-brand-700);">&#9658;</span>
@@ -2343,7 +2583,7 @@ function initAdminPortal(options = {}) {
         <table class="data-table">
           <thead>
             <tr>
-              <th>Mã</th>
+              <th>Mã SP</th>
               <th>Sản phẩm & Phiên bản</th>
               <th class="text-center">Tổng nhập</th>
               <th class="text-center">Đã bán</th>
@@ -2378,11 +2618,15 @@ function initAdminPortal(options = {}) {
     if (Object.prototype.hasOwnProperty.call(currentPageByTab, tab)) {
       currentPageByTab[tab] = 1;
     }
+    if (showProductForm) clearFormImageDrafts();
     showProductForm = false;
     showCategoryModal = false;
     showReceiptModal = false;
     selectedReceiptModal = null;
     selectedOrderModal = null;
+    selectedUserModal = null;
+    editingReceiptId = null;
+    editingReceiptItems = [];
     userMessage = '';
     render();
   };
@@ -2390,8 +2634,13 @@ function initAdminPortal(options = {}) {
   window.handleAdminLogin = (e) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const identifier = form.querySelector('input[type="text"]').value.trim().toLowerCase();
-    const password = form.querySelector('input[type="password"]').value;
+    const identifierEl = document.getElementById('adminIdentifierInput') || form.querySelector('input[type="text"]');
+    const passwordEl = document.getElementById('adminPasswordInput') || form.querySelector('input[type="password"]');
+    const rememberEl = document.getElementById('adminRememberMe');
+    const identifier = (identifierEl ? identifierEl.value : '').trim().toLowerCase();
+    const password = passwordEl ? passwordEl.value : '';
+    const remember = rememberEl ? rememberEl.checked : false;
+
     const validIdentifier = identifier === 'admin' || identifier === 'admin@technostore.vn';
     const validPassword = password === 'admin123' || password === '123';
 
@@ -2401,8 +2650,16 @@ function initAdminPortal(options = {}) {
     }
 
     isLoggedIn = true;
-    setAdminUser(true);
+    setAdminUser(true, remember);
     render();
+  };
+
+  window.toggleAdminPasswordVisibility = (btn) => {
+    const wrap = btn.closest('.field-input-wrap');
+    if (!wrap) return;
+    const input = wrap.querySelector('input');
+    if (!input) return;
+    input.type = input.type === 'password' ? 'text' : 'password';
   };
 
   window.handleAdminLogout = () => {
@@ -2501,10 +2758,12 @@ function initAdminPortal(options = {}) {
   // NGHIỆP VỤ FORM SẢN PHẨM & BIẾN THỂ (PRODUCT VARIANT MATRIX)
   // --------------------------------------------------------------------------
   window.openCreateProductForm = () => {
+    clearFormImageDrafts();
     editingProductId = null;
     const nextId = generateNextProductId();
     formProductCode = generateNextProductCode();
-    formImageBase64 = '';
+    formImagePath = '';
+    formImagePreview = '';
     const firstCatName = categories[0] ? (typeof categories[0] === 'string' ? categories[0] : (categories[0].name || 'Điện thoại')) : 'Điện thoại';
     formSelectedCategory = firstCatName;
 
@@ -2520,6 +2779,7 @@ function initAdminPortal(options = {}) {
         stock: 0 // Quy tắc: Mặc định là 0 và bị khóa (Immutable Stock)
       }
     ];
+    initializeFormImageDrafts(formVariants);
 
     showProductForm = true;
     render();
@@ -2531,7 +2791,8 @@ function initAdminPortal(options = {}) {
 
     editingProductId = id;
     formProductCode = p.code;
-    formImageBase64 = p.image || '';
+    formImagePath = p.image || `assets/img/${p.code}.png`;
+    formImagePreview = getProductImageUrl(formImagePath);
     const firstCatName = categories[0] ? (typeof categories[0] === 'string' ? categories[0] : (categories[0].name || 'Điện thoại')) : 'Điện thoại';
     formSelectedCategory = p.category || firstCatName;
 
@@ -2550,12 +2811,14 @@ function initAdminPortal(options = {}) {
         }
       ];
     }
+    initializeFormImageDrafts(formVariants);
 
     showProductForm = true;
     render();
   };
 
   window.setShowProductForm = (val) => {
+    if (!val) clearFormImageDrafts();
     showProductForm = val;
     render();
   };
@@ -2579,13 +2842,26 @@ function initAdminPortal(options = {}) {
       formVariants[index].ram || '',
       formVariants[index].rom || ''
     );
-    formVariants[index].sku = sku;
+    updateVariantSku(formVariants[index], sku, index);
 
     const skuDisplayEl = document.getElementById(`skuDisplay_${index}`);
     if (skuDisplayEl) {
       skuDisplayEl.textContent = sku;
     }
   };
+
+  function updateVariantSku(variant, nextSku, index = null) {
+    if (variant.sku === nextSku) return;
+    variant.sku = nextSku;
+    variant.imageId = formVariantImageSources.get(variant) || nextSku;
+    if (index !== null) refreshVariantImagePreview(index);
+  }
+
+  function refreshVariantImagePreview(index) {
+    const previewImage = document.querySelector(`#variantRow_${index} img[data-image-id]`);
+    if (!previewImage) return;
+    applyFormVariantImagePreviews();
+  }
 
   /**
    * Thêm 1 dòng cấu hình biến thể động (Khởi tạo dòng trống)
@@ -2602,7 +2878,7 @@ function initAdminPortal(options = {}) {
       } else if (newCat === 'Đồng hồ thông minh') {
         v.ram = '';
       }
-      v.sku = generateSku(formProductCode, v.color || '', v.ram || '', v.rom || '');
+      updateVariantSku(v, generateSku(formProductCode, v.color || '', v.ram || '', v.rom || ''));
     });
     if (typeof renderDynamicSpecsAndVariants === 'function') {
       renderDynamicSpecsAndVariants(newCat);
@@ -2623,8 +2899,10 @@ function initAdminPortal(options = {}) {
       cost: 0,
       price: 0,
       sku: newSku,
+      imageId: newSku,
       stock: 0 // Quy tắc: Mặc định là 0 và bị khóa (Immutable Stock)
     });
+    formVariantImageSources.set(formVariants[formVariants.length - 1], null);
 
     if (typeof renderDynamicSpecsAndVariants === 'function') {
       renderDynamicSpecsAndVariants(cat);
@@ -2655,6 +2933,13 @@ function initAdminPortal(options = {}) {
       'Xác nhận xoá phiên bản',
       'warning',
       () => {
+        if (targetVariant) {
+          const sourceId = formVariantImageSources.get(targetVariant);
+          if (sourceId) removedVariantImageIds.add(sourceId);
+          const draft = formVariantImageDrafts.get(targetVariant);
+          if (draft) URL.revokeObjectURL(draft.previewUrl);
+          formVariantImageDrafts.delete(targetVariant);
+        }
         formVariants.splice(index, 1);
         const cat = formSelectedCategory || (document.getElementById('formProdCat') ? document.getElementById('formProdCat').value : 'Điện thoại');
         if (typeof renderDynamicSpecsAndVariants === 'function') {
@@ -2662,6 +2947,7 @@ function initAdminPortal(options = {}) {
         } else {
           render();
         }
+        applyFormVariantImagePreviews();
       }
     );
   };
@@ -2673,20 +2959,33 @@ function initAdminPortal(options = {}) {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      showCustomDialog('Vui lòng chọn một file hình ảnh hợp lệ (PNG, JPG, WebP)!');
+    const extensionByType = {
+      'image/png': 'png',
+      'image/jpeg': 'jpg',
+      'image/webp': 'webp'
+    };
+    const extension = extensionByType[file.type];
+    if (!extension) {
+      showCustomDialog('Vui lòng chọn ảnh PNG, JPG hoặc WebP!');
       return;
     }
 
+    const sessionId = formImageSessionId;
     const reader = new FileReader();
-    reader.onload = (event) => {
-      formImageBase64 = event.target.result;
+    reader.onload = async (event) => {
+      if (!showProductForm || sessionId !== formImageSessionId) return;
+      formProductImageDraft = file;
+      formImagePath = `assets/img/${formProductCode}.${extension}`;
+      formImagePreview = event.target.result;
       const previewImg = document.getElementById('imagePreviewImg');
+      const previewFallback = previewImg && previewImg.nextElementSibling;
       const previewContainer = document.getElementById('imagePreviewContainer');
       const placeholder = document.getElementById('imageUploadPlaceholder');
 
       if (previewImg && previewContainer && placeholder) {
-        previewImg.src = formImageBase64;
+        previewImg.hidden = false;
+        if (previewFallback) previewFallback.hidden = true;
+        previewImg.src = formImagePreview;
         previewContainer.style.display = 'block';
         placeholder.style.display = 'none';
       }
@@ -2695,6 +2994,34 @@ function initAdminPortal(options = {}) {
       showCustomDialog('Lỗi đọc file ảnh, vui lòng thử lại!');
     };
     reader.readAsDataURL(file);
+  };
+
+  window.handleVariantImageSelect = (e, index) => {
+    const file = e.target.files && e.target.files[0];
+    const variant = formVariants[index];
+    if (!file || !variant) return;
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) {
+      showCustomDialog('Vui lòng chọn ảnh PNG, JPG hoặc WebP!');
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      const previousDraft = formVariantImageDrafts.get(variant);
+      if (previousDraft) URL.revokeObjectURL(previousDraft.previewUrl);
+      formVariantImageDrafts.set(variant, {
+        file,
+        previewUrl: URL.createObjectURL(file)
+      });
+      variant.imageId = formVariantImageSources.get(variant) || variant.sku;
+      refreshVariantImagePreview(index);
+      showToast('Đã chọn ảnh. Nhấn "Lưu sản phẩm" để áp dụng.');
+    } catch (error) {
+      console.error(`[TechnoStore] Không thể lưu ảnh phiên bản "${variant.sku}":`, error);
+      showCustomDialog(`Không thể xem trước ảnh phiên bản: ${error.message}`);
+    } finally {
+      e.target.value = '';
+    }
   };
 
   /**
@@ -2761,8 +3088,37 @@ function initAdminPortal(options = {}) {
         }
       }
 
-      const saveMatrix = () => {
+      const saveMatrix = async () => {
+        if (isSavingProductForm) return;
+        isSavingProductForm = true;
+        try {
         const currentProd = editingProductId !== null ? products.find(p => p.id === editingProductId) : null;
+        const obsoleteImageIds = new Set(removedVariantImageIds);
+        const retainedImageSources = new Set(formVariants
+          .filter(variant => !formVariantImageDrafts.has(variant))
+          .map(variant => {
+            const sourceId = formVariantImageSources.get(variant);
+            return sourceId === variant.sku ? sourceId : null;
+          })
+          .filter(Boolean));
+
+        if (formProductImageDraft) {
+          await saveImageToIndexedDB(formProductCode, formProductImageDraft);
+        }
+
+        for (const variant of formVariants) {
+          const sourceId = formVariantImageSources.get(variant);
+          const imageDraft = formVariantImageDrafts.get(variant);
+          if (imageDraft) {
+            await saveImageToIndexedDB(variant.sku, imageDraft.file);
+            if (sourceId && sourceId !== variant.sku) obsoleteImageIds.add(sourceId);
+          } else if (sourceId && sourceId !== variant.sku && await hasImageInIndexedDB(sourceId)) {
+            await copyImageInIndexedDB(sourceId, variant.sku);
+            obsoleteImageIds.add(sourceId);
+          }
+        }
+
+        retainedImageSources.forEach(imageId => obsoleteImageIds.delete(imageId));
         // Giu nguyen gia von va gia ban hien co neu dang sua, hoac lay gia tri mac dinh
         const validFormPrices = formVariants.map(v => Number(v.price) || 0).filter(p => p > 0);
         const basePrice = validFormPrices.length > 0 ? Math.min(...validFormPrices) : (currentProd ? (currentProd.basePrice || currentProd.price || 0) : 0);
@@ -2770,7 +3126,6 @@ function initAdminPortal(options = {}) {
         const minCost = validFormCosts.length > 0 ? Math.min(...validFormCosts) : (currentProd ? (currentProd.cost || 0) : 0);
         const totalStock = formVariants.reduce((s, v) => s + (Number(v.stock) || 0), 0);
 
-        const currentProd = editingProductId !== null ? products.find(p => p.id === editingProductId) : null;
         const specData = {
           screen: screen || (currentProd ? currentProd.screen : ''),
           chip: chip || (currentProd ? currentProd.chip : ''),
@@ -2799,7 +3154,7 @@ function initAdminPortal(options = {}) {
                 brand,
                 description: desc,
                 ...specData,
-                image: formImageBase64 || p.image,
+                image: formImagePath || p.image || `assets/img/${p.code}.png`,
                 basePrice,
                 price: basePrice,
                 cost: minCost,
@@ -2830,7 +3185,7 @@ function initAdminPortal(options = {}) {
             brand,
             description: desc,
             ...specData,
-            image: formImageBase64,
+            image: formImagePath || `assets/img/${formProductCode || nextCode}.png`,
             createdAt: new Date().toISOString().split('T')[0],
             isDeleted: false,
             isVisible: true,
@@ -2852,8 +3207,22 @@ function initAdminPortal(options = {}) {
         }
 
         saveProducts(products);
+        for (const imageId of obsoleteImageIds) {
+          try {
+            await deleteImageFromIndexedDB(imageId);
+          } catch (error) {
+            console.error(`[TechnoStore] Không thể xóa ảnh phiên bản "${imageId}":`, error);
+            showCustomDialog(`Sản phẩm đã được lưu nhưng không thể dọn ảnh phiên bản cũ: ${error.message}`);
+          }
+        }
+        clearFormImageDrafts();
         showProductForm = false;
         render();
+        } catch (error) {
+          console.error('Lỗi lưu sản phẩm hoặc ảnh:', error);
+          showCustomDialog(`Không thể lưu sản phẩm: ${error.message}`);
+          isSavingProductForm = false;
+        }
       };
 
       // Chỉ cảnh báo nếu có gán giá bán > 0 nhưng thấp hơn giá vốn
@@ -3507,7 +3876,7 @@ function initAdminPortal(options = {}) {
   window.handlePricingSearch = (val) => {
     pricingSearchQuery = val;
     currentPageByTab.pricing = 1;
-    render();
+    refreshAdminTable('pricing', getPricingList(), 'pricingTableBody', generatePricingRows, 'sản phẩm');
   };
 
   window.handlePricingCategoryFilter = (val) => {

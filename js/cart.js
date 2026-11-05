@@ -7,6 +7,12 @@
  * 3. Khi bấm "Tiến hành thanh toán": Chuyển sang luồng thanh toán giỏ hàng (xóa cờ mua ngay tạm)
  */
 function initCartPage(options = {}) {
+  const container = document.getElementById('cartPageContent');
+  if (!container) return;
+
+  const basePath = options.basePath || '';
+  const customerPath = `${basePath}view/customer/`;
+  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
   const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
   if (!currentUser) {
     container.innerHTML = `
@@ -24,12 +30,6 @@ function initCartPage(options = {}) {
     return;
   }
 
-  const container = document.getElementById('cartPageContent');
-  if (!container) return;
-
-  const basePath = options.basePath || '';
-  const customerPath = `${basePath}view/customer/`;
-  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
   // TASK 1: Khi tải trang Giỏ hàng, các ô vuông tick chọn sản phẩm phải ở trạng thái Unchecked (để trống)
   const selectedSkus = new Set();
 
@@ -127,9 +127,7 @@ function initCartPage(options = {}) {
           onchange="handleToggleCartSelection('${item.sku}', this.checked)"
         />
         <div class="cart-item-thumb" style="display: grid; place-items: center; overflow: hidden;">
-          ${item.product.image
-        ? `<img src="${item.product.image}" style="max-height: 76px; max-width: 100%; object-fit: contain;" alt="${item.product.name}" />`
-        : renderDeviceArt(item.product, 'height:80px; width:auto;')}
+          ${renderProductImage(item.product, 'width:76px;height:76px;')}
         </div>
 
         <div class="cart-item-details">
@@ -431,9 +429,7 @@ function initCheckoutPage(options = {}) {
     const reviewItemsHtml = items.map(item => `
       <div class="review-item-row">
         <div class="review-item-thumb" style="display: grid; place-items: center; overflow: hidden;">
-          ${item.product.image
-        ? `<img src="${item.product.image}" style="max-height: 52px; max-width: 100%; object-fit: contain;" alt="" />`
-        : renderDeviceArt(item.product, 'height:56px; width:auto;')}
+          ${renderProductImage(item.product, 'width:52px;height:52px;')}
         </div>
         <div class="review-item-info">
           <div class="review-item-title">${item.product.name}</div>

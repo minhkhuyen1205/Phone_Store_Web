@@ -39,10 +39,7 @@ function renderProductCard(p, options = {}) {
     }
   }
 
-  // Khối hình ảnh: Ảnh thật hoặc SVG Art
-  const artworkHtml = p.image
-    ? `<img src="${p.image}" style="max-height: 192px; max-width: 100%; object-fit: contain; transition: transform 0.3s ease;" alt="${p.name}" />`
-    : (typeof renderDeviceArt === 'function' ? renderDeviceArt(p, 'height:192px; width:auto;') : '');
+  const artworkHtml = renderProductImage(p, 'width:100%;height:192px;');
 
   // Trạng thái tồn kho text
   let stockText = '';
@@ -348,9 +345,7 @@ function renderOrderCardHtml(o, allProducts = []) {
       qty = it.qty || 1;
     }
 
-    const imgHtml = (p && p.image)
-      ? `<img src="${p.image}" style="max-height: 48px; max-width: 100%; object-fit: contain;" alt="" />`
-      : (p && typeof renderDeviceArt === 'function' ? renderDeviceArt(p, 'height:48px; width:auto;') : '📦');
+    const imgHtml = p ? renderProductImage(p, 'width:48px;height:48px;') : '📦';
 
     return `
       <div class="order-item-mini-row">
