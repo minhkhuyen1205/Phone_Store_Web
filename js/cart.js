@@ -1,11 +1,3 @@
-
-/**
- * Khởi tạo Trang Giỏ Hàng (Cart Page)
- * Nghiệp vụ:
- * 1. Khách chưa đăng nhập vẫn xem được giỏ hàng đã lưu từ phiên trước (Guest Cart)
- * 2. Tự động kiểm tra và đồng bộ tồn kho thực tế
- * 3. Khi bấm "Tiến hành thanh toán": Chuyển sang luồng thanh toán giỏ hàng (xóa cờ mua ngay tạm)
- */
 function initCartPage(options = {}) {
   const container = document.getElementById('cartPageContent');
   if (!container) return;
