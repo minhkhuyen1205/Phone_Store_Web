@@ -26,6 +26,9 @@
 }
 
 /* Sidebar */
+/* ==========================================================================
+   TASK 4: ADMIN SIDEBAR - PRIMARY BRAND BLUE THEME (XANH CHỦ ĐẠO TOÀN TRANG)
+   ========================================================================== */
 .admin-sidebar {
   position: sticky;
   top: 0;
@@ -34,10 +37,11 @@
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--color-line);
-  background-color: var(--color-white);
-  padding: 16px;
+  background: linear-gradient(180deg, #1a6dff 0%, #0d57d6 55%, #0846b8 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 20px 14px;
   z-index: 30;
+  box-shadow: 4px 0 20px rgba(10, 88, 230, 0.15);
 }
 
 @media (max-width: 768px) {
@@ -49,21 +53,62 @@
 .admin-sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 12px;
+  gap: 12px;
+  padding: 10px 12px;
   font-size: 18px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--color-ink);
+  color: #ffffff;
   text-decoration: none;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  margin-bottom: 14px;
+  transition: all var(--transition-fast);
+}
+
+.admin-sidebar-logo:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.admin-sidebar-logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.admin-sidebar-logo:hover .admin-sidebar-logo-icon {
+  transform: scale(1.05);
+}
+
+.admin-sidebar-logo-icon .icon {
+  width: 26px;
+  height: 26px;
+  filter: none !important;
+}
+
+.admin-sidebar-logo .brand-accent {
+  color: #bae6fd;
+  font-weight: 800;
 }
 
 .admin-nav-list {
-  margin-top: 16px;
+  margin-top: 8px;
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .admin-nav-item {
@@ -72,35 +117,66 @@
   width: 100%;
   align-items: center;
   gap: 12px;
-  border-radius: var(--radius-md);
-  padding: 0 12px;
+  border-radius: var(--radius-lg);
+  padding: 0 14px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--color-ink-2);
+  color: rgba(255, 255, 255, 0.86);
   transition: all var(--transition-fast);
   cursor: pointer;
   text-align: left;
   border: none;
-  background: none;
+  background: transparent;
+}
+
+.admin-nav-item .icon {
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
 .admin-nav-item:hover {
-  background-color: var(--color-surface);
-  color: var(--color-ink);
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+}
+
+.admin-nav-item:hover .icon {
+  opacity: 1;
+  transform: translateX(2px);
 }
 
 .admin-nav-item.active {
-  background-color: var(--color-brand-50);
+  background-color: #ffffff;
   color: var(--color-brand-700);
   font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.admin-nav-item.active .icon {
+  filter: invert(24%) sepia(85%) saturate(2250%) hue-rotate(210deg) brightness(85%) contrast(105%);
+  opacity: 1;
 }
 
 .admin-nav-item.admin-logout {
-  color: #dc2626;
+  margin-top: auto;
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.admin-nav-item.admin-logout .icon {
+  filter: invert(70%) sepia(50%) saturate(2000%) hue-rotate(320deg) brightness(105%) contrast(100%);
+  opacity: 0.9;
 }
 
 .admin-nav-item.admin-logout:hover {
-  background-color: var(--color-danger-bg);
+  background-color: rgba(239, 68, 68, 0.25);
+  color: #ffffff;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.admin-nav-item.admin-logout:hover .icon {
+  filter: brightness(0) invert(1);
 }
 
 /* Admin Main Content */
@@ -179,6 +255,10 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+}
+
+.pricing-toolbar {
+  margin-bottom: 18px;
 }
 
 .admin-search-wrap {
@@ -304,12 +384,92 @@
   outline-offset: 2px;
 }
 
+.product-list-table {
+  min-width: 1120px;
+  table-layout: fixed;
+}
+
+.product-list-table th:nth-child(1),
+.product-list-table td:nth-child(1) {
+  width: 7%;
+}
+
+.product-list-table th:nth-child(2),
+.product-list-table td:nth-child(2) {
+  width: 18%;
+}
+
+.product-list-table th:nth-child(3),
+.product-list-table td:nth-child(3) {
+  width: 10%;
+}
+
+.product-list-table th:nth-child(4),
+.product-list-table td:nth-child(4) {
+  width: 8%;
+}
+
+.product-list-table th:nth-child(5),
+.product-list-table td:nth-child(5) {
+  width: 10%;
+}
+
+.product-list-table th:nth-child(6),
+.product-list-table td:nth-child(6) {
+  width: 8%;
+}
+
+.product-list-table th:nth-child(7),
+.product-list-table td:nth-child(7) {
+  width: 25%;
+}
+
+.product-list-table th:nth-child(8),
+.product-list-table td:nth-child(8) {
+  width: 14%;
+}
+
+.product-sku-cell,
+.product-sku-list {
+  min-width: 0;
+}
+
+.product-sku-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.product-sku-list .variant-sku-display {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.product-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 4px;
+}
+
+.product-row-actions>* {
+  flex: 0 0 auto;
+}
+
 .inventory-product-row {
   cursor: pointer;
 }
 
 .inventory-variant-row {
   background: rgba(245, 246, 249, 0.55);
+}
+
+@media (max-width: 900px) {
+  .pop>form>div:first-child {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
 }
 
 @media (max-width: 900px) {
@@ -520,97 +680,535 @@
 }
 
 /* Admin Login Page */
-.admin-login-layout {
-  display: grid;
+/* ==========================================================================
+   TASK 6: REDESIGN GIAO DIỆN ĐĂNG NHẬP ADMIN (SPLIT SCREEN & CARD UI HIỆN ĐẠI)
+   ========================================================================== */
+.admin-login-page {
   min-height: 100vh;
-  place-items: center;
-  background-color: var(--color-surface);
-  padding: 20px;
-}
-
-.admin-login-card {
   width: 100%;
-  max-width: 400px;
-  border-radius: var(--radius-3xl);
-  background-color: var(--color-white);
-  padding: 32px;
-  box-shadow: var(--shadow-lift);
+  display: flex;
+  background-color: #f1f5f9;
 }
 
-.admin-login-icon-box {
-  margin: 0 auto;
+.admin-login-split {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+@media (max-width: 900px) {
+  .admin-login-split {
+    flex-direction: column;
+  }
+}
+
+/* Cột trái: Brand Hero Panel */
+.admin-login-brand-panel {
+  flex: 1.15;
+  background: linear-gradient(135deg, #091e42 0%, #0d3b87 35%, #1a6dff 80%, #38bdf8 100%);
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .admin-login-brand-panel {
+    display: none;
+  }
+}
+
+.admin-login-brand-panel::before {
+  content: '';
+  position: absolute;
+  top: -120px;
+  right: -80px;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.28) 0%, rgba(10, 88, 230, 0) 70%);
+  pointer-events: none;
+}
+
+.admin-login-brand-panel::after {
+  content: '';
+  position: absolute;
+  bottom: -100px;
+  left: -80px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.22) 0%, rgba(10, 88, 230, 0) 70%);
+  pointer-events: none;
+}
+
+.brand-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+.brand-panel-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.brand-logo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   display: grid;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
-  background-color: var(--color-ink);
-  color: var(--color-white);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.brand-logo-icon .icon {
+  width: 26px;
+  height: 26px;
+  filter: none !important;
+}
+
+.brand-logo-text {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.brand-logo-text .accent {
+  color: #bae6fd;
+}
+
+.brand-system-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #e0f2fe;
+}
+
+.brand-panel-content {
+  margin: 32px 0;
+  position: relative;
+  z-index: 2;
+}
+
+.brand-pill-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #bae6fd;
+  margin-bottom: 14px;
+}
+
+.tag-sparkle {
+  color: #38bdf8;
+}
+
+.brand-hero-title {
+  font-size: 32px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.03em;
+  margin-bottom: 14px;
+}
+
+.hero-highlight {
+  color: #7dd3fc;
+  background: linear-gradient(90deg, #bae6fd, #38bdf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-hero-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 480px;
+  margin-bottom: 24px;
+}
+
+.brand-hero-illustration {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto 24px auto;
+  display: flex;
+  justify-content: center;
+}
+
+.brand-features-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.feature-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 12px;
+  color: #f0f9ff;
+}
+
+.feature-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+}
+
+.brand-panel-footer {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  position: relative;
+  z-index: 2;
+}
+
+/* Cột phải: Form Panel */
+.admin-login-form-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: #f8fafc;
+}
+
+.admin-login-card-modern {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 44px 38px;
+  box-shadow: 0 25px 50px -12px rgba(10, 88, 230, 0.12), 0 0 0 1px rgba(226, 232, 240, 0.8);
+}
+
+.form-header {
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.form-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background-color: var(--color-brand-50);
+  border: 1px solid rgba(26, 109, 255, 0.2);
+  color: var(--color-brand-700);
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.form-badge-pill .icon {
+  filter: invert(24%) sepia(85%) saturate(2250%) hue-rotate(210deg) brightness(85%) contrast(105%);
+}
+
+.form-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--color-ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.form-subtitle {
+  font-size: 14px;
+  color: var(--color-ink-3);
+  line-height: 1.5;
+}
+
+.admin-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-field-modern {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-ink-2);
+}
+
+.field-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.field-icon {
+  position: absolute;
+  left: 14px;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.field-input-control {
+  width: 100%;
+  height: 50px;
+  padding: 0 44px 0 44px;
+  border-radius: 12px;
+  border: 1.5px solid #e2e8f0;
+  background-color: #f8fafc;
+  font-size: 14px;
+  color: var(--color-ink);
+  outline: none;
+  transition: all var(--transition-fast);
+  font-family: inherit;
+}
+
+.field-input-control:focus {
+  border-color: var(--color-brand-500);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(26, 109, 255, 0.12);
+}
+
+.field-toggle-pwd {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+}
+
+.field-toggle-pwd:hover {
+  opacity: 1;
+}
+
+.form-options-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.remember-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-ink-2);
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-checkbox-label input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-brand-600);
+  cursor: pointer;
+}
+
+.support-hint {
+  color: var(--color-brand-600);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.btn-admin-login-submit {
+  height: 50px;
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1a6dff 0%, #0a58e6 100%);
+  color: #ffffff;
+  border: none;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 20px -4px rgba(26, 109, 255, 0.4);
+  transition: all var(--transition-fast);
+}
+
+.btn-admin-login-submit:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #0846b8 100%);
+  box-shadow: 0 12px 24px -4px rgba(26, 109, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-admin-login-submit:active {
+  transform: translateY(0);
+}
+
+.arrow-icon {
+  font-size: 18px;
+  transition: transform var(--transition-fast);
+}
+
+.btn-admin-login-submit:hover .arrow-icon {
+  transform: translateX(4px);
+}
+
+.form-card-footer {
+  text-align: center;
+  margin-top: 18px;
+}
+
+.back-to-store-link {
+  font-size: 13px;
+  color: var(--color-ink-3);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.back-to-store-link:hover {
+  color: var(--color-brand-600);
 }
 
 /* ==========================================================================
-   Product Variant Matrix & Real Image Upload Styles
+   TASK 3: CỘT MÃ ĐỒNG BỘ TOÀN TRANG ADMIN (1 KIỂU CHỮ, KHÔNG IN ĐẬM, KHÔNG UPPERCASE)
    ========================================================================== */
+.admin-code-cell {
+  font-family: var(--font-sans) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  color: var(--color-ink) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+}
+
+/* ==========================================================================
+   TASK 5: ĐỒNG BỘ UI MÃ SKU BIẾN THỂ CON (KHUNG VIỀN + BACKGROUND + CHỮ XANH)
+   ========================================================================== */
+.variant-sku-display,
+.sku-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  background-color: var(--color-brand-50);
+  border: 1px solid rgba(26, 109, 255, 0.25);
+  color: var(--color-brand-700);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: all var(--transition-fast);
+}
+
+.variant-sku-display:hover,
+.sku-badge-pill:hover {
+  background-color: var(--color-brand-100);
+  border-color: var(--color-brand-500);
+}
+
 .variant-matrix-card {
+  min-width: 0;
+  padding: 20px;
   background: var(--color-white);
-  border-radius: var(--radius-2xl);
   border: 1px solid var(--color-line);
-  padding: 24px;
+  border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-soft);
 }
 
 .variant-matrix-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 12px;
+  margin-bottom: 16px;
 }
 
 .variant-matrix-table {
   width: 100%;
+  min-width: 680px;
   border-collapse: separate;
-  border-spacing: 0 8px;
+  border-spacing: 0 6px;
 }
 
 .variant-matrix-table th {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-ink-3);
   padding: 8px 12px;
-  background: transparent;
+  color: var(--color-ink-3);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
-.variant-matrix-row {
-  background-color: var(--color-surface);
-  border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+.variant-matrix-table .variant-matrix-row {
+  background: var(--color-surface);
 }
 
-.variant-matrix-row td {
-  padding: 10px 12px;
+.variant-matrix-table .variant-matrix-row td {
+  padding: 8px 12px;
+  font-weight: 400;
 }
 
-.variant-matrix-row td:first-child {
-  border-top-left-radius: var(--radius-md);
-  border-bottom-left-radius: var(--radius-md);
+.variant-matrix-table .variant-sku-display,
+.variant-matrix-table .variant-stock-locked {
+  font-weight: 400;
 }
 
-.variant-matrix-row td:last-child {
-  border-top-right-radius: var(--radius-md);
-  border-bottom-right-radius: var(--radius-md);
+.variant-row-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
 }
 
-.variant-sku-display {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  background: var(--color-white);
+.variant-row-actions .product-image-frame {
+  flex: 0 0 32px;
+  overflow: hidden;
   border: 1px solid var(--color-line);
-  padding: 6px 10px;
   border-radius: var(--radius-sm);
-  color: var(--color-brand-700);
-  font-weight: 600;
+  background: var(--color-white);
+}
+
+.variant-row-actions .product-image-frame .product-image-placeholder {
+  min-width: 24px;
+  min-height: 24px;
+  font-size: 15px;
+}
+
+.variant-image-file-input {
+  display: none;
+}
+
+.variant-required-note {
+  color: var(--color-ink-3);
+  font-size: 12px;
   white-space: nowrap;
 }
 
@@ -660,16 +1258,7 @@
   border-radius: var(--radius-md);
 }
 
-.sku-badge-pill {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 9999px;
-  font-size: 11px;
-  font-family: var(--font-mono);
-  background-color: var(--color-brand-50);
-  color: var(--color-brand-700);
-  border: 1px solid rgba(26, 109, 255, 0.2);
-}
+/* .sku-badge-pill merged into .variant-sku-display */
 
 /* ==========================================================================
    SKU Pricing Accordion Table Styles
