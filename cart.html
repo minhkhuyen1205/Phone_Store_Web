@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechnoStore - Giỏ hàng & Thanh toán</title>
+  <meta name="description" content="Giỏ hàng, thanh toán đơn hàng, lịch sử và tài khoản TechnoStore.">
+
+  <!-- CSS Stylesheets -->
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages/cart.css">
+  <link rel="stylesheet" href="css/pages/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <div id="headerContainer"></div>
+
+  <!-- VIEW 1: Giỏ hàng -->
+  <main id="cartPageContent" style="display:none;"></main>
+
+  <!-- VIEW 2: Thanh toán (Checkout) -->
+  <main id="checkoutPageContent" style="display:none;"></main>
+
+  <!-- VIEW 3: Lịch sử đơn hàng -->
+  <main id="historyPageContent" class="container profile-container" style="display:none;">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 24px;">
+      <div>
+        <h1 style="font-size: 28px; font-weight: 700; color: var(--color-ink);">Lịch sử đơn hàng</h1>
+        <p style="font-size: 14px; color: var(--color-ink-3); margin-top: 4px;">Xem lại và theo dõi tiến độ các đơn hàng của bạn</p>
+      </div>
+      <a href="cart.html?page=profile" class="btn btn-secondary btn-sm">Xem hồ sơ cá nhân</a>
+    </div>
+
+    <!-- Status Filter Chips -->
+    <div class="order-status-chips-wrap" style="margin-bottom: 24px;" id="orderFilterPills">
+      <button class="order-filter-chip active" onclick="filterOrderHistory('')">Tất cả</button>
+      <button class="order-filter-chip" onclick="filterOrderHistory('Chờ xác nhận')">Chờ xác nhận</button>
+      <button class="order-filter-chip" onclick="filterOrderHistory('Đã xác nhận')">Đã xác nhận</button>
+      <button class="order-filter-chip" onclick="filterOrderHistory('Đang giao')">Đang giao</button>
+      <button class="order-filter-chip" onclick="filterOrderHistory('Đã giao')">Đã giao</button>
+      <button class="order-filter-chip" onclick="filterOrderHistory('Đã huỷ')">Đã huỷ</button>
+    </div>
+
+    <!-- Orders List Wrap -->
+    <div id="orderHistoryList" class="orders-list-wrap"></div>
+  </main>
+
+  <!-- VIEW 4: Hồ sơ cá nhân (Profile) -->
+  <main id="profilePageContent" style="display:none;"></main>
+
+  <!-- VIEW 5: Đăng nhập & Đăng ký -->
+  <main id="authPageContent" style="display:none;"></main>
+
+  <!-- Footer -->
+  <div id="footerContainer"></div>
+
+  <!-- Floating Nav -->
+  <div id="floatingNavContainer"></div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/data.js"></script>
+  <script src="js/db-image.js"></script>
+  <script src="js/components.js"></script>
+  <script src="js/display.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/auth.js"></script>
+
+  <script>
+    var activeStatusFilter = '';
+
+    document.addEventListener('DOMContentLoaded', function () {
+      var params = new URLSearchParams(window.location.search);
+      var page = params.get('page') || 'cart';
+
+      // Ẩn tất cả các view trước khi bật view tương ứng
+      var views = ['cartPageContent', 'checkoutPageContent', 'historyPageContent', 'profilePageContent', 'authPageContent'];
+      views.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+
+      // Xác định activePage cho Header
+      var activePageName = 'cart';
+      if (page === 'checkout') activePageName = 'checkout';
+      else if (page === 'history' || page === 'orders') activePageName = 'orders';
+      else if (page === 'profile') activePageName = 'profile';
+
+      // Render Header, Footer, Nav
+      renderStoreHeader('headerContainer', {
+        basePath: './',
+        viewPath: 'view/',
+        isRoot: true,
+        activePage: activePageName
+      });
+
+      renderStoreFooter('footerContainer', {
+        basePath: './',
+        viewPath: 'view/',
+        isRoot: true
+      });
+
+      renderFloatingNav('floatingNavContainer', {
+        basePath: './',
+        viewPath: 'view/',
+        active: 'store'
+      });
+
+      // Điều hướng view theo tham số ?page=
+      if (page === 'checkout') {
+        document.getElementById('checkoutPageContent').style.display = '';
+        document.title = 'Thanh toán đơn hàng - TechnoStore';
+        initCheckoutPage({ basePath: './', isRoot: true });
+
+      } else if (page === 'history' || page === 'orders') {
+        document.getElementById('historyPageContent').style.display = '';
+        document.title = 'Lịch sử đơn hàng - TechnoStore';
+        renderOrderHistory();
+
+      } else if (page === 'profile') {
+        document.getElementById('profilePageContent').style.display = '';
+        document.title = 'Thông tin tài khoản - TechnoStore';
+        initProfilePage({
+          basePath: './',
+          isRoot: true,
+          defaultTab: params.get('tab') || 'info'
+        });
+
+      } else if (page === 'login' || page === 'auth' || page === 'register') {
+        document.getElementById('authPageContent').style.display = '';
+        document.title = 'Đăng nhập & Đăng ký - TechnoStore';
+        initAuthPage({
+          basePath: './',
+          isRoot: true,
+          defaultMode: (page === 'register' || params.get('mode') === 'register') ? 'register' : 'login'
+        });
+
+      } else {
+        // Mặc định: Giỏ hàng (page === 'cart')
+        document.getElementById('cartPageContent').style.display = '';
+        document.title = 'Giỏ hàng - TechnoStore';
+        initCartPage({ basePath: './', isRoot: true });
+      }
+    });
+
+    function renderOrderHistory() {
+      if (typeof renderCustomerOrderHistory === 'function') {
+        renderCustomerOrderHistory('orderHistoryList', activeStatusFilter);
+      }
+    }
+
+    function filterOrderHistory(status) {
+      activeStatusFilter = status;
+      document.querySelectorAll('#orderFilterPills .order-filter-chip').forEach(function (btn) {
+        btn.classList.toggle('active', btn.textContent.trim() === (status || 'Tất cả'));
+      });
+      renderOrderHistory();
+    }
+  </script>
+</body>
+
+</html>
+
