@@ -22,7 +22,7 @@ function initAuthPage(options = {}) {
         <div class="auth-showcase-side">
           <div class="auth-showcase-inner">
             <div class="auth-showcase-art">
-              ${heroProd ? renderDeviceArt(heroProd, 'height:320px; width:auto;') : ''}
+              ${heroProd ? renderProductImage(heroProd, 'width:100%;height:320px;') : ''}
             </div>
             <h2 class="auth-showcase-title">
               Mua sắm công nghệ<br />theo cách của bạn.
@@ -382,9 +382,7 @@ function initProfilePage(options = {}) {
             qty = it.qty || 1;
           }
 
-          const imgHtml = (p && p.image)
-            ? `<img src="${p.image}" style="max-height: 48px; max-width: 100%; object-fit: contain;" alt="" />`
-            : (p && typeof renderDeviceArt === 'function' ? renderDeviceArt(p, 'height:48px; width:auto;') : '📦');
+          const imgHtml = p ? renderProductImage(p, 'width:48px;height:48px;') : '📦';
 
           return `
             <div class="order-item-mini-row">
