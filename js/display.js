@@ -13,7 +13,7 @@ function renderProductCard(p, options = {}) {
   } else if (typeof options.detailUrl === 'string' && options.detailUrl.trim() !== '') {
     detailUrl = options.detailUrl;
   } else {
-    const prefix = options.detailUrlPrefix || (options.isRoot ? 'view/customer/detail.html?id=' : 'detail.html?id=');
+    const prefix = options.detailUrlPrefix || 'detail.html?id=';
     detailUrl = `${prefix}${p.id}`;
   }
 
@@ -114,14 +114,7 @@ function renderProductGrid(containerId, productList, options = {}) {
   // Trang chủ chỉ ẩn sản phẩm hết hàng khi không hiển thị kết quả đã lọc.
   const isHomePage = options.isHome || (typeof window !== 'undefined' && (
     window.location.pathname.endsWith('index.html') ||
-    window.location.pathname.endsWith('/') ||
-    (!window.location.pathname.includes('search.html') &&
-      !window.location.pathname.includes('detail.html') &&
-      !window.location.pathname.includes('admin.html') &&
-      !window.location.pathname.includes('cart.html') &&
-      !window.location.pathname.includes('checkout.html') &&
-      !window.location.pathname.includes('history.html') &&
-      !window.location.pathname.includes('profile.html'))
+    window.location.pathname.endsWith('/')
   ));
 
   if (isHomePage && !options.includeOutOfStock) {
@@ -159,13 +152,11 @@ function handleCardAction(event, productId) {
   // TASK 10: Chặn thêm vào giỏ khi chưa đăng nhập
   const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
   if (!currentUser) {
-    const isCustomerDir = window.location.pathname.includes('/customer/') || window.location.pathname.includes('/view/');
-    const loginUrl = isCustomerDir ? `login.html?redirect=cart.html` : `view/customer/login.html?redirect=cart.html`;
     showCustomDialog(
       'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!',
       'Yêu cầu đăng nhập',
       'warning',
-      () => { window.location.href = loginUrl; }
+      () => { window.location.href = getStorePageUrl('login', { redirect: 'cart' }); }
     );
     return;
   }
@@ -185,9 +176,7 @@ function handleCardAction(event, productId) {
 
   if (hasVariants) {
     // Sản phẩm có biến thể -> Chuyển hướng sang trang chi tiết để khách chọn Màu & ROM
-    const isCustomerDir = window.location.pathname.includes('/customer/') || window.location.pathname.includes('/view/');
-    const detailUrl = isCustomerDir ? `detail.html?id=${p.id}` : `view/customer/detail.html?id=${p.id}`;
-    window.location.href = detailUrl;
+    window.location.href = getStorePageUrl('detail', { id: p.id });
   } else {
     // Sản phẩm đơn / phụ kiện -> Gọi addToCart thêm nhanh vào giỏ
     if (typeof addToCart === 'function') {
@@ -270,7 +259,7 @@ function getStatusTone(s) {
 }
 
 /**
- * Helper hiển thị Lịch sử đơn hàng của riêng khách hàng đang đăng nhập (Dùng cho history.html và profile)
+ * Helper hiển thị lịch sử đơn hàng của khách hàng đang đăng nhập.
  */
 function renderCustomerOrderHistory(containerId = 'orderHistoryList', activeStatus = '') {
   const container = document.getElementById(containerId);
@@ -281,7 +270,7 @@ function renderCustomerOrderHistory(containerId = 'orderHistoryList', activeStat
     container.innerHTML = `
       <div class="empty-state-box" style="padding: 48px 20px; text-align: center;">
         <p style="color: var(--color-ink-3); font-size: 15px;">Vui lòng đăng nhập để xem lịch sử đơn hàng của bạn.</p>
-        <a href="login.html?redirect=history.html" class="btn btn-primary btn-sm" style="margin-top: 12px;">Đăng nhập ngay</a>
+        <a href="${getStorePageUrl('login', { redirect: 'history' })}" class="btn btn-primary btn-sm" style="margin-top: 12px;">Đăng nhập ngay</a>
       </div>
     `;
     return;
@@ -311,7 +300,7 @@ function renderCustomerOrderHistory(containerId = 'orderHistoryList', activeStat
 
   container.innerHTML = `${focusedOrderId ? `
       <div style="margin-bottom: 16px;">
-        <a href="profile.html?tab=orders" class="btn btn-secondary btn-sm">Xem tất cả lịch sử đơn hàng</a>
+        <a href="${getStorePageUrl('history')}" class="btn btn-secondary btn-sm">Xem tất cả lịch sử đơn hàng</a>
       </div>
     ` : ''}${orders.map(o => renderOrderCardHtml(o, allProducts)).join('')}`;
 }

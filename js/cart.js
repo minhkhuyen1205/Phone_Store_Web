@@ -3,7 +3,6 @@ function initCartPage(options = {}) {
   if (!container) return;
 
   const basePath = options.basePath || '';
-  const customerPath = `${basePath}view/customer/`;
   const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
   const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
   if (!currentUser) {
@@ -14,7 +13,7 @@ function initCartPage(options = {}) {
       </div>
       <h1 class="cart-empty-title">Bạn chưa đăng nhập</h1>
       <p class="cart-empty-text">Vui lòng đăng nhập tài khoản TechnoStore để sử dụng giỏ hàng và đồng bộ sản phẩm.</p>
-      <a href="${customerPath}login.html?redirect=cart.html" class="btn btn-primary btn-md" style="margin-top: 24px;">
+      <a href="${getStorePageUrl('login', { redirect: 'cart' })}" class="btn btn-primary btn-md" style="margin-top: 24px;">
         Đăng nhập ngay
       </a>
     </div>
@@ -123,7 +122,7 @@ function initCartPage(options = {}) {
         </div>
 
         <div class="cart-item-details">
-          <a href="${customerPath}detail.html?id=${item.product.id}" class="cart-item-name">
+          <a href="${getStorePageUrl('detail', { id: item.product.id })}" class="cart-item-name">
             ${item.product.name}
           </a>
           <div class="cart-item-meta" style="color: var(--color-ink-2); font-size: 13px; margin-top: 2px;">
@@ -275,11 +274,11 @@ function initCartPage(options = {}) {
     const user = getCurrentUser();
     if (!user) {
       showCustomDialog('Vui lòng đăng nhập tài khoản trước khi tiến hành thanh toán!', 'Yêu cầu đăng nhập', 'warning', () => {
-        window.location.href = `${customerPath}login.html?redirect=checkout.html`;
+        window.location.href = getStorePageUrl('login', { redirect: 'checkout' });
       });
       return;
     }
-    window.location.href = `${customerPath}checkout.html`;
+    window.location.href = getStorePageUrl('checkout');
   };
 
   render();
@@ -295,14 +294,13 @@ function initCheckoutPage(options = {}) {
   if (!container) return;
 
   const basePath = options.basePath || '';
-  const customerPath = `${basePath}view/customer/`;
   const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
 
   // 1. Kiểm tra đăng nhập bắt buộc
   const currentUser = getCurrentUser();
   if (!currentUser) {
     showCustomDialog('Vui lòng đăng nhập tài khoản để thanh toán đơn hàng!', 'Yêu cầu đăng nhập', 'warning', () => {
-      window.location.href = `${customerPath}login.html?redirect=checkout.html`;
+      window.location.href = getStorePageUrl('login', { redirect: 'checkout' });
     });
     return;
   }
@@ -577,7 +575,7 @@ function initCheckoutPage(options = {}) {
             <button type="button" onclick="handlePlaceOrder()" class="btn btn-primary btn-lg btn-full" style="margin-top: 20px;">
               Xác nhận đặt hàng
             </button>
-            <a href="${isBuyNowMode ? (homeUrl) : (customerPath + 'cart.html')}" class="btn btn-ghost btn-md btn-full" style="margin-top: 8px;">
+            <a href="${isBuyNowMode ? homeUrl : getStorePageUrl('cart')}" class="btn btn-ghost btn-md btn-full" style="margin-top: 8px;">
               ${isBuyNowMode ? '← Huỷ mua ngay' : '← Quay lại giỏ hàng'}
             </a>
           </aside>
@@ -881,7 +879,7 @@ function initCheckoutPage(options = {}) {
   // Mở đúng đơn hàng vừa đặt trong lịch sử tài khoản, không điều hướng tới danh sách chung.
   window.handleViewPlacedOrder = (orderId) => {
     if (!completedOrder || completedOrder.id !== orderId) return;
-    window.location.href = `profile.html?tab=orders&orderId=${encodeURIComponent(completedOrder.id)}`;
+    window.location.href = getStorePageUrl('history', { orderId: completedOrder.id });
   };
 
   render();

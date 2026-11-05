@@ -1,3 +1,35 @@
+const STORE_PAGE_PATHS = Object.freeze({
+  home: 'index.html',
+  detail: 'detail.html',
+  cart: 'cart.html',
+  checkout: 'cart.html',
+  history: 'cart.html',
+  profile: 'cart.html',
+  login: 'cart.html',
+  register: 'cart.html',
+  admin: 'admin.html'
+});
+
+function getStorePageUrl(page = 'home', params = {}) {
+  const requestedPage = String(page || 'home');
+  const aliases = { orders: 'history', auth: 'login' };
+  const pageKey = aliases[requestedPage] || requestedPage;
+  const path = STORE_PAGE_PATHS[pageKey] || STORE_PAGE_PATHS.home;
+  const query = new URLSearchParams();
+
+  if (['cart', 'checkout', 'history', 'profile', 'login', 'register'].includes(pageKey)) {
+    query.set('page', pageKey);
+  }
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      query.set(key, String(value));
+    }
+  });
+
+  const queryString = query.toString();
+  return queryString ? `${path}?${queryString}` : path;
+}
+
 function getProductImageUrl(imagePath) {
   const image = String(imagePath || '').trim();
   if (!image) return '';
@@ -91,9 +123,7 @@ function renderStoreHeader(containerId, options = {}) {
 
   const basePath = options.basePath || '';
   const iconPath = `${basePath}assets/icon/`;
-  const viewPath = options.viewPath || `${basePath}view/`;
-  const customerPath = `${viewPath}customer/`;
-  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
+  const homeUrl = getStorePageUrl('home');
 
   const user = getCurrentUser();
   const customer = user && typeof getCustomers === 'function' ? getCustomers().find(item => String(item.id) === String(user.id)) : null;
@@ -120,13 +150,13 @@ function renderStoreHeader(containerId, options = {}) {
       .map(c => `
               <a href="${homeUrl}?cat=${encodeURIComponent(c)}" class="nav-link ${options.activeCategory === c ? 'active' : ''}">${c}</a>
             `).join('')}
-          <a href="${user ? customerPath + 'history.html' : customerPath + 'login.html'}" class="nav-link ${options.activePage === 'orders' ? 'active' : ''}">Đơn hàng</a>
+          <a href="${user ? getStorePageUrl('history') : getStorePageUrl('login', { redirect: 'history' })}" class="nav-link ${options.activePage === 'orders' ? 'active' : ''}">Đơn hàng</a>
         </nav>
 
         <!-- Thanh tìm kiếm -->
         <div class="header-search">
           <img src="${iconPath}tim-kiem.svg" class="header-search-icon icon icon-16" alt="Tìm kiếm" />
-          <form action="${customerPath}search.html" method="GET" onsubmit="handleHeaderSearch(event, '${customerPath}')">
+          <form action="${homeUrl}" method="GET" onsubmit="handleHeaderSearch(event)">
             <input 
               type="text" 
               name="q" 
@@ -147,15 +177,15 @@ function renderStoreHeader(containerId, options = {}) {
       <span class="account-name">${escapeHeader(accountName)}</span>
     </button>
     <div class="account-dropdown" id="accountDropdown" hidden>
-      <a class="account-menu-item" href="${customerPath}profile.html?tab=info">Thông tin cá nhân</a>
+      <a class="account-menu-item" href="${getStorePageUrl('profile', { tab: 'info' })}">Thông tin cá nhân</a>
       <div class="account-menu-phone">SĐT: ${escapeHeader((customer && customer.phone) || user.phone || 'Chưa cập nhật')}</div>
       <div class="account-menu-divider"></div>
       <button class="account-menu-logout" type="button">Đăng xuất</button>
     </div>
   </div>` : `
-  <a href="${customerPath}login.html" class="user-btn"><img src="${iconPath}con-nguoi.svg" class="icon icon-18" alt="" /><span>Đăng nhập</span></a>`}
+  <a href="${getStorePageUrl('login')}" class="user-btn"><img src="${iconPath}con-nguoi.svg" class="icon icon-18" alt="" /><span>Đăng nhập</span></a>`}
 
-          <a href="${customerPath}cart.html" class="cart-btn" aria-label="Giỏ hàng">
+          <a href="${getStorePageUrl('cart')}" class="cart-btn" aria-label="Giỏ hàng">
             <img src="${iconPath}gio-hang.svg" class="icon icon-20" alt="Giỏ hàng" />
             <span class="cart-count-badge" id="headerCartCount" style="${cartCount > 0 ? '' : 'display:none;'}">
               ${cartCount}
@@ -199,11 +229,11 @@ function renderStoreHeader(containerId, options = {}) {
   });
 }
 
-function handleHeaderSearch(e, searchPath) {
+function handleHeaderSearch(e) {
   e.preventDefault();
   const input = document.getElementById('headerSearchInput');
   const val = input ? input.value.trim() : '';
-  window.location.href = `${searchPath}search.html?q=${encodeURIComponent(val)}`;
+  window.location.href = getStorePageUrl('home', val ? { q: val } : {});
 }
 
 /**
@@ -217,9 +247,7 @@ function renderStoreFooter(containerId, options = {}) {
 
   const basePath = options.basePath || '';
   const iconPath = `${basePath}assets/icon/`;
-  const viewPath = options.viewPath || `${basePath}view/`;
-  const adminUrl = `${viewPath}admin.html`;
-  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
+  const homeUrl = getStorePageUrl('home');
 
   container.innerHTML = `
     <footer class="store-footer">

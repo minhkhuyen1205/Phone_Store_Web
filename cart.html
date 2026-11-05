@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="css/pages/cart.css">
   <link rel="stylesheet" href="css/pages/auth.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link id="legacyAuthStylesheet" rel="stylesheet" href="css/pages/login.css" media="not all">
 </head>
 
 <body>
@@ -53,7 +54,80 @@
   <main id="profilePageContent" style="display:none;"></main>
 
   <!-- VIEW 5: Đăng nhập & Đăng ký -->
-  <main id="authPageContent" style="display:none;"></main>
+  <div id="authPageContent" style="display:none;">
+    <header class="header">
+      <a class="brand" href="index.html"><span class="brand-mark">T</span>Techno<span>Store</span></a>
+      <a class="back" href="index.html">Về cửa hàng</a>
+    </header>
+    <main>
+      <div class="card" id="authCard">
+        <section class="form-panel login-panel" id="loginPanel">
+          <a class="form-brand" href="index.html"><span class="form-brand-mark">T</span>Techno<span>Store</span></a>
+          <div class="form-content">
+            <span class="kicker">CHÀO MỪNG TRỞ LẠI</span>
+            <h1>Đăng nhập</h1>
+            <p class="description">Tiếp tục khám phá những công nghệ tuyệt vời dành riêng cho bạn.</p>
+            <form class="auth-entry-form">
+              <label for="identity">Email hoặc số điện thoại</label>
+              <input id="identity" autocomplete="username" placeholder="Nhập email hoặc số điện thoại" required>
+              <label for="loginPassword">Mật khẩu</label>
+              <div class="password">
+                <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Nhập mật khẩu" required>
+                <button type="button" data-password="loginPassword" aria-label="Hiện mật khẩu">◉</button>
+              </div>
+              <div class="options">
+                <button type="button" class="text-button" id="forgot">Quên mật khẩu?</button>
+              </div>
+              <button class="primary" type="submit">Đăng nhập</button>
+            </form>
+            <p class="mobile-switch">Bạn chưa có tài khoản? <button type="button" data-mode="register">Đăng ký ngay</button></p>
+          </div>
+        </section>
+        <section class="form-panel register-panel" id="registerPanel" inert aria-hidden="true">
+          <a class="form-brand" href="index.html"><span class="form-brand-mark">T</span>Techno<span>Store</span></a>
+          <div class="form-content">
+            <span class="kicker">BẮT ĐẦU CÙNG TECHNOSTORE</span>
+            <h1>Tạo tài khoản</h1>
+            <p class="description">Đăng ký để lưu lại những sản phẩm bạn yêu thích.</p>
+            <form class="auth-entry-form register-form">
+              <label for="name">Họ và tên</label>
+              <input id="name" autocomplete="name" placeholder="Nhập họ và tên" required>
+              <label for="phone">Số điện thoại</label>
+              <input id="phone" type="tel" autocomplete="tel" placeholder="Nhập số điện thoại" required>
+              <label for="email">Email</label>
+              <input id="email" type="email" autocomplete="email" placeholder="Nhập địa chỉ email" required>
+              <label for="registerPassword">Mật khẩu</label>
+              <div class="password">
+                <input id="registerPassword" type="password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự" minlength="6" required>
+                <button type="button" data-password="registerPassword" aria-label="Hiện mật khẩu">◉</button>
+              </div>
+              <button class="primary" type="submit">Tạo tài khoản</button>
+            </form>
+            <p class="mobile-switch">Đã có tài khoản? <button type="button" data-mode="login">Đăng nhập</button></p>
+          </div>
+        </section>
+        <aside class="sliding-panel">
+          <div class="orb orb-one"></div>
+          <div class="orb orb-two"></div>
+          <div class="device-stage" aria-hidden="true">
+            <span class="device-halo"></span>
+            <img class="shopping-art login-art" src="assets/login-shopping-illustration.png" alt="">
+            <img class="shopping-art register-art" src="assets/register-shopping-illustration.png" alt="">
+          </div>
+          <div class="panel-content welcome">
+            <h2>Xin chào!</h2>
+            <p>Tạo tài khoản để mua sắm cùng TechnoStore.</p>
+            <button class="outline" type="button" data-mode="register">Đăng ký ngay</button>
+          </div>
+          <div class="panel-content returning">
+            <h2>Chào mừng trở lại!</h2>
+            <p>Đăng nhập để tiếp tục mua sắm.</p>
+            <button class="outline" type="button" data-mode="login">Đăng nhập</button>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
 
   <!-- Footer -->
   <div id="footerContainer"></div>
@@ -68,6 +142,7 @@
   <script src="js/display.js"></script>
   <script src="js/cart.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/login.js"></script>
 
   <script>
     var activeStatusFilter = '';
@@ -92,20 +167,17 @@
       // Render Header, Footer, Nav
       renderStoreHeader('headerContainer', {
         basePath: './',
-        viewPath: 'view/',
         isRoot: true,
         activePage: activePageName
       });
 
       renderStoreFooter('footerContainer', {
         basePath: './',
-        viewPath: 'view/',
         isRoot: true
       });
 
       renderFloatingNav('floatingNavContainer', {
         basePath: './',
-        viewPath: 'view/',
         active: 'store'
       });
 
@@ -131,11 +203,15 @@
 
       } else if (page === 'login' || page === 'auth' || page === 'register') {
         document.getElementById('authPageContent').style.display = '';
-        document.title = 'Đăng nhập & Đăng ký - TechnoStore';
-        initAuthPage({
-          basePath: './',
-          isRoot: true,
-          defaultMode: (page === 'register' || params.get('mode') === 'register') ? 'register' : 'login'
+        document.getElementById('headerContainer').style.display = 'none';
+        document.getElementById('floatingNavContainer').style.display = 'none';
+        document.getElementById('legacyAuthStylesheet').media = 'all';
+        document.body.classList.add('legacy-auth-page');
+        document.title = page === 'register' || params.get('mode') === 'register'
+          ? 'Đăng ký | TechnoStore'
+          : 'Đăng nhập | TechnoStore';
+        initLegacyAuthPage({
+          defaultMode: page === 'register' || params.get('mode') === 'register' ? 'register' : 'login'
         });
 
       } else {
@@ -163,4 +239,3 @@
 </body>
 
 </html>
-

@@ -23,7 +23,7 @@ function initDetailPage() {
     document.getElementById('productDetailContainer').innerHTML = `
       <div style="padding: 80px 20px; text-align: center;">
         <h2>Không tìm thấy sản phẩm hoặc sản phẩm đã ngừng kinh doanh.</h2>
-        <a href="../../index.html" class="btn btn-primary btn-md" style="margin-top: 16px;">Về trang chủ</a>
+        <a href="${getStorePageUrl('home')}" class="btn btn-primary btn-md" style="margin-top: 16px;">Về trang chủ</a>
       </div>
     `;
     return;
@@ -835,7 +835,7 @@ function handleDetailBuyNow() {
     qty: qtyToBuy
   });
 
-  window.location.href = 'checkout.html';
+  window.location.href = getStorePageUrl('checkout');
 }
 // chặn thêm vào giỏ hàng khi chưa đăng nhập
 function handleDetailAddToCart() {
@@ -848,7 +848,7 @@ function handleDetailAddToCart() {
       'Vui lòng đăng nhập tài khoản để thêm sản phẩm vào giỏ hàng!',
       'Yêu cầu đăng nhập',
       'warning',
-      () => { window.location.href = `login.html?redirect=cart.html`; }
+      () => { window.location.href = getStorePageUrl('login', { redirect: 'cart' }); }
     );
     return;
   }

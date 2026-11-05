@@ -188,6 +188,7 @@ main {
   position:absolute;
   right:10px;
   top:8px;
+  z-index:1;
   border:0;
   background:none;
   color:#91a1b5;

@@ -56,30 +56,21 @@ TechnoStore/
 ├── js/                      
 │   ├── data.js              # Khởi tạo mảng dữ liệu mẫu (10-15 sản phẩm, tài khoản mẫu) và ghi vào localStorage nếu trình duyệt chưa có dữ liệu.
 │   ├── components.js        # Chứa các hàm JavaScript trả về chuỗi HTML tái sử dụng: renderNavbar(), renderFooter(), renderProductCard(product).
-│   ├── login.js             # Xử lý đăng nhập, đăng ký và chuyển trang sau khi đăng nhập.
+│   ├── login.js             # Bộ điều khiển đăng nhập cũ; giao diện hiện tại dùng auth.js trong cart.html.
 │   ├── auth.js              # Xử lý hồ sơ, mật khẩu và sổ địa chỉ khách hàng.
 │   ├── display.js           # Đọc mảng sản phẩm từ localStorage, in ra lưới sản phẩm ở trang chủ, hiển thị chi tiết khi bấm vào một sản phẩm và tính toán thuật toán phân trang.
 │   ├── search.js            # Lắng nghe sự kiện ô tìm kiếm và các checkbox bộ lọc, dùng hàm .filter() trên mảng sản phẩm và gọi hàm in kết quả ra màn hình.
 │   ├── cart.js              # Xử lý thêm/sửa/xóa sản phẩm trong giỏ, cập nhật số lượng, tính tổng tiền tạm tính và đóng gói thành Object Đơn hàng lưu vào localStorage.
 │   └── admin.js             # Xử lý logic chuyển tab ẩn/hiện (.active) giữa các mục quản trị, xử lý CRUD (thêm/sửa/xóa sản phẩm) và cập nhật trạng thái đơn hàng.
 │
-├── views/                   
-│   ├── admin.html           # Khung sườn phân hệ quản trị (SPA): chứa thanh điều hướng dọc (sidebar) và các thẻ <section> riêng cho Dashboard, Quản lý sản phẩm, Quản lý đơn hàng.
-│   │
-│   └── customer/            # Các trang giao diện chức năng độc lập dành cho khách hàng (MPA)
-│       ├── login.html       # Giao diện biểu mẫu đăng ký tài khoản mới và đăng nhập hệ thống.
-│       ├── profile.html     # Giao diện xem và chỉnh sửa thông tin cá nhân, đổi mật khẩu của tài khoản.
-│       ├── detail.html      # Giao diện hiển thị chi tiết thông tin, hình ảnh lớn, cấu hình và nút bấm thêm vào giỏ của một sản phẩm.
-│       ├── search.html      # Giao diện tìm kiếm sản phẩm kèm khung lọc đa tiêu chí (danh mục, mức giá) và danh sách kết quả.
-│       ├── cart.html        # Giao diện bảng danh sách sản phẩm đã chọn mua, thay đổi số lượng và nút chuyển sang thanh toán.
-│       ├── checkout.html    # Giao diện form nhập thông tin người nhận, địa chỉ giao hàng và lựa chọn phương thức thanh toán.
-│       └── history.html     # Giao diện tra cứu danh sách đơn hàng đã mua và theo dõi trạng thái xử lý từng đơn.
-│
 ├── database/                
 │   ├── technostore.sql      # Tập lệnh SQL tạo cấu trúc bảng (Categories, Products, Users, Orders, Order_Details) và dữ liệu mẫu trích xuất từ phpMyAdmin.
 │   └── ERD_Diagram.png      # Sơ đồ quan hệ thực thể (ERD) minh họa liên kết khóa chính (PK) và khóa ngoại (FK) giữa các bảng.
 │
-├── index.html               # Điểm truy cập chính của website: chứa thanh điều hướng, banner chào mừng và các khối sản phẩm mới/bán chạy.
+├── index.html               # Trang chủ, danh mục và tìm kiếm sản phẩm (tìm kiếm qua ?q=).
+├── detail.html              # Chi tiết sản phẩm và lựa chọn SKU.
+├── cart.html                # Giỏ hàng, thanh toán, lịch sử đơn, hồ sơ và đăng nhập/đăng ký qua ?page=.
+├── admin.html               # Cổng quản trị.
 ├── README.md                # Tài liệu tổng quan: mô tả đề tài, các tính năng chính, kiến trúc thư mục và bảng phân chia nhiệm vụ.
 ├── SETUP_GUIDE.md           # Tài liệu hướng dẫn các bước mở và chạy thử website trên trình duyệt máy tính.
 └── Git_workFlow.md          # Tài liệu quy định quy trình phân nhánh Git (branching), cú pháp đặt tên commit và các bước đồng bộ mã nguồn nhóm.

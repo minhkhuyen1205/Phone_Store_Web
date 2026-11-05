@@ -1,6 +1,16 @@
+function initLegacyAuthPage(options = {}) {
 const card = document.getElementById('authCard');
 const loginPanel = document.getElementById('loginPanel');
 const registerPanel = document.getElementById('registerPanel');
+if (!card || !loginPanel || !registerPanel) {
+  throw new Error('Không tìm thấy giao diện đăng nhập/đăng ký.');
+}
+const defaultRegister = options.defaultMode === 'register';
+card.classList.toggle('is-register', defaultRegister);
+loginPanel.inert = defaultRegister;
+registerPanel.inert = !defaultRegister;
+loginPanel.setAttribute('aria-hidden', String(defaultRegister));
+registerPanel.setAttribute('aria-hidden', String(!defaultRegister));
 document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
   const register = button.dataset.mode === 'register';
   card.classList.toggle('is-register', register);
@@ -24,7 +34,11 @@ document.querySelectorAll('[data-password]').forEach(button => {
   });
 });
 const target = new URLSearchParams(location.search).get('redirect');
-const destination = ['cart.html', 'checkout.html', 'profile.html', 'history.html'].includes(target) ? target : '../../index.html';
+const redirectPages = {
+  cart: 'cart', checkout: 'checkout', profile: 'profile', history: 'history',
+  'cart.html': 'cart', 'checkout.html': 'checkout', 'profile.html': 'profile', 'history.html': 'history'
+};
+const destination = getStorePageUrl(redirectPages[target] || 'home');
 const normalizePhone = value => value.replace(/\D/g, '');
 const loginForm = loginPanel.querySelector('form');
 const registerForm = registerPanel.querySelector('form');
@@ -69,7 +83,7 @@ function showError(input, message) {
 function finishLogin(customer) {
   const { password, ...sessionUser } = customer;
   setCurrentUser(sessionUser);
-  location.href = customer.mustChangePassword ? 'profile.html?tab=security' : destination;
+  location.href = customer.mustChangePassword ? getStorePageUrl('profile', { tab: 'security' }) : destination;
 }
 loginForm.addEventListener('submit', event => {
   event.preventDefault();
@@ -126,4 +140,4 @@ document.getElementById('forgot').addEventListener('click', () => {
   clearErrors(loginForm);
   showError(document.getElementById('identity'), 'Chức năng khôi phục mật khẩu đang được phát triển.');
 });
-renderStoreFooter('footerContainer', { basePath: '../../', viewPath: '../' });
+}
