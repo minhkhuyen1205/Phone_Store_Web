@@ -37,7 +37,8 @@ Dự án chú trọng vào việc xây dựng một **Clickable Prototype Websit
 
 ```text
 TechnoStore/
-├── assets/                  
+├── assets/
+    └── icon/           
 │   └── images/              # Lưu trữ hình ảnh sản phẩm thực tế (.png nền trong suốt), banner quảng cáo, logo cửa hàng (đã nén tối ưu dung lượng).
 │
 ├── css/                     
@@ -56,7 +57,7 @@ TechnoStore/
 ├── js/                      
 │   ├── data.js              # Khởi tạo mảng dữ liệu mẫu (10-15 sản phẩm, tài khoản mẫu) và ghi vào localStorage nếu trình duyệt chưa có dữ liệu.
 │   ├── components.js        # Chứa các hàm JavaScript trả về chuỗi HTML tái sử dụng: renderNavbar(), renderFooter(), renderProductCard(product).
-│   ├── login.js             # Bộ điều khiển đăng nhập cũ; giao diện hiện tại dùng auth.js trong cart.html.
+│   ├── login.js             # Bộ điều khiển đăng nhập cũ; giao diện hiện tại dùng auth.js trong checkout.html.
 │   ├── auth.js              # Xử lý hồ sơ, mật khẩu và sổ địa chỉ khách hàng.
 │   ├── display.js           # Đọc mảng sản phẩm từ localStorage, in ra lưới sản phẩm ở trang chủ, hiển thị chi tiết khi bấm vào một sản phẩm và tính toán thuật toán phân trang.
 │   ├── search.js            # Lắng nghe sự kiện ô tìm kiếm và các checkbox bộ lọc, dùng hàm .filter() trên mảng sản phẩm và gọi hàm in kết quả ra màn hình.
@@ -69,7 +70,7 @@ TechnoStore/
 │
 ├── index.html               # Trang chủ, danh mục và tìm kiếm sản phẩm (tìm kiếm qua ?q=).
 ├── detail.html              # Chi tiết sản phẩm và lựa chọn SKU.
-├── cart.html                # Giỏ hàng, thanh toán, lịch sử đơn, hồ sơ và đăng nhập/đăng ký qua ?page=.
+├── checkout.html            # Giỏ hàng, thanh toán, lịch sử đơn, hồ sơ và đăng nhập/đăng ký qua ?page=.
 ├── admin.html               # Cổng quản trị.
 ├── README.md                # Tài liệu tổng quan: mô tả đề tài, các tính năng chính, kiến trúc thư mục và bảng phân chia nhiệm vụ.
 ├── SETUP_GUIDE.md           # Tài liệu hướng dẫn các bước mở và chạy thử website trên trình duyệt máy tính.
