@@ -36,7 +36,7 @@ document.querySelectorAll('[data-password]').forEach(button => {
 const target = new URLSearchParams(location.search).get('redirect');
 const redirectPages = {
   cart: 'cart', checkout: 'checkout', profile: 'profile', history: 'history',
-  'cart.html': 'cart', 'checkout.html': 'checkout', 'profile.html': 'profile', 'history.html': 'history'
+  'checkout.html': 'checkout', 'profile.html': 'profile', 'history.html': 'history'
 };
 const destination = getStorePageUrl(redirectPages[target] || 'home');
 const normalizePhone = value => value.replace(/\D/g, '');
