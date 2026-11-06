@@ -184,7 +184,7 @@ function initAuthPage(options = {}) {
       const redirectUrl = urlParams.get('redirect');
       const redirectPages = {
         cart: 'cart', checkout: 'checkout', history: 'history', profile: 'profile',
-        'cart.html': 'cart', 'checkout.html': 'checkout', 'history.html': 'history', 'profile.html': 'profile'
+        'checkout.html': 'checkout', 'history.html': 'history', 'profile.html': 'profile'
       };
       const targetUrl = getStorePageUrl(redirectPages[redirectUrl] || 'home');
 
@@ -267,7 +267,7 @@ function initAuthPage(options = {}) {
       const redirectUrl = urlParams.get('redirect');
       const redirectPages = {
         cart: 'cart', checkout: 'checkout', history: 'history', profile: 'profile',
-        'cart.html': 'cart', 'checkout.html': 'checkout', 'history.html': 'history', 'profile.html': 'profile'
+        'checkout.html': 'checkout', 'history.html': 'history', 'profile.html': 'profile'
       };
       const targetUrl = getStorePageUrl(redirectPages[redirectUrl] || 'home');
 
