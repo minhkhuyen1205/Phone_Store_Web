@@ -1,12 +1,12 @@
 const STORE_PAGE_PATHS = Object.freeze({
   home: 'index.html',
   detail: 'detail.html',
-  cart: 'cart.html',
-  checkout: 'cart.html',
-  history: 'cart.html',
-  profile: 'cart.html',
-  login: 'cart.html',
-  register: 'cart.html',
+  cart: 'checkout.html',
+  checkout: 'checkout.html',
+  history: 'checkout.html',
+  profile: 'checkout.html',
+  login: 'checkout.html',
+  register: 'checkout.html',
   admin: 'admin.html'
 });
 
