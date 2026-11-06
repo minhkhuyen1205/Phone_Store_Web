@@ -10,6 +10,7 @@ function initAdminPortal(options = {}) {
   const basePath = options.basePath || '../';
   const iconPath = `${basePath}assets/icon/`;
   const homeUrl = `${basePath}index.html`;
+  const escapeCustomerHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
 
   // Trạng thái tab điều hướng
   let currentTab = 'dash'; // 'dash', 'users', 'cats', 'products', 'receipts', 'pricing', 'orders', 'stock'
@@ -666,13 +667,13 @@ function initAdminPortal(options = {}) {
       }).length;
 
       return `
-      <tr style="${r.locked ? 'background-color: rgba(245, 246, 249, 0.6); opacity: 0.7;' : ''} cursor: pointer;" ondblclick="handleCustomerDblClick('${r.id}')" title="Nhấn đúp để xem chi tiết khách hàng">
-        <td><span class="admin-code-cell">${r.id}</span></td>
+      <tr style="${r.locked ? 'background-color: rgba(245, 246, 249, 0.6); opacity: 0.7;' : ''} cursor: pointer;" data-customer-id="${escapeCustomerHtml(r.id)}" ondblclick="handleCustomerDblClick(this.dataset.customerId)" title="Nhấn đúp để xem chi tiết khách hàng">
+        <td><span class="admin-code-cell">${escapeCustomerHtml(r.id)}</span></td>
         <td>
-          <div style="font-weight: 600; color: var(--color-ink);">${r.name}</div>
+          <div style="font-weight: 600; color: var(--color-ink);">${escapeCustomerHtml(r.name)}</div>
         </td>
-        <td>${r.phone}</td>
-        <td>${r.joined}</td>
+        <td>${escapeCustomerHtml(r.phone)}</td>
+        <td>${escapeCustomerHtml(r.joined)}</td>
         <td class="text-center">${customerOrderCount}</td>
         <td>
           <span class="badge ${r.locked ? 'badge-danger' : 'badge-success'}">
@@ -681,10 +682,10 @@ function initAdminPortal(options = {}) {
         </td>
         <td class="text-center">
           <div style="display: flex; justify-content: center; gap: 4px;">
-            <button class="action-icon-btn" title="${r.locked ? 'Mở khoá' : 'Khoá'}" onclick="handleToggleLockUser('${r.id}')">
+            <button class="action-icon-btn" title="${r.locked ? 'Mở khoá' : 'Khoá'}" data-customer-id="${escapeCustomerHtml(r.id)}" onclick="handleToggleLockUser(this.dataset.customerId)">
               <img src="${iconPath}${r.locked ? 'unclock.svg' : 'lock.svg'}" class="icon icon-16" alt="Khoá" />
             </button>
-            <button class="action-icon-btn" title="Reset mật khẩu" onclick="handleResetUserPass('${r.id}', '${r.name}')">
+            <button class="action-icon-btn" title="Reset mật khẩu" data-customer-id="${escapeCustomerHtml(r.id)}" data-customer-name="${escapeCustomerHtml(r.name)}" onclick="handleResetUserPass(this.dataset.customerId, this.dataset.customerName)">
               <img src="${iconPath}refresh.svg" class="icon icon-16" alt="Reset" />
             </button>
           </div>
@@ -705,7 +706,7 @@ function initAdminPortal(options = {}) {
     return `
       ${userMessage ? `
         <div class="alert-banner info">
-          <span>${userMessage}</span>
+          <span>${escapeCustomerHtml(userMessage)}</span>
           <button onclick="clearUserMsg()" style="margin-left:auto; background:none; border:none; cursor:pointer;">✕</button>
         </div>
       ` : ''}
@@ -718,7 +719,7 @@ function initAdminPortal(options = {}) {
             id="userSearchInput" 
             placeholder="Tìm theo tên, email, SĐT..." 
             class="input-control" 
-            value="${userSearchQuery}" 
+            value="${escapeCustomerHtml(userSearchQuery)}"
             oninput="handleUserSearch(this.value)" 
           />
         </div>
@@ -756,10 +757,10 @@ function initAdminPortal(options = {}) {
             <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
               <div style="display: flex; align-items: center; gap: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--color-line);">
                 <div class="admin-avatar-circle" style="width: 48px; height: 48px; font-size: 18px;">
-                  ${selectedUserModal.name ? selectedUserModal.name[0].toUpperCase() : 'K'}
+                  ${escapeCustomerHtml(selectedUserModal.name ? selectedUserModal.name[0].toUpperCase() : 'K')}
                 </div>
                 <div>
-                  <div style="font-weight: 700; font-size: 16px; color: var(--color-ink);">${selectedUserModal.name}</div>
+                  <div style="font-weight: 700; font-size: 16px; color: var(--color-ink);">${escapeCustomerHtml(selectedUserModal.name)}</div>
                   <div style="margin-top: 4px;">
                     <span class="badge ${selectedUserModal.locked ? 'badge-danger' : 'badge-success'}">
                       ${selectedUserModal.locked ? 'Bị khoá' : 'Hoạt động'}
@@ -770,23 +771,23 @@ function initAdminPortal(options = {}) {
               <div style="display: flex; flex-direction: column; gap: 12px; font-size: 14px;">
                 <div style="display: grid; grid-template-columns: 120px 1fr; gap: 8px;">
                   <span style="color: var(--color-ink-3);">Mã khách hàng:</span>
-                  <span style="font-weight: 600; color: var(--color-ink);">${selectedUserModal.id}</span>
+                  <span style="font-weight: 600; color: var(--color-ink);">${escapeCustomerHtml(selectedUserModal.id)}</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 120px 1fr; gap: 8px;">
                   <span style="color: var(--color-ink-3);">Email:</span>
-                  <span style="color: var(--color-ink);">${selectedUserModal.email || 'Chưa cập nhật'}</span>
+                  <span style="color: var(--color-ink);">${escapeCustomerHtml(selectedUserModal.email || 'Chưa cập nhật')}</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 120px 1fr; gap: 8px;">
                   <span style="color: var(--color-ink-3);">Số điện thoại:</span>
-                  <span style="color: var(--color-ink);">${selectedUserModal.phone || 'Chưa cập nhật'}</span>
+                  <span style="color: var(--color-ink);">${escapeCustomerHtml(selectedUserModal.phone || 'Chưa cập nhật')}</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 120px 1fr; gap: 8px;">
                   <span style="color: var(--color-ink-3);">Địa chỉ:</span>
-                  <span style="color: var(--color-ink); line-height: 1.5;">${getCustomerFullAddress(selectedUserModal)}</span>
+                  <span style="color: var(--color-ink); line-height: 1.5;">${escapeCustomerHtml(getCustomerFullAddress(selectedUserModal))}</span>
                 </div>
                 <div style="display: grid; grid-template-columns: 120px 1fr; gap: 8px;">
                   <span style="color: var(--color-ink-3);">Ngày tham gia:</span>
-                  <span style="color: var(--color-ink);">${selectedUserModal.joined || 'Chưa cập nhật'}</span>
+                  <span style="color: var(--color-ink);">${escapeCustomerHtml(selectedUserModal.joined || 'Chưa cập nhật')}</span>
                 </div>
               </div>
             </div>
@@ -2247,7 +2248,7 @@ function initAdminPortal(options = {}) {
       <tr>
         <td><span class="admin-code-cell">#${o.id}</span></td>
         <td>
-          <div style="font-weight: 500; color: var(--color-ink);">${o.customer}</div>
+          <div style="font-weight: 500; color: var(--color-ink);">${escapeCustomerHtml(o.customer)}</div>
         </td>
         <td>${o.date}</td>
         <td>${o.status === 'Đã giao' ? (o.receivedDate || '') : ''}</td>
@@ -2370,14 +2371,14 @@ function initAdminPortal(options = {}) {
             </div>
             <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
               <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--color-ink-3);">
-                <span>Khách hàng: <b>${selectedOrderModal.customer}</b> · Ngày đặt: ${selectedOrderModal.date} · ${selectedOrderModal.pay}</span>
+                <span>Khách hàng: <b>${escapeCustomerHtml(selectedOrderModal.customer)}</b> · Ngày đặt: ${selectedOrderModal.date} · ${selectedOrderModal.pay}</span>
                 <span class="badge badge-${getStatusTone(selectedOrderModal.status)}">${selectedOrderModal.status}</span>
               </div>
               <div style="font-size:14px;color:var(--color-ink-2);">
-                Số điện thoại: <b style="color:var(--color-ink);">${selectedOrderModal.phone || 'Chưa có thông tin'}</b>
+                Số điện thoại: <b style="color:var(--color-ink);">${escapeCustomerHtml(selectedOrderModal.phone || 'Chưa có thông tin')}</b>
               </div>
               <div style="font-size:14px;color:var(--color-ink-2);">
-                Địa chỉ nhận hàng: <b style="color:var(--color-ink); font-weight: 500;">${selectedOrderModal.address || 'Chưa có thông tin'}</b>
+                Địa chỉ nhận hàng: <b style="color:var(--color-ink); font-weight: 500;">${escapeCustomerHtml(selectedOrderModal.address || 'Chưa có thông tin')}</b>
               </div>
 
               <!-- Chi tiết danh sách sản phẩm theo SKU -->

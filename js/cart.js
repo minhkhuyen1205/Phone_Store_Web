@@ -719,7 +719,8 @@ function initCheckoutPage(options = {}) {
     }
 
     saveCustomers(customers);
-    setCurrentUser(customers[idx]);
+    const { password, ...sessionUser } = customers[idx];
+    setCurrentUser(sessionUser);
     selectedAddressId = targetId;
 
     const modal = document.getElementById('checkoutAddressModal');

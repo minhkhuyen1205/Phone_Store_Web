@@ -66,7 +66,7 @@ loginForm.addEventListener('submit', event => {
   event.preventDefault();
   clearErrors(loginForm);
   const identity = document.getElementById('identity').value.trim();
-  const phone = normalizePhone(identity);
+  const phone = /^[\d\s().+-]+$/.test(identity) ? normalizePhone(identity) : '';
   const password = document.getElementById('loginPassword').value;
   if (!identity || !password) {
     if (!identity) showError(document.getElementById('identity'), 'Vui lòng nhập email hoặc số điện thoại.');
@@ -75,7 +75,7 @@ loginForm.addEventListener('submit', event => {
   }
   const customer = getCustomers().find(item =>
     (item.email && item.email.toLowerCase() === identity.toLowerCase()) ||
-    (phone && item.phone && normalizePhone(item.phone) === phone)
+    (/^0\d{9}$/.test(phone) && item.phone && normalizePhone(item.phone) === phone)
   );
   if (!customer || !(customer.password ? customer.password === password : ['password123', '123456'].includes(password))) {
     showError(document.getElementById('identity'), 'Thông tin đăng nhập không chính xác.');
