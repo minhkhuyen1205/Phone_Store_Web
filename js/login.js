@@ -28,15 +28,6 @@ const destination = ['cart.html', 'checkout.html', 'profile.html', 'history.html
 const normalizePhone = value => value.replace(/\D/g, '');
 const loginForm = loginPanel.querySelector('form');
 const registerForm = registerPanel.querySelector('form');
-const testCustomers = getCustomers();
-if ((location.protocol === 'file:' || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) && !testCustomers.some(customer => customer.email === '1' || customer.phone === '1')) {
-  const usedTestIds = new Set(testCustomers.map(customer => customer.id));
-  let testId = 'KH-TEST';
-  let suffix = 1;
-  while (usedTestIds.has(testId)) testId = `KH-TEST-${suffix++}`;
-  testCustomers.push({ id: testId, name: 'Khách hàng thử nghiệm', email: '1', phone: '', password: '1', joined: new Date().toLocaleDateString('vi-VN'), orders: 0, locked: false, addresses: [] });
-  saveCustomers(testCustomers);
-}
 function clearErrors(form) {
   form.querySelectorAll('.field-error').forEach(error => error.remove());
   form.querySelectorAll('[aria-invalid]').forEach(input => {
