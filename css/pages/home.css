@@ -96,6 +96,19 @@
   filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.15));
 }
 
+.hero-device-art > .product-image-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-device-art > .product-image-frame > img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 @media (min-width: 640px) {
   .hero-device-art {
     height: 384px;

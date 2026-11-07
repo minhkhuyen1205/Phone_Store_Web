@@ -23,7 +23,7 @@ function initDetailPage() {
     document.getElementById('productDetailContainer').innerHTML = `
       <div style="padding: 80px 20px; text-align: center;">
         <h2>Không tìm thấy sản phẩm hoặc sản phẩm đã ngừng kinh doanh.</h2>
-        <a href="../../index.html" class="btn btn-primary btn-md" style="margin-top: 16px;">Về trang chủ</a>
+        <a href="${getStorePageUrl('home')}" class="btn btn-primary btn-md" style="margin-top: 16px;">Về trang chủ</a>
       </div>
     `;
     return;
@@ -93,40 +93,49 @@ function loadProductDetails(p, allProducts) {
 }
 
 function initializeProductGallery(product) {
+  if (!product) return;
+
   const productImageId = product.imageId || product.code;
-  productGalleryImages = [{
+  const list = [];
+
+  // 1. Khung chính / Thumbnail đầu tiên: Ảnh chính (anh_chinh)
+  list.push({
     id: productImageId,
     fallbackPath: product.image,
-    label: product.name
-  }];
+    label: `${product.name} - Ảnh chính`,
+    type: 'main'
+  });
+
+  // 2. Dải ảnh chi tiết (anh_chi_tiet)
+  if (Array.isArray(product.gallery)) {
+    product.gallery.forEach((gPath, idx) => {
+      list.push({
+        id: `${product.code}_ct_${idx + 1}`,
+        fallbackPath: gPath,
+        label: `${product.name} - Chi tiết ${idx + 1}`,
+        type: 'detail'
+      });
+    });
+  }
+
+  // 3. Dải ảnh phiên bản màu sắc (anh_mau)
+  const seenColors = new Set();
+  (product.variants || []).forEach(variant => {
+    if (variant.color && variant.image && !seenColors.has(variant.color)) {
+      seenColors.add(variant.color);
+      list.push({
+        id: variant.imageId || variant.sku,
+        color: variant.color,
+        fallbackPath: variant.image,
+        label: `${product.name} - ${variant.color}`,
+        type: 'color'
+      });
+    }
+  });
+
+  productGalleryImages = list;
   activeGalleryImageIndex = 0;
   renderProductGallery();
-
-  const requestToken = ++galleryLoadToken;
-  Promise.all((product.variants || []).map(async variant => {
-    const imageId = variant.imageId || variant.sku;
-    try {
-      const hasStoredImage = await hasImageInIndexedDB(imageId);
-      if (hasStoredImage) {
-        return {
-          id: imageId,
-          fallbackPath: variant.image || product.image,
-          label: `${product.name} ${variant.color || ''}`.trim()
-        };
-      }
-    } catch (error) {
-      console.error(`[TechnoStore] Không thể kiểm tra ảnh phiên bản "${imageId}":`, error);
-    }
-    return null;
-  })).then(variantImages => {
-    if (requestToken !== galleryLoadToken || currentProduct !== product) return;
-    productGalleryImages = [
-      productGalleryImages[0],
-      ...variantImages.filter(Boolean)
-    ];
-    renderProductGallery();
-    updateProductGalleryForVariant(false);
-  });
 }
 
 function renderProductGallery(scrollActiveThumb = false) {
@@ -137,7 +146,7 @@ function renderProductGallery(scrollActiveThumb = false) {
   const activeImage = productGalleryImages[activeGalleryImageIndex] || productGalleryImages[0];
   galleryMain.innerHTML = renderProductImage(
     currentProduct,
-    'width:100%;height:380px;',
+    'width:100%;',
     activeImage.id,
     activeImage.fallbackPath
   );
@@ -145,7 +154,7 @@ function renderProductGallery(scrollActiveThumb = false) {
     <button type="button" class="gallery-thumb-item ${index === activeGalleryImageIndex ? 'active' : ''}"
       data-gallery-index="${index}" aria-label="Xem ảnh ${index + 1}: ${image.label}"
       onclick="selectThumb(this)">
-      ${renderProductImage(currentProduct, 'width:100%;height:70px;', image.id, image.fallbackPath)}
+      ${renderProductImage(currentProduct, 'width:100%;', image.id, image.fallbackPath)}
     </button>
   `).join('');
 
@@ -156,13 +165,28 @@ function renderProductGallery(scrollActiveThumb = false) {
 }
 
 function updateProductGalleryForVariant(scrollActiveThumb = true) {
-  const activeSku = selectedVariant && (selectedVariant.imageId || selectedVariant.sku);
-  const nextIndex = activeSku
-    ? productGalleryImages.findIndex(image => image.id === activeSku)
-    : 0;
-  const resolvedIndex = nextIndex >= 0 ? nextIndex : 0;
-  if (resolvedIndex !== activeGalleryImageIndex) {
-    activeGalleryImageIndex = resolvedIndex;
+  if (!productGalleryImages || productGalleryImages.length === 0) return;
+
+  let targetIndex = -1;
+
+  // 1. Ưu tiên tìm ảnh tương ứng với Màu sắc đang được chọn
+  if (selectedColor) {
+    targetIndex = productGalleryImages.findIndex(img => img.color === selectedColor);
+  }
+
+  // 2. Nếu không thấy theo color, tìm theo SKU phiên bản đang chọn
+  if (targetIndex < 0 && selectedVariant) {
+    const activeSku = selectedVariant.imageId || selectedVariant.sku;
+    targetIndex = productGalleryImages.findIndex(img => img.id === activeSku);
+  }
+
+  // 3. Nếu không chọn màu nào, về lại ảnh chính
+  if (targetIndex < 0) {
+    targetIndex = 0;
+  }
+
+  if (targetIndex !== activeGalleryImageIndex) {
+    activeGalleryImageIndex = targetIndex;
     renderProductGallery(scrollActiveThumb);
   } else if (scrollActiveThumb) {
     document.querySelector('.gallery-thumb-item.active')
@@ -770,7 +794,7 @@ function selectThumb(el) {
   const index = Number(el.dataset.galleryIndex);
   if (!Number.isInteger(index) || !productGalleryImages[index]) return;
   activeGalleryImageIndex = index;
-  renderProductGallery();
+  renderProductGallery(true);
 }
 
 /**
@@ -835,7 +859,7 @@ function handleDetailBuyNow() {
     qty: qtyToBuy
   });
 
-  window.location.href = 'checkout.html';
+  window.location.href = getStorePageUrl('checkout');
 }
 // chặn thêm vào giỏ hàng khi chưa đăng nhập
 function handleDetailAddToCart() {
@@ -848,7 +872,7 @@ function handleDetailAddToCart() {
       'Vui lòng đăng nhập tài khoản để thêm sản phẩm vào giỏ hàng!',
       'Yêu cầu đăng nhập',
       'warning',
-      () => { window.location.href = `login.html?redirect=cart.html`; }
+      () => { window.location.href = getStorePageUrl('login', { redirect: 'cart' }); }
     );
     return;
   }

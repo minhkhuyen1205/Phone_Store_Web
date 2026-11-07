@@ -33,7 +33,7 @@
             Chip A18 Pro, camera 48MP và pin cả ngày. Trả góp 0% lãi suất, thu cũ đổi mới trợ giá đến 5 triệu.
           </p>
           <div class="hero-actions">
-            <a href="view/customer/detail.html?id=1" class="btn btn-primary btn-lg">Mua ngay</a>
+            <a href="detail.html?id=1" class="btn btn-primary btn-lg">Mua ngay</a>
             <button onclick="document.getElementById('list').scrollIntoView({ behavior: 'smooth' })"
               class="btn btn-secondary btn-lg">
               Xem tất cả sản phẩm
@@ -232,14 +232,12 @@
       // 1. Render Header & Footer
       renderStoreHeader('headerContainer', {
         basePath: './',
-        viewPath: 'view/',
         isRoot: true,
         activePage: 'home'
       });
 
       renderStoreFooter('footerContainer', {
         basePath: './',
-        viewPath: 'view/',
         isRoot: true
       });
 
@@ -247,7 +245,7 @@
       const hero = getProducts().find(p => !p.isDeleted && (Number(p.stock) || 0) > 0) || getProducts()[0];
       const heroArt = document.getElementById('heroArtWrapper');
       if (heroArt && hero) {
-        heroArt.innerHTML = renderProductImage(hero, 'width:100%;height:360px;');
+        heroArt.innerHTML = renderProductImage(hero, 'width:100%;height:100%;');
       }
       const heroPriceEl = document.getElementById('heroStartingPrice');
       if (heroPriceEl && hero) {
@@ -256,15 +254,21 @@
 
       // 3. Initialize Search & Filter Controller (Chế độ Trang chủ: ẩn sản phẩm hết hàng)
       window.filterCtrl = new FilterController({
-        detailUrlPrefix: 'view/customer/detail.html?id=',
+        detailUrlPrefix: 'detail.html?id=',
         isHome: true
       });
       window.filterCtrl.init();
 
-      // Check category in URL if any
-      const urlCat = new URLSearchParams(window.location.search).get('cat');
+      // Check query / category in URL if any
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlCat = urlParams.get('cat');
       if (urlCat) {
         filterCtrl.setCategory(urlCat);
+      }
+      const urlQ = urlParams.get('q');
+      if (urlQ) {
+        const listEl = document.getElementById('list');
+        if (listEl) listEl.scrollIntoView({ behavior: 'smooth' });
       }
     });
   </script>

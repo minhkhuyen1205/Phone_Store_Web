@@ -19,14 +19,7 @@ class FilterController {
     this.detailUrlPrefix = options.detailUrlPrefix || 'detail.html?id=';
     this.isHome = Boolean(options.isHome || (typeof window !== 'undefined' && (
       window.location.pathname.endsWith('index.html') ||
-      window.location.pathname.endsWith('/') ||
-      (!window.location.pathname.includes('search.html') &&
-        !window.location.pathname.includes('detail.html') &&
-        !window.location.pathname.includes('admin.html') &&
-        !window.location.pathname.includes('cart.html') &&
-        !window.location.pathname.includes('checkout.html') &&
-        !window.location.pathname.includes('history.html') &&
-        !window.location.pathname.includes('profile.html'))
+      window.location.pathname.endsWith('/')
     )));
   }
 
@@ -329,7 +322,7 @@ class FilterController {
       list.sort((a, b) => (b.sold || 0) - (a.sold || 0));
     }
 
-    // 3. TRANG DANH MỤC & TÌM KIẾM (search.html):
+    // 3. TRANG DANH MỤC & TÌM KIẾM (index.html):
     // TỰ ĐỘNG ĐẨY SẢN PHẨM HẾT HÀNG XUỐNG DƯỚI CÙNG của danh sách kết quả
     if (!this.isHome || hasActiveFilters) {
       list.sort((a, b) => {

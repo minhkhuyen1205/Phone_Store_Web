@@ -88,6 +88,7 @@ function initAdminPortal(options = {}) {
   const adminPageSize = 10;
   const currentPageByTab = {
     users: 1,
+    cats: 1,
     products: 1,
     receipts: 1,
     pricing: 1,
@@ -123,7 +124,7 @@ function initAdminPortal(options = {}) {
     const rangeText = page.total === 0
       ? 'Hiển thị 0 kết quả'
       : `Hiển thị ${(page.currentPage - 1) * adminPageSize + 1} - ${Math.min(page.currentPage * adminPageSize, page.total)} trong ${page.total} ${unitName}`;
-    const paginationButtons = page.totalPages <= 1 ? '' : `
+    const paginationButtons = page.total === 0 ? '' : `
       <div style="display: flex; align-items: center; gap: 4px;">
         <button type="button" onclick="changeAdminPage('${tab}', ${page.currentPage - 1})" ${page.currentPage === 1 ? 'disabled' : ''} aria-label="Trang trước" style="display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; border: 1px solid var(--color-line); border-radius: 6px; background: var(--color-white); cursor: ${page.currentPage === 1 ? 'not-allowed' : 'pointer'}; opacity: ${page.currentPage === 1 ? '0.45' : '1'};">
           <img src="${iconPath}chevron-left.svg" class="icon icon-16" alt="Trang trước" />
@@ -172,6 +173,106 @@ function initAdminPortal(options = {}) {
     const toKey = dateFilterKey(to);
     return (!fromKey || key >= fromKey) && (!toKey || key <= toKey);
   }
+
+  function formatAdminDate(value) {
+    const key = dateFilterKey(value);
+    if (!key) return value ? String(value) : '';
+    const year = Number(key.slice(0, 4));
+    const month = Number(key.slice(4, 6));
+    const day = Number(key.slice(6, 8));
+    const date = new Date(Date.UTC(year, month - 1, day));
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+      return String(value);
+    }
+    return `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${year}`;
+  }
+
+  function renderAdminDateInput({ textId, pickerId, value, context, range, min = '', required = false }) {
+    const formattedValue = formatAdminDate(value);
+    const dateKey = dateFilterKey(value);
+    const pickerValue = dateKey
+      ? `${dateKey.slice(0, 4)}-${dateKey.slice(4, 6)}-${dateKey.slice(6, 8)}`
+      : '';
+    return `
+      <div class="admin-date-input-wrap">
+        <input
+          type="text"
+          id="${textId}"
+          class="input-control"
+          value="${formattedValue}"
+          placeholder="dd/mm/yyyy"
+          inputmode="numeric"
+          maxlength="10"
+          data-min="${min}"
+          ${required ? 'required' : ''}
+          onchange="handleAdminDateTextChange(this, '${pickerId}', '${context}', '${range}')"
+        />
+        <span class="admin-date-picker-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+            <path d="M16 3v4M8 3v4M3 11h18"></path>
+          </svg>
+        </span>
+        <input
+          type="date"
+          id="${pickerId}"
+          class="admin-date-picker-trigger"
+          value="${pickerValue}"
+          ${min ? `min="${min}"` : ''}
+          aria-label="Chọn ngày"
+          onchange="handleAdminDatePickerChange(this, '${textId}', '${context}', '${range}')"
+        />
+      </div>
+    `;
+  }
+
+  function parseAdminDateInput(value) {
+    const trimmedValue = String(value || '').trim();
+    if (!trimmedValue) return '';
+    const match = trimmedValue.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) return null;
+    const [, dayText, monthText, yearText] = match;
+    const day = Number(dayText);
+    const month = Number(monthText);
+    const year = Number(yearText);
+    const date = new Date(Date.UTC(year, month - 1, day));
+    if (date.getUTCFullYear() !== year || date.getUTCMonth() !== month - 1 || date.getUTCDate() !== day) {
+      return null;
+    }
+    return `${yearText}-${monthText}-${dayText}`;
+  }
+
+  function applyAdminDateFilter(context, range, value) {
+    if (context === 'stock') window.handleStockDateFilter(range, value);
+    if (context === 'orders') window.handleOrderDateFilter(range, value);
+  }
+
+  window.handleAdminDateTextChange = (input, pickerId, context, range) => {
+    const value = parseAdminDateInput(input.value);
+    if (value === null) {
+      input.setCustomValidity('Vui lòng nhập ngày hợp lệ theo định dạng dd/mm/yyyy.');
+      input.reportValidity();
+      return;
+    }
+    if (value && input.dataset.min && value < input.dataset.min) {
+      input.setCustomValidity(`Ngày phải từ ${formatAdminDate(input.dataset.min)} trở đi.`);
+      input.reportValidity();
+      return;
+    }
+    input.setCustomValidity('');
+    const picker = document.getElementById(pickerId);
+    if (picker) picker.value = value;
+    if (context !== 'receipt') applyAdminDateFilter(context, range, value);
+  };
+
+  window.handleAdminDatePickerChange = (picker, textId, context, range) => {
+    const textInput = document.getElementById(textId);
+    if (textInput) {
+      textInput.value = formatAdminDate(picker.value);
+      textInput.setCustomValidity('');
+    }
+    if (context !== 'receipt') applyAdminDateFilter(context, range, picker.value);
+  };
 
   /**
    * Thuat toan tim kiem theo nguyen tu (Regex Word Boundary \b)
@@ -672,8 +773,8 @@ function initAdminPortal(options = {}) {
         <td>
           <div style="font-weight: 600; color: var(--color-ink);">${escapeCustomerHtml(r.name)}</div>
         </td>
-        <td>${escapeCustomerHtml(r.phone)}</td>
-        <td>${escapeCustomerHtml(r.joined)}</td>
+        <td>${r.phone}</td>
+        <td>${formatAdminDate(r.joined)}</td>
         <td class="text-center">${customerOrderCount}</td>
         <td>
           <span class="badge ${r.locked ? 'badge-danger' : 'badge-success'}">
@@ -787,7 +888,7 @@ function initAdminPortal(options = {}) {
                 </div>
                 <div style="display: grid; grid-template-columns: 120px 1fr; gap: 8px;">
                   <span style="color: var(--color-ink-3);">Ngày tham gia:</span>
-                  <span style="color: var(--color-ink);">${escapeCustomerHtml(selectedUserModal.joined || 'Chưa cập nhật')}</span>
+                  <span style="color: var(--color-ink);">${formatAdminDate(selectedUserModal.joined) || 'Chưa cập nhật'}</span>
                 </div>
               </div>
             </div>
@@ -848,6 +949,7 @@ function initAdminPortal(options = {}) {
       const q = catSearchQuery.toLowerCase();
       list = list.filter(item => item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q));
     }
+    const page = paginateAdminList('cats', list);
 
     const catObj = editingCategory
       ? categories.map((c, i) => typeof c === 'string' ? { id: `DM0${i + 1}`, name: c, type: i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo', status: 'active' } : c)
@@ -888,14 +990,12 @@ function initAdminPortal(options = {}) {
             </tr>
           </thead>
           <tbody id="catTableBody">
-            ${generateCatRows(list)}
+            ${generateCatRows(page.items)}
           </tbody>
         </table>
       </div>
 
-      <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--color-ink-3); margin-top: 12px;">
-        <span id="catCountLabel">Hiển thị ${list.length} bản ghi</span>
-      </div>
+      ${renderAdminPagination('cats', list, 'danh mục')}
 
       <!-- Modal Thêm/Sửa Danh mục -->
       ${showCategoryModal ? `
@@ -1358,7 +1458,7 @@ function initAdminPortal(options = {}) {
         <td class="text-center">
           <div class="variant-row-actions">
             ${renderProductImage(
-              { code: formProductCode, name: v.color || 'Ảnh phiên bản', image: currentProduct && currentProduct.image },
+              { code: formProductCode, name: v.color || 'Ảnh phiên bản', image: v.image || (currentProduct && currentProduct.image) },
               'width:32px;height:32px;',
               formVariantImageSources.get(v) || v.imageId || v.sku
             )}
@@ -1603,7 +1703,7 @@ function initAdminPortal(options = {}) {
     return list.map(r => `
       <tr>
         <td><span class="admin-code-cell">${r.id}</span></td>
-        <td>${r.date}</td>
+        <td>${formatAdminDate(r.date)}</td>
         <td class="text-center">${r.lines || (r.items ? r.items.length : 1)}</td>
         <td class="text-center"><b style="color: var(--color-ink);">${r.qty}</b></td>
         <td class="text-right"><b style="color: var(--color-brand-700);">${vnd(r.total)}</b></td>
@@ -1633,7 +1733,10 @@ function initAdminPortal(options = {}) {
       const q = receiptSearchQuery.toLowerCase().trim();
       list = list.filter(r =>
         (r.id && r.id.toLowerCase().includes(q)) ||
-        (r.date && r.date.toLowerCase().includes(q))
+        (r.date && (
+          r.date.toLowerCase().includes(q) ||
+          formatAdminDate(r.date).toLowerCase().includes(q)
+        ))
       );
     }
     const page = paginateAdminList('receipts', list);
@@ -1781,7 +1884,14 @@ function initAdminPortal(options = {}) {
                 </div>
                 <div class="form-field" style="margin:0;">
                   <label class="form-label">Ngày nhập kho</label>
-                  <input type="date" id="receiptDateInput" class="input-control" value="${new Date().toISOString().split('T')[0]}" />
+                  ${renderAdminDateInput({
+                    textId: 'receiptDateInput',
+                    pickerId: 'receiptDatePicker',
+                    value: typeof formatCurrentDate === 'function' ? formatCurrentDate() : new Date().toLocaleDateString('vi-VN'),
+                    context: 'receipt',
+                    range: '',
+                    required: true
+                  })}
                 </div>
               </div>
 
@@ -1855,7 +1965,7 @@ function initAdminPortal(options = {}) {
                 <div>
                   <h3 class="modal-title">Sửa phiếu nhập #${editReceipt.id}</h3>
                   <div style="font-size: 13px; color: var(--color-ink-3); margin-top: 4px;">
-                    Ngày lập: <b>${editReceipt.date}</b> · Trạng thái: <span class="badge badge-warning">Chờ duyệt</span>
+                    Ngày lập: <b>${formatAdminDate(editReceipt.date)}</b> · Trạng thái: <span class="badge badge-warning">Chờ duyệt</span>
                   </div>
                 </div>
                 <button class="modal-close-btn" onclick="closeEditReceiptModal()">✕</button>
@@ -1937,7 +2047,7 @@ function initAdminPortal(options = {}) {
                   </span>
                 </h3>
                 <div style="font-size: 13px; color: var(--color-ink-3); margin-top: 4px;">
-                  Ngày lập phiếu: <b>${selectedReceiptModal.date}</b>
+                  Ngày lập phiếu: <b>${formatAdminDate(selectedReceiptModal.date)}</b>
                 </div>
               </div>
               <button class="modal-close-btn" onclick="closeReceiptDetailModal()">✕</button>
@@ -2250,8 +2360,8 @@ function initAdminPortal(options = {}) {
         <td>
           <div style="font-weight: 500; color: var(--color-ink);">${escapeCustomerHtml(o.customer)}</div>
         </td>
-        <td>${o.date}</td>
-        <td>${o.status === 'Đã giao' ? (o.receivedDate || '') : ''}</td>
+        <td>${formatAdminDate(o.date)}</td>
+        <td>${o.status === 'Đã giao' ? formatAdminDate(o.receivedDate) : ''}</td>
         <td>${o.pay}</td>
         <!-- TASK 2: Cột Tổng tiền hiển thị màu xanh dương (var(--color-brand-700)) -->
         <td class="text-right"><b style="color: var(--color-brand-700);">${vnd(o.total)}</b></td>
@@ -2327,15 +2437,15 @@ function initAdminPortal(options = {}) {
       <div class="admin-order-date-filters">
         <div class="admin-date-range">
           <label>Ngày đặt</label>
-          <input type="date" class="input-control" value="${orderDateFrom}" onchange="handleOrderDateFilter('orderFrom', this.value)" />
+          ${renderAdminDateInput({ textId: 'orderDateFromInput', pickerId: 'orderDateFromPicker', value: orderDateFrom, context: 'orders', range: 'orderFrom' })}
           <span>đến</span>
-          <input type="date" class="input-control" value="${orderDateTo}" min="${orderDateFrom}" onchange="handleOrderDateFilter('orderTo', this.value)" />
+          ${renderAdminDateInput({ textId: 'orderDateToInput', pickerId: 'orderDateToPicker', value: orderDateTo, context: 'orders', range: 'orderTo', min: orderDateFrom })}
         </div>
         <div class="admin-date-range">
           <label>Ngày nhận</label>
-          <input type="date" class="input-control" value="${receivedDateFrom}" onchange="handleOrderDateFilter('receivedFrom', this.value)" />
+          ${renderAdminDateInput({ textId: 'receivedDateFromInput', pickerId: 'receivedDateFromPicker', value: receivedDateFrom, context: 'orders', range: 'receivedFrom' })}
           <span>đến</span>
-          <input type="date" class="input-control" value="${receivedDateTo}" min="${receivedDateFrom}" onchange="handleOrderDateFilter('receivedTo', this.value)" />
+          ${renderAdminDateInput({ textId: 'receivedDateToInput', pickerId: 'receivedDateToPicker', value: receivedDateTo, context: 'orders', range: 'receivedTo', min: receivedDateFrom })}
         </div>
       </div>
 
@@ -2371,7 +2481,7 @@ function initAdminPortal(options = {}) {
             </div>
             <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
               <div style="display: flex; justify-content: space-between; font-size: 14px; color: var(--color-ink-3);">
-                <span>Khách hàng: <b>${escapeCustomerHtml(selectedOrderModal.customer)}</b> · Ngày đặt: ${selectedOrderModal.date} · ${selectedOrderModal.pay}</span>
+                <span>Khách hàng: <b>${selectedOrderModal.customer}</b> · Ngày đặt: ${formatAdminDate(selectedOrderModal.date)} · ${selectedOrderModal.pay}</span>
                 <span class="badge badge-${getStatusTone(selectedOrderModal.status)}">${selectedOrderModal.status}</span>
               </div>
               <div style="font-size:14px;color:var(--color-ink-2);">
@@ -2437,13 +2547,17 @@ function initAdminPortal(options = {}) {
     const hasDateRange = Boolean(stockDateFrom || stockDateTo);
     const importedBySku = new Map();
     const soldBySku = new Map();
+    const activeSkuSet = new Set();
 
     if (hasDateRange) {
       receipts.filter(receipt =>
         receipt.status === 'Hoàn thành' && isDateInRange(receipt.date, stockDateFrom, stockDateTo)
       ).forEach(receipt => {
         (receipt.items || []).forEach(item => {
-          importedBySku.set(item.sku, (importedBySku.get(item.sku) || 0) + (Number(item.qty) || 0));
+          const qty = Number(item.qty) || 0;
+          if (!item.sku || qty <= 0) return;
+          importedBySku.set(item.sku, (importedBySku.get(item.sku) || 0) + qty);
+          activeSkuSet.add(item.sku);
         });
       });
 
@@ -2453,31 +2567,39 @@ function initAdminPortal(options = {}) {
         isDateInRange(order.date, stockDateFrom, stockDateTo)
       ).forEach(order => {
         (order.items || []).forEach(item => {
-          soldBySku.set(item.sku, (soldBySku.get(item.sku) || 0) + (Number(item.qty) || 0));
+          const qty = Number(item.qty) || 0;
+          if (!item.sku || qty <= 0) return;
+          soldBySku.set(item.sku, (soldBySku.get(item.sku) || 0) + qty);
+          activeSkuSet.add(item.sku);
         });
       });
     }
 
-    return products.filter(product => !product.isDeleted).map(product => {
-      const variants = (product.variants || []).map(variant => {
-        const imported = hasDateRange
-          ? importedBySku.get(variant.sku) || 0
-          : Number(variant.imported) || 0;
-        const sold = hasDateRange
-          ? soldBySku.get(variant.sku) || 0
-          : Number(variant.sold) || 0;
-        return {
-          ...variant,
-          imported,
-          sold,
-          stock: hasDateRange ? imported - sold : Number(variant.stock) || 0
-        };
-      });
+    const stockData = products.filter(product => !product.isDeleted).map(product => {
+      const variants = (product.variants || [])
+        .filter(variant => !hasDateRange || activeSkuSet.has(variant.sku))
+        .map(variant => {
+          const imported = hasDateRange
+            ? importedBySku.get(variant.sku) || 0
+            : Number(variant.imported) || 0;
+          const sold = hasDateRange
+            ? soldBySku.get(variant.sku) || 0
+            : Number(variant.sold) || 0;
+          return {
+            ...variant,
+            imported,
+            sold,
+            stock: Number(variant.stock) || 0
+          };
+        });
       const imported = variants.reduce((sum, variant) => sum + variant.imported, 0);
       const sold = variants.reduce((sum, variant) => sum + variant.sold, 0);
-      const stock = hasDateRange ? imported - sold : Number(product.stock) || 0;
+      const stock = Number(product.stock) || 0;
       return { ...product, variants, imported, sold, stock };
     });
+    return hasDateRange
+      ? stockData.filter(product => product.variants.length > 0)
+      : stockData;
   }
 
   function getFilteredStockList() {
@@ -2566,10 +2688,10 @@ function initAdminPortal(options = {}) {
           <input type="number" class="input-control" min="0" step="1" value="${stockWarningThreshold}" onchange="handleStockThreshold(this.value)" />
         </label>
         <label class="admin-filter-field">Từ ngày
-          <input type="date" class="input-control" value="${stockDateFrom}" onchange="handleStockDateFilter('from', this.value)" />
+          ${renderAdminDateInput({ textId: 'stockDateFromInput', pickerId: 'stockDateFromPicker', value: stockDateFrom, context: 'stock', range: 'from' })}
         </label>
         <label class="admin-filter-field">Đến ngày
-          <input type="date" class="input-control" value="${stockDateTo}" min="${stockDateFrom}" onchange="handleStockDateFilter('to', this.value)" />
+          ${renderAdminDateInput({ textId: 'stockDateToInput', pickerId: 'stockDateToPicker', value: stockDateTo, context: 'stock', range: 'to', min: stockDateFrom })}
         </label>
       </div>
 
@@ -2705,25 +2827,21 @@ function initAdminPortal(options = {}) {
 
   window.handleCatSearch = (val) => {
     catSearchQuery = val;
-    const tbody = document.getElementById('catTableBody');
-    const countLabel = document.getElementById('catCountLabel');
-    if (tbody) {
-      categories = getCategories();
-      let list = categories.map((c, i) => {
-        const name = typeof c === 'string' ? c : (c.name || '');
-        const id = (typeof c === 'object' && c.id) ? c.id : `DM0${i + 1}`;
-        const type = (typeof c === 'object' && c.type) ? c.type : (i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo');
-        const status = (typeof c === 'object' && c.status) ? c.status : 'active';
-        const count = products.filter(p => !p.isDeleted && p.category === name).length;
-        return { id, name, type, status, count };
-      });
-      if (catSearchQuery) {
-        const q = catSearchQuery.toLowerCase();
-        list = list.filter(item => item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q));
-      }
-      tbody.innerHTML = generateCatRows(list);
-      if (countLabel) countLabel.textContent = `Hiển thị ${list.length} bản ghi`;
+    currentPageByTab.cats = 1;
+    categories = getCategories();
+    let list = categories.map((c, i) => {
+      const name = typeof c === 'string' ? c : (c.name || '');
+      const id = (typeof c === 'object' && c.id) ? c.id : `DM0${i + 1}`;
+      const type = (typeof c === 'object' && c.type) ? c.type : (i < 2 ? 'Thiết bị chính' : 'Phụ kiện & Đeo');
+      const status = (typeof c === 'object' && c.status) ? c.status : 'active';
+      const count = products.filter(p => !p.isDeleted && p.category === name).length;
+      return { id, name, type, status, count };
+    });
+    if (catSearchQuery) {
+      const q = catSearchQuery.toLowerCase();
+      list = list.filter(item => item.name.toLowerCase().includes(q) || item.id.toLowerCase().includes(q));
     }
+    refreshAdminTable('cats', list, 'catTableBody', generateCatRows, 'danh mục');
   };
 
   window.handleReceiptSearch = (val) => {
@@ -2734,7 +2852,10 @@ function initAdminPortal(options = {}) {
       const q = receiptSearchQuery.toLowerCase().trim();
       list = list.filter(r =>
         (r.id && r.id.toLowerCase().includes(q)) ||
-        (r.date && r.date.toLowerCase().includes(q))
+        (r.date && (
+          r.date.toLowerCase().includes(q) ||
+          formatAdminDate(r.date).toLowerCase().includes(q)
+        ))
       );
     }
     refreshAdminTable('receipts', list, 'receiptTableBody', generateReceiptRows, 'phiếu nhập');
@@ -3165,6 +3286,7 @@ function initAdminPortal(options = {}) {
                   const sold = previous ? Number(previous.sold) || 0 : 0;
                   return {
                     ...variant,
+                    image: variant.image || (previous && previous.image) || '',
                     sold,
                     imported: (Number(variant.stock) || 0) + sold
                   };
@@ -3369,9 +3491,17 @@ function initAdminPortal(options = {}) {
       return;
     }
 
-    const receiptId = generateNextReceiptId();
     const dateInput = document.getElementById('receiptDateInput');
-    const receiptDate = typeof formatCurrentDate === 'function' ? formatCurrentDate(dateInput ? dateInput.value : null) : (dateInput ? dateInput.value : new Date().toLocaleDateString('vi-VN'));
+    const receiptDateValue = dateInput ? parseAdminDateInput(dateInput.value) : null;
+    if (!receiptDateValue) {
+      if (dateInput) {
+        dateInput.setCustomValidity('Vui lòng nhập ngày hợp lệ theo định dạng dd/mm/yyyy.');
+        dateInput.reportValidity();
+      }
+      return;
+    }
+    const receiptId = generateNextReceiptId();
+    const receiptDate = formatAdminDate(receiptDateValue);
 
     let totalQty = 0;
     let totalAmount = 0;

@@ -5,9 +5,7 @@ function initAuthPage(options = {}) {
   const container = document.getElementById('authPageContent');
   if (!container) return;
 
-  const basePath = options.basePath || '';
-  const customerPath = `${basePath}view/customer/`;
-  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
+  const homeUrl = getStorePageUrl('home');
 
   let mode = options.defaultMode || 'login'; // 'login' or 'register'
   const allProds = typeof getProducts === 'function' ? getProducts() : [];
@@ -184,9 +182,11 @@ function initAuthPage(options = {}) {
       // Kiểm tra tham số chuyển hướng sau khi đăng nhập (ví dụ: quay lại giỏ hàng/thanh toán)
       const urlParams = new URLSearchParams(window.location.search);
       const redirectUrl = urlParams.get('redirect');
-      const targetUrl = redirectUrl
-        ? (redirectUrl.startsWith('http') || redirectUrl.startsWith('/') ? redirectUrl : `${customerPath}${redirectUrl}`)
-        : homeUrl;
+      const redirectPages = {
+        cart: 'cart', checkout: 'checkout', history: 'history', profile: 'profile',
+        'checkout.html': 'checkout', 'history.html': 'history', 'profile.html': 'profile'
+      };
+      const targetUrl = getStorePageUrl(redirectPages[redirectUrl] || 'home');
 
       showCustomDialog(`Đăng nhập thành công! Chào mừng <b>${user.name}</b> quay trở lại.`, 'Thành công', 'success', () => {
         window.location.href = targetUrl;
@@ -265,9 +265,11 @@ function initAuthPage(options = {}) {
 
       const urlParams = new URLSearchParams(window.location.search);
       const redirectUrl = urlParams.get('redirect');
-      const targetUrl = redirectUrl
-        ? (redirectUrl.startsWith('http') || redirectUrl.startsWith('/') ? redirectUrl : `${customerPath}${redirectUrl}`)
-        : homeUrl;
+      const redirectPages = {
+        cart: 'cart', checkout: 'checkout', history: 'history', profile: 'profile',
+        'checkout.html': 'checkout', 'history.html': 'history', 'profile.html': 'profile'
+      };
+      const targetUrl = getStorePageUrl(redirectPages[redirectUrl] || 'home');
 
       showCustomDialog(`Chúc mừng <b>${newCustomer.name}</b> đã đăng ký tài khoản thành công!`, 'Đăng ký thành công', 'success', () => {
         window.location.href = targetUrl;
@@ -285,14 +287,12 @@ function initProfilePage(options = {}) {
   const container = document.getElementById('profilePageContent');
   if (!container) return;
 
-  const basePath = options.basePath || '';
-  const customerPath = `${basePath}view/customer/`;
-  const homeUrl = options.isRoot ? 'index.html' : `${basePath}index.html`;
+  const homeUrl = getStorePageUrl('home');
 
   // Kiểm tra đăng nhập
   const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
   if (!currentUser) {
-    window.location.href = `${customerPath}login.html?redirect=profile.html`;
+    window.location.href = getStorePageUrl('login', { redirect: 'profile' });
     return;
   }
 
@@ -366,7 +366,7 @@ function initProfilePage(options = {}) {
     } else {
       ordersHtml = `${focusedOrderId ? `
         <div style="margin-bottom: 16px;">
-          <a href="profile.html?tab=orders" class="btn btn-secondary btn-sm">Xem tất cả lịch sử đơn hàng</a>
+          <a href="${getStorePageUrl('history')}" class="btn btn-secondary btn-sm">Xem tất cả lịch sử đơn hàng</a>
         </div>
       ` : ''}${filteredOrders.map(o => {
         const tone = typeof getStatusTone === 'function' ? getStatusTone(o.status) : 'neutral';
