@@ -727,6 +727,19 @@ input[type="range"] {
   object-fit: contain;
 }
 
+.product-art-wrap > .product-image-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-art-wrap > .product-image-frame > img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .product-image-placeholder {
   display: grid;
   width: 100%;
