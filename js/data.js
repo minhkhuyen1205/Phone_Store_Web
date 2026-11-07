@@ -1936,6 +1936,20 @@ function syncCustomerOrderCounts(orderList = getOrders()) {
 
 function getReceipts() {
   const receipts = getStorage('techno_receipts', defaultReceipts);
+  const legacyReceipt = receipts.find(r => r.id === 'PN013' && r.status === 'Chờ duyệt');
+  const hasSeedReceipts = [1, 2, 3, 4].every(number =>
+    receipts.some(r => r.id === `PN${String(number).padStart(3, '0')}`)
+  );
+  const hasIntermediateReceiptIds = receipts.some(r => {
+    const match = String(r.id || '').match(/^PN(\d+)$/);
+    const number = match ? Number(match[1]) : 0;
+    return number >= 5 && number <= 12;
+  });
+  if (legacyReceipt && hasSeedReceipts && !hasIntermediateReceiptIds) {
+    legacyReceipt.id = 'PN005';
+    setStorage('techno_receipts', receipts);
+  }
+
   return receipts.map(r => {
     let id = r.id;
     if (id && id.startsWith('PN') && id.length > 5) {
@@ -2033,7 +2047,7 @@ function generateNextOrderId() {
 
 function generateNextReceiptId() {
   const receipts = getReceipts();
-  let maxNum = 12;
+  let maxNum = 0;
   receipts.forEach(r => {
     if (r.id && r.id.startsWith('PN')) {
       const num = parseInt(r.id.replace('PN', ''), 10);
