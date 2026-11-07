@@ -1664,13 +1664,6 @@ function initDefaultData(forceReset = false) {
       setStorage('techno_orders', !forceReset && Array.isArray(existingOrders) ? existingOrders : defaultOrders);
       setStorage('techno_receipts', defaultReceipts);
       setStorage('techno_customers', !forceReset && Array.isArray(rawCusts) ? rawCusts.map(c => ({ ...c, addresses: Array.isArray(c.addresses) ? c.addresses : [] })) : defaultCustomers);
-
-      const existingCart = getStorage('techno_cart', null);
-      if (!existingCart || !Array.isArray(existingCart) || existingCart.length === 0) {
-        setStorage('techno_cart', [
-          { sku: 'SP001-TITAN_DEN-8GB-256GB', productId: 1, qty: 1 }
-        ]);
-      }
     } else {
       // Tự động quét và chuẩn hóa các đơn hàng cũ còn lưu trong LocalStorage nếu có
       const storedOrders = getStorage('techno_orders', null);
@@ -1801,6 +1794,21 @@ function initDefaultData(forceReset = false) {
       });
       if (hasChanges) setStorage('techno_orders', orders);
       localStorage.setItem('techno_order_received_dates_schema', 'received_dates_v1');
+    }
+
+    const cartSeedMigrationKey = 'techno_cart_demo_seed_cleanup_v1';
+    if (localStorage.getItem(cartSeedMigrationKey) !== 'true') {
+      const cartStorageKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index))
+        .filter(key => key && (key === 'techno_cart' || key.startsWith('techno_cart_')));
+      cartStorageKeys.forEach(key => {
+        const cart = getStorage(key, null);
+        const isOnlyDemoItem = Array.isArray(cart) && cart.length === 1 &&
+          cart[0].sku === 'SP001-TITAN_DEN-8GB-256GB' &&
+          Number(cart[0].productId) === 1 &&
+          Number(cart[0].qty) === 1;
+        if (isOnlyDemoItem) localStorage.removeItem(key);
+      });
+      localStorage.setItem(cartSeedMigrationKey, 'true');
     }
   } catch (e) {
     console.error('[TechnoStore] Lỗi initDefaultData:', e);
