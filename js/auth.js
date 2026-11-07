@@ -576,7 +576,7 @@ function initProfilePage(options = {}) {
             <!-- Tab 3: Address Book -->
             ${activeTab === 'addr' ? `
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: 18px; font-weight: 700; color: var(--color-ink); margin: 0;">Danh sách địa chỉ nhận hàng (${addresses.length}/10)</h3>
+                <h3 style="font-size: 18px; font-weight: 700; color: var(--color-ink); margin: 0;">Danh sách địa chỉ nhận hàng (${addresses.length})</h3>
                 <button type="button" class="btn btn-primary btn-sm" onclick="openAddressEditModal(null)">
                   + Thêm địa chỉ mới
                 </button>
@@ -821,8 +821,6 @@ function initProfilePage(options = {}) {
     }
 
     const addrs = customers[idx].addresses;
-
-    if (!addrId && addrs.length >= 10) { showCustomDialog('Bạn chỉ có thể lưu tối đa 10 địa chỉ.', 'Giới hạn địa chỉ', 'warning'); return; }
 
     if (isDefault) {
       addrs.forEach(a => a.isDefault = false);

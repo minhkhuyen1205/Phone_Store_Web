@@ -105,7 +105,8 @@ textarea:focus-visible {
     max-width: none;
   }
 
-  .header-actions .user-btn span {
+  .header-actions .account-name,
+  .header-actions a.user-btn span {
     display: none;
   }
 
@@ -191,7 +192,8 @@ textarea:focus-visible {
     padding: 0;
   }
 
-  .header-actions .user-btn span {
+  .header-actions .account-name,
+  .header-actions a.user-btn span {
     display: none;
   }
 

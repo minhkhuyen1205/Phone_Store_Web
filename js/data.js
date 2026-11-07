@@ -2359,6 +2359,23 @@ function formatCurrentDate(dateInput) {
 // Tự động khởi tạo dữ liệu chuẩn ngay khi nạp file
 initDefaultData();
 
+if (location.protocol === 'file:' || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) {
+  try {
+    const customers = getStorage('techno_customers', null);
+    if (Array.isArray(customers)) {
+      const removed = customers.filter(customer => /^KH-TEST(?:-\d+)?$/.test(String(customer.id)) && customer.email === '1' && customer.password === '1');
+      if (removed.length) {
+        const removedIds = new Set(removed.map(customer => String(customer.id)));
+        localStorage.setItem('techno_customers', JSON.stringify(customers.filter(customer => !removedIds.has(String(customer.id)))));
+        const session = getCurrentUser();
+        if (session && removedIds.has(String(session.id))) localStorage.removeItem('techno_user');
+      }
+    }
+  } catch (error) {
+    console.error('Không thể xóa tài khoản thử nghiệm:', error);
+  }
+}
+
 // Xuất biến toàn cục
 window.DEFAULT_PRODUCTS = defaultProducts;
 window.initDefaultData = initDefaultData;

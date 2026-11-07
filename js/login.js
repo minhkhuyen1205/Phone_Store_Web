@@ -42,15 +42,6 @@ const destination = getStorePageUrl(redirectPages[target] || 'home');
 const normalizePhone = value => value.replace(/\D/g, '');
 const loginForm = loginPanel.querySelector('form');
 const registerForm = registerPanel.querySelector('form');
-const testCustomers = getCustomers();
-if ((location.protocol === 'file:' || ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) && !testCustomers.some(customer => customer.email === '1' || customer.phone === '1')) {
-  const usedTestIds = new Set(testCustomers.map(customer => customer.id));
-  let testId = 'KH-TEST';
-  let suffix = 1;
-  while (usedTestIds.has(testId)) testId = `KH-TEST-${suffix++}`;
-  testCustomers.push({ id: testId, name: 'Khách hàng thử nghiệm', email: '1', phone: '', password: '1', joined: new Date().toLocaleDateString('vi-VN'), orders: 0, locked: false, addresses: [] });
-  saveCustomers(testCustomers);
-}
 function clearErrors(form) {
   form.querySelectorAll('.field-error').forEach(error => error.remove());
   form.querySelectorAll('[aria-invalid]').forEach(input => {
@@ -89,7 +80,7 @@ loginForm.addEventListener('submit', event => {
   event.preventDefault();
   clearErrors(loginForm);
   const identity = document.getElementById('identity').value.trim();
-  const phone = normalizePhone(identity);
+  const phone = /^[\d\s().+-]+$/.test(identity) ? normalizePhone(identity) : '';
   const password = document.getElementById('loginPassword').value;
   if (!identity || !password) {
     if (!identity) showError(document.getElementById('identity'), 'Vui lòng nhập email hoặc số điện thoại.');
@@ -98,7 +89,7 @@ loginForm.addEventListener('submit', event => {
   }
   const customer = getCustomers().find(item =>
     (item.email && item.email.toLowerCase() === identity.toLowerCase()) ||
-    (phone && item.phone && normalizePhone(item.phone) === phone)
+    (/^0\d{9}$/.test(phone) && item.phone && normalizePhone(item.phone) === phone)
   );
   if (!customer || !(customer.password ? customer.password === password : ['password123', '123456'].includes(password))) {
     showError(document.getElementById('identity'), 'Thông tin đăng nhập không chính xác.');
