@@ -245,7 +245,7 @@
       const hero = getProducts().find(p => !p.isDeleted && (Number(p.stock) || 0) > 0) || getProducts()[0];
       const heroArt = document.getElementById('heroArtWrapper');
       if (heroArt && hero) {
-        heroArt.innerHTML = renderProductImage(hero, 'width:100%;height:360px;');
+        heroArt.innerHTML = renderProductImage(hero, 'width:100%;height:100%;');
       }
       const heroPriceEl = document.getElementById('heroStartingPrice');
       if (heroPriceEl && hero) {

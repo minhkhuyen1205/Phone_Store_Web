@@ -145,7 +145,7 @@ textarea:focus-visible {
   }
 
   .product-art-wrap {
-    height: 168px;
+    height: 184px;
   }
 
   .detail-main-grid {
@@ -402,7 +402,7 @@ textarea:focus-visible {
   }
 
   .product-art-wrap {
-    height: clamp(118px, 38vw, 168px);
+    height: clamp(128px, 42vw, 176px);
   }
 
   .product-badges {
@@ -470,8 +470,8 @@ textarea:focus-visible {
     border-radius: 22px;
   }
 
-  .gallery-main-art {
-    height: min(78vw, 340px);
+  .gallery-main-view > .product-image-frame {
+    min-height: 0;
   }
 
   .gallery-thumbs-row {
@@ -485,7 +485,7 @@ textarea:focus-visible {
     padding: 8px 0;
   }
 
-  .gallery-thumb-art {
+  .gallery-thumb-item > .product-image-frame {
     height: 64px;
   }
 

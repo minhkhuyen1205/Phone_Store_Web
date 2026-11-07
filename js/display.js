@@ -39,7 +39,7 @@ function renderProductCard(p, options = {}) {
     }
   }
 
-  const artworkHtml = renderProductImage(p, 'width:100%;height:192px;');
+  const artworkHtml = renderProductImage(p, 'width:100%;height:100%;');
 
   // Trạng thái tồn kho text
   let stockText = '';
@@ -334,7 +334,8 @@ function renderOrderCardHtml(o, allProducts = []) {
       qty = it.qty || 1;
     }
 
-    const imgHtml = p ? renderProductImage(p, 'width:48px;height:48px;') : '📦';
+    const variantImg = (found && found.variant && found.variant.image) ? found.variant.image : (p ? p.image : null);
+    const imgHtml = p ? renderProductImage(variantImg ? { ...p, image: variantImg, imageId: (found && found.variant ? found.variant.sku : p.code) } : p, 'width:48px;height:48px;') : '📦';
 
     return `
       <div class="order-item-mini-row">

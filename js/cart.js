@@ -118,7 +118,7 @@ function initCartPage(options = {}) {
           onchange="handleToggleCartSelection('${item.sku}', this.checked)"
         />
         <div class="cart-item-thumb" style="display: grid; place-items: center; overflow: hidden;">
-          ${renderProductImage(item.product, 'width:76px;height:76px;')}
+          ${renderProductImage(item.variant && item.variant.image ? { ...item.product, image: item.variant.image, imageId: item.variant.sku } : item.product, 'width:76px;height:76px;')}
         </div>
 
         <div class="cart-item-details">
@@ -419,7 +419,7 @@ function initCheckoutPage(options = {}) {
     const reviewItemsHtml = items.map(item => `
       <div class="review-item-row">
         <div class="review-item-thumb" style="display: grid; place-items: center; overflow: hidden;">
-          ${renderProductImage(item.product, 'width:52px;height:52px;')}
+          ${renderProductImage(item.variant && item.variant.image ? { ...item.product, image: item.variant.image, imageId: item.variant.sku } : item.product, 'width:52px;height:52px;')}
         </div>
         <div class="review-item-info">
           <div class="review-item-title">${item.product.name}</div>

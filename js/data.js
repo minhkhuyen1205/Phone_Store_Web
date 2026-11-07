@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Định dạng tiền tệ Việt Nam (VNĐ)
  * @param {number|string} n - Số tiền cần format
  * @returns {string} Chuỗi hiển thị VNĐ (VD: 34.990.000 ₫)
@@ -58,7 +58,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Điện thoại",
     "description": "iPhone 16 Pro Max sở hữu màn hình Super Retina XDR 6.9\" viền siêu mỏng, chip Apple A18 Pro mạnh mẽ vượt trội cùng camera 48MP Fusion thế hệ mới. Khung viền Titan chuẩn hàng không vũ trụ siêu nhẹ và bền bỉ.",
-    "image": "assets/img/SP001.png",
+    "image": "assets/img/SP001_iPhone_16_Pro_Max/anh_chinh.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -88,7 +88,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 30200000,
         "price": 34990000,
-        "stock": 14
+        "stock": 14,
+        "image": "assets/img/SP001_iPhone_16_Pro_Max/anh_mau/titan-den.jpg"
       },
       {
         "sku": "SP001-TITAN_TRANG-8GB-256GB",
@@ -97,7 +98,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 30200000,
         "price": 34990000,
-        "stock": 10
+        "stock": 10,
+        "image": "assets/img/SP001_iPhone_16_Pro_Max/anh_mau/titan-trang.jpg"
       },
       {
         "sku": "SP001-TITAN_TU_NHIEN-8GB-512GB",
@@ -106,7 +108,8 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 34500000,
         "price": 39990000,
-        "stock": 8
+        "stock": 8,
+        "image": "assets/img/SP001_iPhone_16_Pro_Max/anh_mau/titan-tu-nhien.jpg"
       },
       {
         "sku": "SP001-TITAN_SA_MAC-8GB-1TB",
@@ -115,9 +118,13 @@ const defaultProducts = [
         "rom": "1TB",
         "cost": 40000000,
         "price": 46990000,
-        "stock": 0
+        "stock": 0,
+        "image": "assets/img/SP001_iPhone_16_Pro_Max/anh_mau/titan-sa-mac.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP001_iPhone_16_Pro_Max/anh_chi_tiet/chi-tiet-01.webp",
+      "assets/img/SP001_iPhone_16_Pro_Max/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 2,
@@ -126,7 +133,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Điện thoại",
     "description": "iPhone 16 mang đến chip A18 Bionic tiên tiến, nút Điều Khiển Camera hoàn toàn mới và hệ thống Camera Fusion 48MP đột phá 2 trong 1. Hỗ trợ hệ sinh thái Apple Intelligence với thiết kế mặt lưng kính pha màu rực rỡ.",
-    "image": "assets/img/SP002.png",
+    "image": "assets/img/SP002_iPhone_16/anh_chinh.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -156,7 +163,8 @@ const defaultProducts = [
         "rom": "128GB",
         "cost": 16500000,
         "price": 18990000,
-        "stock": 15
+        "stock": 15,
+        "image": "assets/img/SP002_iPhone_16/anh_mau/hong-pastel.png"
       },
       {
         "sku": "SP002-XANH_LUU_LY-8GB-128GB",
@@ -165,7 +173,8 @@ const defaultProducts = [
         "rom": "128GB",
         "cost": 16500000,
         "price": 18990000,
-        "stock": 10
+        "stock": 10,
+        "image": "assets/img/SP002_iPhone_16/anh_mau/xanh-luu-ly.png"
       },
       {
         "sku": "SP002-DEN_NHAM-8GB-256GB",
@@ -174,9 +183,13 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 19000000,
         "price": 21990000,
-        "stock": 5
+        "stock": 5,
+        "image": "assets/img/SP002_iPhone_16/anh_mau/den-nham.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP002_iPhone_16/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP002_iPhone_16/anh_chi_tiet/chi-tiet-02.webp"]
   },
   {
     "id": 3,
@@ -185,7 +198,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Điện thoại",
     "description": "Galaxy S25 Ultra trang bị chip Snapdragon 8 Elite đỉnh cao, camera 200MP bắt trọn từng chi tiết, tích hợp bút S-Pen thông minh và bộ tính năng Galaxy AI tiên tiến nhất hiện nay cùng khung viền Titan sang trọng.",
-    "image": "assets/img/SP003.png",
+    "image": "assets/img/SP003_Galaxy_S25_Ultra/anh_chinh.png",
     "createdAt": "2026-09-22",
     "isDeleted": false,
     "attributes": [
@@ -215,7 +228,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 26000000,
         "price": 30490000,
-        "stock": 15
+        "stock": 15,
+        "image": "assets/img/SP003_Galaxy_S25_Ultra/anh_mau/xanh-titan.png"
       },
       {
         "sku": "SP003-DEN_TITAN-12GB-512GB",
@@ -224,7 +238,8 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 28900000,
         "price": 33490000,
-        "stock": 8
+        "stock": 8,
+        "image": "assets/img/SP003_Galaxy_S25_Ultra/anh_mau/den-titan.png"
       },
       {
         "sku": "SP003-XAM_TITAN-16GB-1TB",
@@ -233,9 +248,13 @@ const defaultProducts = [
         "rom": "1TB",
         "cost": 36000000,
         "price": 41990000,
-        "stock": 4
+        "stock": 4,
+        "image": "assets/img/SP003_Galaxy_S25_Ultra/anh_mau/xam-titan.webp"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP003_Galaxy_S25_Ultra/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP003_Galaxy_S25_Ultra/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 4,
@@ -244,7 +263,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Điện thoại",
     "description": "Điện thoại gập thời thượng Galaxy Z Flip6 với màn hình phụ FlexWindow thông minh, camera 50MP nâng cấp vượt bậc, vi xử lý Snapdragon 8 Gen 3 for Galaxy và viên pin 4000mAh bền bỉ suốt cả ngày.",
-    "image": "assets/img/SP004.png",
+    "image": "assets/img/SP004_Galaxy_Z_Flip6/anh_chinh.png",
     "createdAt": "2026-09-18",
     "isDeleted": false,
     "attributes": [
@@ -273,7 +292,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 18500000,
         "price": 21990000,
-        "stock": 10
+        "stock": 10,
+        "image": "assets/img/SP004_Galaxy_Z_Flip6/anh_mau/xanh-maya.png"
       },
       {
         "sku": "SP004-XAM_METAL-12GB-256GB",
@@ -282,7 +302,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 18500000,
         "price": 21990000,
-        "stock": 6
+        "stock": 6,
+        "image": "assets/img/SP004_Galaxy_Z_Flip6/anh_mau/xam-metal.png"
       },
       {
         "sku": "SP004-VANG_SOLAR-12GB-512GB",
@@ -291,9 +312,13 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 21500000,
         "price": 25490000,
-        "stock": 5
+        "stock": 5,
+        "image": "assets/img/SP004_Galaxy_Z_Flip6/anh_mau/vang-solar.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP004_Galaxy_Z_Flip6/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP004_Galaxy_Z_Flip6/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 5,
@@ -302,7 +327,7 @@ const defaultProducts = [
     "brand": "Xiaomi",
     "category": "Điện thoại",
     "description": "Xiaomi 15 Ultra đồng chế tác cùng Leica với cụm camera tiềm vọng 200MP cực khủng, màn hình 2K AMOLED 120Hz siêu sáng, vi xử lý Snapdragon 8 Elite cùng viên pin silicon-carbon dung lượng 6000mAh.",
-    "image": "assets/img/SP005.png",
+    "image": "assets/img/SP005_Xiaomi_15_Ultra/anh_chinh.webp",
     "createdAt": "2026-09-25",
     "isDeleted": false,
     "attributes": [
@@ -332,7 +357,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 21000000,
         "price": 24990000,
-        "stock": 12
+        "stock": 12,
+        "image": "assets/img/SP005_Xiaomi_15_Ultra/anh_mau/den-gom.webp"
       },
       {
         "sku": "SP005-TRANG_GOM-16GB-512GB",
@@ -341,9 +367,13 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 24500000,
         "price": 28990000,
-        "stock": 8
+        "stock": 8,
+        "image": "assets/img/SP005_Xiaomi_15_Ultra/anh_mau/trang-gom.jpg"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP005_Xiaomi_15_Ultra/anh_chi_tiet/chi-tiet-01.webp",
+      "assets/img/SP005_Xiaomi_15_Ultra/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 6,
@@ -352,7 +382,7 @@ const defaultProducts = [
     "brand": "OPPO",
     "category": "Điện thoại",
     "description": "OPPO Find X8 Pro thiết lập chuẩn mực mới về nhiếp ảnh với cụm camera kép tiềm vọng Hasselblad, chip MediaTek Dimensity 9400 thế hệ mới, phím chụp nhanh chuyên dụng và pin siêu trâu 5910mAh.",
-    "image": "assets/img/SP006.png",
+    "image": "assets/img/SP006_OPPO_Find_X8_Pro/anh_chinh.png",
     "createdAt": "2026-09-26",
     "isDeleted": false,
     "attributes": [
@@ -382,7 +412,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 19500000,
         "price": 22990000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP006_OPPO_Find_X8_Pro/anh_mau/trang-thay-the.png"
       },
       {
         "sku": "SP006-DEN_KHONG_GIAN-16GB-512GB",
@@ -391,9 +422,13 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 22800000,
         "price": 26990000,
-        "stock": 1
+        "stock": 1,
+        "image": "assets/img/SP006_OPPO_Find_X8_Pro/anh_mau/den-thay-the.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP006_OPPO_Find_X8_Pro/anh_chi_tiet/chi-tiet-01.jpg",
+      "assets/img/SP006_OPPO_Find_X8_Pro/anh_chi_tiet/chi-tiet-02.webp"]
   },
   {
     "id": 7,
@@ -402,7 +437,7 @@ const defaultProducts = [
     "brand": "Vivo",
     "category": "Điện thoại",
     "description": "Vivo X100 Pro tích hợp cụm ống kính quang học ZEISS đỉnh cao với cảm biến 1-inch, vi xử lý Dimensity 9300 tối ưu hóa cùng chip xử lý hình ảnh V3 độc quyền cho trải nghiệm chụp ảnh như máy ảnh cơ.",
-    "image": "assets/img/SP007.png",
+    "image": "assets/img/SP007_Vivo_X100_Pro/anh_chinh.webp",
     "createdAt": "2026-09-24",
     "isDeleted": false,
     "attributes": [
@@ -431,7 +466,8 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 18200000,
         "price": 21490000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP007_Vivo_X100_Pro/anh_mau/xanh-anh-sao.webp"
       },
       {
         "sku": "SP007-DEN_HUYEN_BI-16GB-512GB",
@@ -440,8 +476,12 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 18200000,
         "price": 21490000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP007_Vivo_X100_Pro/anh_mau/den-huyen-bi.png"
       }
+    ],
+    "gallery": [
+      "assets/img/SP007_Vivo_X100_Pro/anh_chi_tiet/chi-tiet-01.webp"
     ]
   },
   {
@@ -451,7 +491,7 @@ const defaultProducts = [
     "brand": "Realme",
     "category": "Điện thoại",
     "description": "Sát thủ hiệu năng Realme GT 6 sở hữu màn hình sáng nhất thế giới 6000 nits, chip Snapdragon 8s Gen 3 xử lý mượt mà mọi tựa game, camera 50MP cảm biến Sony LYT-808 cao cấp và sạc siêu nhanh 120W.",
-    "image": "assets/img/SP008.png",
+    "image": "assets/img/SP008_Realme_GT_6/anh_chinh.png",
     "createdAt": "2026-09-21",
     "isDeleted": false,
     "attributes": [
@@ -480,7 +520,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 11200000,
         "price": 13490000,
-        "stock": 14
+        "stock": 14,
+        "image": "assets/img/SP008_Realme_GT_6/anh_mau/bac-anh-kim.png"
       },
       {
         "sku": "SP008-XANH_LUC_BAO-16GB-512GB",
@@ -489,8 +530,12 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 13000000,
         "price": 15490000,
-        "stock": 8
+        "stock": 8,
+        "image": "assets/img/SP008_Realme_GT_6/anh_mau/xanh-luc-bao.png"
       }
+    ],
+    "gallery": [
+      "assets/img/SP008_Realme_GT_6/anh_chi_tiet/chi-tiet-01.png"
     ]
   },
   {
@@ -500,7 +545,7 @@ const defaultProducts = [
     "brand": "ASUS",
     "category": "Điện thoại",
     "description": "Quái thú gaming ASUS ROG Phone 9 trang bị chip Snapdragon 8 Elite đỉnh nóc kịch trần, tần số quét kỷ lục 185Hz, hệ thống tản nhiệt buồng hơi GameCool 9 cùng màn hình AniMe Vision mặt lưng độc đáo.",
-    "image": "assets/img/SP009.png",
+    "image": "assets/img/SP009_ASUS_ROG_Phone_9/anh_chinh.webp",
     "createdAt": "2026-09-27",
     "isDeleted": false,
     "attributes": [
@@ -530,7 +575,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 20000000,
         "price": 23990000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP009_ASUS_ROG_Phone_9/anh_mau/den-phantom.webp"
       },
       {
         "sku": "SP009-TRANG_STORM-16GB-512GB",
@@ -539,8 +585,12 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 24000000,
         "price": 27990000,
-        "stock": 1
+        "stock": 1,
+        "image": "assets/img/SP009_ASUS_ROG_Phone_9/anh_mau/trang-storm.png"
       }
+    ],
+    "gallery": [
+      "assets/img/SP009_ASUS_ROG_Phone_9/anh_chi_tiet/chi-tiet-01.webp"
     ]
   },
   {
@@ -550,7 +600,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Máy tính bảng",
     "description": "iPad Pro M4 thiết kế siêu mỏng kỷ lục 5.1mm, trang bị màn hình Ultra Retina XDR Tandem OLED tiên phong kết hợp sức mạnh phi thường từ chip Apple M4 thế hệ mới, đáp ứng hoàn hảo mọi tác vụ đồ họa chuyên sâu.",
-    "image": "assets/img/SP010.png",
+    "image": "assets/img/SP010_iPad_Pro_M4/anh_chinh.png",
     "createdAt": "2026-09-15",
     "isDeleted": false,
     "attributes": [
@@ -580,7 +630,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 25200000,
         "price": 28990000,
-        "stock": 12
+        "stock": 12,
+        "image": "assets/img/SP010_iPad_Pro_M4/anh_mau/bac-anh-kim.webp"
       },
       {
         "sku": "SP010-DEN_KHONG_GIAN-8GB-512GB",
@@ -589,9 +640,13 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 29500000,
         "price": 34490000,
-        "stock": 6
+        "stock": 6,
+        "image": "assets/img/SP010_iPad_Pro_M4/anh_mau/den-khong-gian.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP010_iPad_Pro_M4/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP010_iPad_Pro_M4/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 11,
@@ -600,7 +655,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Máy tính bảng",
     "description": "iPad Air 6 nâng cấp vượt bậc với chip Apple M2 mạnh mẽ, màn hình Liquid Retina tuyệt đẹp sắc nét, camera trước Center Stage góc siêu rộng nằm ở cạnh ngang tối ưu cho gọi video và học tập trực tuyến.",
-    "image": "assets/img/SP011.png",
+    "image": "assets/img/SP011_iPad_Air_6/anh_chinh.jpg",
     "createdAt": "2026-09-15",
     "isDeleted": false,
     "attributes": [
@@ -629,7 +684,8 @@ const defaultProducts = [
         "rom": "128GB",
         "cost": 14500000,
         "price": 16990000,
-        "stock": 15
+        "stock": 15,
+        "image": "assets/img/SP011_iPad_Air_6/anh_mau/xam-khong-gian.png"
       },
       {
         "sku": "SP011-XANH_DUONG-8GB-128GB",
@@ -638,7 +694,8 @@ const defaultProducts = [
         "rom": "128GB",
         "cost": 14500000,
         "price": 16990000,
-        "stock": 10
+        "stock": 10,
+        "image": "assets/img/SP011_iPad_Air_6/anh_mau/xanh-duong.jpg"
       },
       {
         "sku": "SP011-TIM_PASTEL-8GB-256GB",
@@ -647,9 +704,13 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 16800000,
         "price": 19490000,
-        "stock": 7
+        "stock": 7,
+        "image": "assets/img/SP011_iPad_Air_6/anh_mau/tim-pastel.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP011_iPad_Air_6/anh_chi_tiet/chi-tiet-01.webp",
+      "assets/img/SP011_iPad_Air_6/anh_chi_tiet/chi-tiet-02.jpg"]
   },
   {
     "id": 12,
@@ -658,7 +719,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Máy tính bảng",
     "description": "Galaxy Tab S10+ sở hữu màn hình Dynamic AMOLED 2X 12.4\" phủ lớp chống chói cao cấp, chip MediaTek Dimensity 9300+ tiến trình 4nm, kèm bút S-Pen kháng nước chuẩn IP68 và quyền năng Galaxy AI vượt trội.",
-    "image": "assets/img/SP012.png",
+    "image": "assets/img/SP012_Galaxy_Tab_S10_Plus/anh_chinh.png",
     "createdAt": "2026-09-23",
     "isDeleted": false,
     "attributes": [
@@ -687,7 +748,8 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 21000000,
         "price": 24990000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP012_Galaxy_Tab_S10_Plus/anh_mau/xam-thay-the.png"
       },
       {
         "sku": "SP012-BAC_PLATINUM-12GB-512GB",
@@ -696,9 +758,13 @@ const defaultProducts = [
         "rom": "512GB",
         "cost": 24500000,
         "price": 28490000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP012_Galaxy_Tab_S10_Plus/anh_mau/bac-thay-the.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP012_Galaxy_Tab_S10_Plus/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP012_Galaxy_Tab_S10_Plus/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 13,
@@ -707,7 +773,7 @@ const defaultProducts = [
     "brand": "Xiaomi",
     "category": "Máy tính bảng",
     "description": "Máy tính bảng Xiaomi Pad 6 Pro mang đến màn hình 11\" tần số quét mượt mà 144Hz chuẩn màu 2.8K, vi xử lý Snapdragon 8+ Gen 1 mạnh mẽ, hệ thống 4 loa Dolby Atmos đỉnh cao và sạc siêu tốc 67W.",
-    "image": "assets/img/SP013.png",
+    "image": "assets/img/SP013_Xiaomi_Pad_6_Pro/anh_chinh.webp",
     "createdAt": "2026-09-17",
     "isDeleted": false,
     "attributes": [
@@ -736,7 +802,8 @@ const defaultProducts = [
         "rom": "128GB",
         "cost": 7200000,
         "price": 8990000,
-        "stock": 16
+        "stock": 16,
+        "image": "assets/img/SP013_Xiaomi_Pad_6_Pro/anh_mau/den-titan.jpg"
       },
       {
         "sku": "SP013-XANH_BANG-12GB-256GB",
@@ -745,9 +812,13 @@ const defaultProducts = [
         "rom": "256GB",
         "cost": 8800000,
         "price": 10990000,
-        "stock": 9
+        "stock": 9,
+        "image": "assets/img/SP013_Xiaomi_Pad_6_Pro/anh_mau/xanh-bang.jpg"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP013_Xiaomi_Pad_6_Pro/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP013_Xiaomi_Pad_6_Pro/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 14,
@@ -756,7 +827,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Tai nghe",
     "description": "Tai nghe AirPods Pro 2 cổng sạc USB-C trang bị chip Apple H2 mang lại khả năng chống ồn chủ động ANC tốt hơn gấp 2 lần, chế độ Xuyên Âm Thích Ứng thông minh và chuẩn kháng bụi nước IP54 bền bỉ.",
-    "image": "assets/img/SP014.png",
+    "image": "assets/img/SP014_AirPods_Pro_2/anh_chinh.png",
     "createdAt": "2026-09-16",
     "isDeleted": false,
     "attributes": [
@@ -782,9 +853,13 @@ const defaultProducts = [
         "rom": null,
         "cost": 4700000,
         "price": 5690000,
-        "stock": 0
+        "stock": 0,
+        "image": "assets/img/SP014_AirPods_Pro_2/anh_mau/trang.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP014_AirPods_Pro_2/anh_chi_tiet/chi-tiet-01.jpg",
+      "assets/img/SP014_AirPods_Pro_2/anh_chi_tiet/chi-tiet-02.jpg"]
   },
   {
     "id": 15,
@@ -793,7 +868,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Tai nghe",
     "description": "Tai nghe không dây Galaxy Buds3 Pro tái định nghĩa thiết kế với dải đèn Blade Lights hiện đại, âm thanh Hi-Fi 24-bit đỉnh cao cùng bộ khử tiếng ồn thích ứng AI thích ứng linh hoạt theo môi trường xung quanh.",
-    "image": "assets/img/SP015.png",
+    "image": "assets/img/SP015_Galaxy_Buds3_Pro/anh_chinh.webp",
     "createdAt": "2026-09-22",
     "isDeleted": false,
     "attributes": [
@@ -820,7 +895,8 @@ const defaultProducts = [
         "rom": null,
         "cost": 4200000,
         "price": 4990000,
-        "stock": 18
+        "stock": 18,
+        "image": "assets/img/SP015_Galaxy_Buds3_Pro/anh_mau/bac-titan.webp"
       },
       {
         "sku": "SP015-TRANG_MAY",
@@ -829,9 +905,13 @@ const defaultProducts = [
         "rom": null,
         "cost": 4200000,
         "price": 4990000,
-        "stock": 14
+        "stock": 14,
+        "image": "assets/img/SP015_Galaxy_Buds3_Pro/anh_mau/trang-may.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP015_Galaxy_Buds3_Pro/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP015_Galaxy_Buds3_Pro/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 16,
@@ -840,7 +920,7 @@ const defaultProducts = [
     "brand": "Sony",
     "category": "Tai nghe",
     "description": "Sony WF-1000XM5 là đỉnh cao tai nghe chống ồn với 2 bộ xử lý chuyên dụng V2 và QN2e, màng loa Dynamic Driver X tái tạo âm thanh trung thực chuẩn Hi-Res Audio Wireless LDAC và micro định hướng AI đàm thoại rõ nét.",
-    "image": "assets/img/SP016.png",
+    "image": "assets/img/SP016_Sony_WF_1000XM5/anh_chinh.png",
     "createdAt": "2026-09-19",
     "isDeleted": false,
     "attributes": [
@@ -866,7 +946,8 @@ const defaultProducts = [
         "rom": null,
         "cost": 5100000,
         "price": 5990000,
-        "stock": 0
+        "stock": 0,
+        "image": "assets/img/SP016_Sony_WF_1000XM5/anh_mau/den-nham.png"
       },
       {
         "sku": "SP016-BAC_BACH_KIM",
@@ -875,9 +956,13 @@ const defaultProducts = [
         "rom": null,
         "cost": 5100000,
         "price": 5990000,
-        "stock": 0
+        "stock": 0,
+        "image": "assets/img/SP016_Sony_WF_1000XM5/anh_mau/bac-bach-kim.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP016_Sony_WF_1000XM5/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP016_Sony_WF_1000XM5/anh_chi_tiet/chi-tiet-02.jpg"]
   },
   {
     "id": 17,
@@ -886,7 +971,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Đồng hồ thông minh",
     "description": "Apple Watch Series 10 sở hữu màn hình OLED góc rộng lớn nhất và mỏng nhất từng có trên Apple Watch, sạc nhanh ấn tượng 80% trong 30 phút cùng các cảm biến theo dõi ngưng thở khi ngủ và đo độ sâu chuẩn xác.",
-    "image": "assets/img/SP017.png",
+    "image": "assets/img/SP017_Apple_Watch_Series_10/anh_chinh.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -914,7 +999,8 @@ const defaultProducts = [
         "rom": "64GB",
         "cost": 9200000,
         "price": 10990000,
-        "stock": 3
+        "stock": 3,
+        "image": "assets/img/SP017_Apple_Watch_Series_10/anh_mau/nhom-den-bong.png"
       },
       {
         "sku": "SP017-NHOM_BAC-64GB",
@@ -923,9 +1009,13 @@ const defaultProducts = [
         "rom": "64GB",
         "cost": 9200000,
         "price": 10990000,
-        "stock": 2
+        "stock": 2,
+        "image": "assets/img/SP017_Apple_Watch_Series_10/anh_mau/nhom-bac.webp"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP017_Apple_Watch_Series_10/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP017_Apple_Watch_Series_10/anh_chi_tiet/chi-tiet-02.jpg"]
   },
   {
     "id": 18,
@@ -934,7 +1024,7 @@ const defaultProducts = [
     "brand": "Samsung",
     "category": "Đồng hồ thông minh",
     "description": "Galaxy Watch7 trang bị vi xử lý 3nm mạnh mẽ vượt trội, cảm biến BioActive tiên tiến nhất hỗ trợ chấm điểm năng lượng Energy Score của Galaxy AI và định vị GPS tần số kép cực kỳ chính xác khi luyện tập ngoài trời.",
-    "image": "assets/img/SP018.png",
+    "image": "assets/img/SP018_Galaxy_Watch7/anh_chinh.png",
     "createdAt": "2026-09-21",
     "isDeleted": false,
     "attributes": [
@@ -961,7 +1051,8 @@ const defaultProducts = [
         "rom": "32GB",
         "cost": 5500000,
         "price": 6990000,
-        "stock": 0
+        "stock": 0,
+        "image": "assets/img/SP018_Galaxy_Watch7/anh_mau/xanh-quan-doi.png"
       },
       {
         "sku": "SP018-BAC_KEM-32GB",
@@ -970,9 +1061,13 @@ const defaultProducts = [
         "rom": "32GB",
         "cost": 5500000,
         "price": 6990000,
-        "stock": 0
+        "stock": 0,
+        "image": "assets/img/SP018_Galaxy_Watch7/anh_mau/bac-kem.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP018_Galaxy_Watch7/anh_chi_tiet/chi-tiet-01.webp",
+      "assets/img/SP018_Galaxy_Watch7/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 19,
@@ -981,7 +1076,7 @@ const defaultProducts = [
     "brand": "Apple",
     "category": "Phụ kiện",
     "description": "Đế sạc MagSafe 25W chính hãng Apple hỗ trợ chuẩn sạc không dây thế hệ mới Qi2, cho phép sạc không dây siêu nhanh 50% chỉ trong 30 phút cho iPhone 16 series, cáp bện dù chống rối siêu bền bỉ.",
-    "image": "assets/img/SP019.png",
+    "image": "assets/img/SP019_Apple_MagSafe/anh_chinh.png",
     "createdAt": "2026-09-20",
     "isDeleted": false,
     "attributes": [
@@ -1006,7 +1101,8 @@ const defaultProducts = [
         "rom": null,
         "cost": 850000,
         "price": 1190000,
-        "stock": 25
+        "stock": 25,
+        "image": "assets/img/SP019_Apple_MagSafe/anh_mau/trang-1m.png"
       },
       {
         "sku": "SP019-TRANG_2M",
@@ -1015,9 +1111,14 @@ const defaultProducts = [
         "rom": null,
         "cost": 1100000,
         "price": 1490000,
-        "stock": 20
+        "stock": 20,
+        "image": "assets/img/SP019_Apple_MagSafe/anh_mau/trang-2m.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP019_Apple_MagSafe/anh_chi_tiet/bo-sac-magsafe-apple-kem-cap-type-c-2m-5.webp",
+      "assets/img/SP019_Apple_MagSafe/anh_chi_tiet/chi-tiet-01.png",
+      "assets/img/SP019_Apple_MagSafe/anh_chi_tiet/chi-tiet-02.png"]
   },
   {
     "id": 20,
@@ -1026,7 +1127,7 @@ const defaultProducts = [
     "brand": "Anker",
     "category": "Phụ kiện",
     "description": "Củ sạc nhanh Anker GaNPrime 65W thiết kế siêu nhỏ gọn chân gập tiện lợi, trang bị 2 cổng USB-C và 1 cổng USB-A cho phép sạc cùng lúc laptop, máy tính bảng và điện thoại với công nghệ an toàn ActiveShield 2.0.",
-    "image": "assets/img/SP020.png",
+    "image": "assets/img/SP020_Anker_GaN_65W/anh_chinh.png",
     "createdAt": "2026-09-22",
     "isDeleted": false,
     "attributes": [
@@ -1051,7 +1152,8 @@ const defaultProducts = [
         "rom": null,
         "cost": 580000,
         "price": 790000,
-        "stock": 25
+        "stock": 25,
+        "image": "assets/img/SP020_Anker_GaN_65W/anh_mau/den-nham.png"
       },
       {
         "sku": "SP020-TRANG_BAC",
@@ -1060,9 +1162,13 @@ const defaultProducts = [
         "rom": null,
         "cost": 580000,
         "price": 790000,
-        "stock": 20
+        "stock": 20,
+        "image": "assets/img/SP020_Anker_GaN_65W/anh_mau/trang-bac.png"
       }
-    ]
+    ],
+    "gallery": [
+      "assets/img/SP020_Anker_GaN_65W/anh_chi_tiet/chi-tiet-01.jpg",
+      "assets/img/SP020_Anker_GaN_65W/anh_chi_tiet/chi-tiet-02.webp"]
   }
 ];
 
@@ -1395,16 +1501,17 @@ function setStorage(key, val) {
 }
 
 function normalizeProductImagePath(image, code) {
-  const productCode = String(code || 'SP000').replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'SP000';
   const imageValue = String(image || '').trim();
-  const pathMatch = imageValue.match(/^assets\/img\/([a-z0-9_-]+)\.(png|jpe?g|webp)$/i);
-  if (pathMatch) {
-    const baseName = pathMatch[1].toUpperCase();
-    if (baseName === productCode || baseName.startsWith(`${productCode}_`)) {
-      return `assets/img/${baseName}.${pathMatch[2].toLowerCase()}`;
+  if (imageValue) {
+    if (/^(?:https?:|data:|blob:|file:)/i.test(imageValue)) {
+      return imageValue;
+    }
+    if (/^assets\/img\//i.test(imageValue)) {
+      return imageValue;
     }
   }
 
+  const productCode = String(code || 'SP000').replace(/[^a-zA-Z0-9]/g, '').toUpperCase() || 'SP000';
   const mimeType = imageValue.match(/^data:image\/(png|jpe?g|webp);/i);
   const fileExtension = imageValue.match(/\.(png|jpe?g|webp)(?:[?#].*)?$/i);
   const extension = mimeType
@@ -1422,6 +1529,7 @@ function normalizeProductImagePath(image, code) {
 function normalizeProduct(p) {
   if (!p) return null;
   p.image = normalizeProductImagePath(p.image || p.img, p.code);
+  p.gallery = Array.isArray(p.gallery) ? p.gallery : [];
   p.imageId = String(p.code || '');
   delete p.img;
   p.isDeleted = Boolean(p.isDeleted);
@@ -1703,14 +1811,44 @@ function initDefaultData(forceReset = false) {
 function getProducts() {
   initDefaultData();
   const raw = getStorage('techno_products', defaultProducts);
-  const hasImageMigration = raw.some(product =>
-    product && (
-      product.image !== normalizeProductImagePath(product.image || product.img, product.code) ||
-      Object.prototype.hasOwnProperty.call(product, 'img') ||
-      product.imageId !== String(product.code || '') ||
-      (Array.isArray(product.variants) && product.variants.some(variant => variant.imageId !== String(variant.sku || '')))
-    )
-  );
+  const defaultMap = new Map(defaultProducts.map(dp => [dp.code, dp]));
+  let hasImageMigration = false;
+
+  raw.forEach(product => {
+    if (!product) return;
+    const dp = defaultMap.get(product.code);
+    if (dp) {
+      const currentImage = String(product.image || '');
+      const usesBundledImage = /^assets\/img\//i.test(currentImage);
+      if (!currentImage || (usesBundledImage && currentImage !== dp.image)) {
+        product.image = dp.image;
+        hasImageMigration = true;
+      }
+
+      const currentGallery = Array.isArray(product.gallery) ? product.gallery : [];
+      const usesBundledGallery = currentGallery.every(path => /^assets\/img\//i.test(String(path || '')));
+      if (usesBundledGallery && JSON.stringify(currentGallery) !== JSON.stringify(dp.gallery)) {
+        product.gallery = [...dp.gallery];
+        hasImageMigration = true;
+      }
+      if (Array.isArray(product.variants) && Array.isArray(dp.variants)) {
+        product.variants.forEach(variant => {
+          const dv = dp.variants.find(item => item.sku === variant.sku || item.color === variant.color);
+          if (!dv || !dv.image) return;
+
+          const currentVariantImage = String(variant.image || '');
+          const usesBundledVariantImage = /^assets\/img\//i.test(currentVariantImage);
+          const shouldUpdateVariantImage = !currentVariantImage ||
+            (usesBundledVariantImage && currentVariantImage !== dv.image);
+          if (shouldUpdateVariantImage) {
+            variant.image = dv.image;
+            hasImageMigration = true;
+          }
+        });
+      }
+    }
+  });
+
   const products = raw.map(normalizeProduct);
   if (hasImageMigration) setStorage('techno_products', products);
   return products;
