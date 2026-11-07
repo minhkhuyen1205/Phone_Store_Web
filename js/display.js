@@ -313,6 +313,7 @@ function renderOrderCardHtml(o, allProducts = []) {
   const tone = typeof getStatusTone === 'function' ? getStatusTone(o.status) : 'neutral';
   const itemsHtml = (o.items || []).map(it => {
     let p = null;
+    let found = null;
     let sku = '';
     let name = 'Sản phẩm';
     let price = 0;
@@ -327,7 +328,7 @@ function renderOrderCardHtml(o, allProducts = []) {
       sku = (p && p.variants && p.variants[0]) ? p.variants[0].sku : `SP00${id}-STD`;
     } else {
       sku = it.sku || '';
-      const found = typeof findVariantBySku === 'function' ? findVariantBySku(sku) : null;
+      found = typeof findVariantBySku === 'function' ? findVariantBySku(sku) : null;
       p = found ? found.product : allProducts.find(x => x.id === it.productId);
       name = it.name || (p ? p.name : 'Sản phẩm');
       price = it.price || (found ? found.variant.price : (p ? p.basePrice || p.price : 0));
