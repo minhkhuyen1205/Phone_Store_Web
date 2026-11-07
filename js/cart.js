@@ -109,7 +109,7 @@ function initCartPage(options = {}) {
     const total = selectedItems.length > 0 ? subtotal + shipping : 0;
 
     const itemsHtml = items.map(item => `
-      <div class="cart-item-card">
+      <div class="cart-item-card" onclick="handleCartItemCardClick(event, ${item.product.id})">
         <input
           class="cart-item-checkbox"
           type="checkbox"
@@ -117,9 +117,14 @@ function initCartPage(options = {}) {
           ${selectedSkus.has(item.sku) ? 'checked' : ''}
           onchange="handleToggleCartSelection('${item.sku}', this.checked)"
         />
-        <div class="cart-item-thumb" style="display: grid; place-items: center; overflow: hidden;">
+        <a
+          href="${getStorePageUrl('detail', { id: item.product.id })}"
+          class="cart-item-thumb"
+          aria-label="Xem chi tiết ${item.product.name}"
+          style="display: grid; place-items: center; overflow: hidden;"
+        >
           ${renderProductImage(item.variant && item.variant.image ? { ...item.product, image: item.variant.image, imageId: item.variant.sku } : item.product, 'width:76px;height:76px;')}
-        </div>
+        </a>
 
         <div class="cart-item-details">
           <a href="${getStorePageUrl('detail', { id: item.product.id })}" class="cart-item-name">
@@ -203,6 +208,11 @@ function initCartPage(options = {}) {
       </div>
     `;
   }
+
+  window.handleCartItemCardClick = (event, productId) => {
+    if (event.target.closest('a, button, input, select, textarea, label')) return;
+    window.location.href = getStorePageUrl('detail', { id: productId });
+  };
 
   window.handleUpdateCartQty = (sku, newQty) => {
     if (newQty <= 0) {
