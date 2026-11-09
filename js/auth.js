@@ -288,6 +288,7 @@ function initProfilePage(options = {}) {
   if (!container) return;
 
   const homeUrl = getStorePageUrl('home');
+  const iconPath = `${options.basePath || './'}assets/icon/`;
 
   // Kiểm tra đăng nhập
   const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
@@ -308,7 +309,7 @@ function initProfilePage(options = {}) {
     if (!input) return;
     const old = document.getElementById(`${id}-error`); if (old) old.remove();
     const error = document.createElement('span'); error.id = `${id}-error`; error.className = 'profile-field-error'; error.setAttribute('role', 'alert'); error.textContent = message;
-    input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', error.id); input.insertAdjacentElement('afterend', error);
+    input.setAttribute('aria-invalid', 'true'); input.setAttribute('aria-describedby', error.id); (input.closest('.password-input-wrap') || input).insertAdjacentElement('afterend', error);
     input.addEventListener('input', () => { error.remove(); input.removeAttribute('aria-invalid'); input.removeAttribute('aria-describedby'); }, { once: true });
   };
   // Hỗ trợ mở trực tiếp một đơn vừa đặt từ trang thanh toán.
@@ -564,11 +565,23 @@ function initProfilePage(options = {}) {
             ${activeTab === 'security' ? `
               ${needsPasswordChange() ? '<div class="alert-banner info">Bạn cần đổi mật khẩu tạm thời trước khi tiếp tục.</div>' : ''}
               <form class="info-form-box" novalidate onsubmit="handleChangePassword(event)">
-                <div class="password-heading info-full-col"><h2 class="profile-form-title">Đổi mật khẩu</h2><button type="button" class="password-lamp" aria-label="Hiển thị mật khẩu" aria-pressed="false" title="Hiển thị mật khẩu" onclick="toggleProfilePasswords(this)"><svg viewBox="0 0 32 32" aria-hidden="true"><path class="lamp-rays" d="M16 2v3M5 7l2 2M27 7l-2 2"/><path class="lamp-shade" d="M8 18l3-9h10l3 9H8z"/><path d="M16 18v7m-5 3h10m-8-3h6"/></svg><span class="password-lamp-label">Hiển thị mật khẩu</span></button></div>
-                <div class="form-field info-full-col"><label class="form-label" for="currentPassword">Mật khẩu hiện tại</label><input id="currentPassword" type="password" class="input-control" required autocomplete="current-password"></div>
-                <div class="form-field"><label class="form-label" for="newPassword">Mật khẩu mới</label><input id="newPassword" type="password" class="input-control" required minlength="6" autocomplete="new-password"><small>Tối thiểu 6 ký tự.</small></div>
-                <div class="form-field"><label class="form-label" for="confirmPassword">Nhập lại mật khẩu mới</label><input id="confirmPassword" type="password" class="input-control" required minlength="6" autocomplete="new-password"></div>
-                <small class="info-full-col" id="passwordVisibilityNote" aria-live="polite" hidden>Mật khẩu đang hiển thị trên màn hình.</small>
+                <h2 class="profile-form-title info-full-col">Đổi mật khẩu</h2>
+                ${[
+                  { id: 'currentPassword', label: 'Mật khẩu hiện tại', autocomplete: 'current-password', fullWidth: true },
+                  { id: 'newPassword', label: 'Mật khẩu mới', autocomplete: 'new-password', hint: '<small>Tối thiểu 6 ký tự.</small>' },
+                  { id: 'confirmPassword', label: 'Nhập lại mật khẩu mới', autocomplete: 'new-password' }
+                ].map(field => `
+                  <div class="form-field ${field.fullWidth ? 'info-full-col' : ''}">
+                    <label class="form-label" for="${field.id}">${field.label}</label>
+                    <div class="password-input-wrap">
+                      <input id="${field.id}" type="password" class="input-control" required ${field.id !== 'currentPassword' ? 'minlength="6"' : ''} autocomplete="${field.autocomplete}">
+                      <button type="button" class="password-visibility-toggle" aria-label="Hiển thị ${field.label.toLowerCase()}" aria-pressed="false" aria-controls="${field.id}" data-password-label="${field.label.toLowerCase()}" onclick="toggleProfilePassword(this)">
+                        <img src="${iconPath}eye-off.svg" class="icon" alt="" />
+                      </button>
+                    </div>
+                    ${field.hint || ''}
+                  </div>
+                `).join('')}
                 <div class="profile-form-actions info-full-col"><button class="btn btn-primary btn-md" type="submit">Đổi mật khẩu</button></div>
               </form>
             ` : ''}
@@ -691,15 +704,17 @@ function initProfilePage(options = {}) {
     render();
   };
 
-  window.toggleProfilePasswords = (button) => {
-    const show = button.getAttribute('aria-pressed') !== 'true';
-    const form = button.closest('form');
-    form.querySelectorAll('#currentPassword, #newPassword, #confirmPassword').forEach(input => { input.type = show ? 'text' : 'password'; });
+  window.toggleProfilePassword = (button) => {
+    const input = document.getElementById(button.getAttribute('aria-controls'));
+    if (!input) return;
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
     button.setAttribute('aria-pressed', String(show));
-    button.setAttribute('aria-label', show ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu');
-    button.title = show ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu';
-    button.querySelector('.password-lamp-label').textContent = show ? 'Ẩn mật khẩu' : 'Hiển thị mật khẩu';
-    form.querySelector('#passwordVisibilityNote').hidden = !show;
+    const action = show ? 'Ẩn' : 'Hiển thị';
+    const label = button.dataset.passwordLabel;
+    button.setAttribute('aria-label', `${action} ${label}`);
+    button.title = `${action} ${label}`;
+    button.querySelector('img').src = `${iconPath}${show ? 'view.svg' : 'eye-off.svg'}`;
   };
 
   window.handleChangePassword = (e) => {
