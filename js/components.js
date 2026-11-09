@@ -128,15 +128,25 @@ function renderStoreHeader(containerId, options = {}) {
   const user = getCurrentUser();
   const customer = user && typeof getCustomers === 'function' ? getCustomers().find(item => String(item.id) === String(user.id)) : null;
   const escapeHeader = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  const activeCategories = typeof getActiveCategories === 'function'
+    ? getActiveCategories()
+    : ['Điện thoại', 'Máy tính bảng', 'Tai nghe', 'Đồng hồ thông minh', 'Phụ kiện'];
   const accountName = (customer && customer.name) || (user && (user.name || user.fullName || user.username)) || 'Tài khoản';
   const initials = String(accountName).trim().split(/\s+/).filter(Boolean).slice(-2).map(part => part[0].toUpperCase()).join('') || 'KH';
   const avatar = customer && /^data:image\/(png|jpeg|webp);base64,/i.test(customer.avatar || '') ? customer.avatar : '';
+  const accountAvatar = avatar
+    ? `<img src="${escapeHeader(avatar)}" alt="" />`
+    : escapeHeader(initials);
   const cartCount = getCartCount();
   const q = options.query || '';
 
   container.innerHTML = `
     <header class="store-header">
       <div class="header-container">
+        <button type="button" class="mobile-menu-toggle" aria-label="Mở menu" aria-expanded="false" aria-controls="storeMobileMenu">
+          <img src="${iconPath}menu.svg" class="icon" alt="" />
+        </button>
+
         <!-- Logo cửa hàng -->
         <a href="${homeUrl}" class="brand-logo">
           <img src="${iconPath}dien-thoai.svg" class="icon icon-32" alt="TechnoStore Logo" />
@@ -145,27 +155,31 @@ function renderStoreHeader(containerId, options = {}) {
 
         <!-- Liên kết điều hướng chính (tự động lọc các danh mục đang hoạt động) -->
         <nav class="store-nav">
-          ${(typeof getActiveCategories === 'function' ? getActiveCategories() : ['Điện thoại', 'Máy tính bảng', 'Tai nghe', 'Đồng hồ thông minh', 'Phụ kiện'])
-      .slice(0, 4)
+          ${activeCategories.slice(0, 4)
       .map(c => `
               <a href="${homeUrl}?cat=${encodeURIComponent(c)}" class="nav-link ${options.activeCategory === c ? 'active' : ''}">${c}</a>
             `).join('')}
           <a href="${user ? getStorePageUrl('history') : getStorePageUrl('login', { redirect: 'history' })}" class="nav-link ${options.activePage === 'orders' ? 'active' : ''}">Đơn hàng</a>
         </nav>
 
-        <!-- Thanh tìm kiếm -->
-        <div class="header-search">
-          <img src="${iconPath}tim-kiem.svg" class="header-search-icon icon icon-16" alt="Tìm kiếm" />
-          <form action="${homeUrl}" method="GET" onsubmit="handleHeaderSearch(event)">
-            <input 
-              type="text" 
-              name="q" 
-              id="headerSearchInput" 
-              value="${q}" 
-              placeholder="Tìm iPhone, Galaxy, AirPods..." 
-              class="header-search-input" 
-            />
-          </form>
+        <!-- Thanh tìm kiếm và nút tải lại -->
+        <div class="header-search-group">
+          <div class="header-search">
+            <img src="${iconPath}tim-kiem.svg" class="header-search-icon icon icon-16" alt="Tìm kiếm" />
+            <form action="${homeUrl}" method="GET" onsubmit="handleHeaderSearch(event)">
+              <input
+                type="text"
+                name="q"
+                id="headerSearchInput"
+                value="${q}"
+                placeholder="Tìm iPhone, Galaxy, AirPods..."
+                class="header-search-input"
+              />
+            </form>
+          </div>
+          <button type="button" class="header-refresh-btn" onclick="window.location.reload()" aria-label="Tải lại trang" title="Tải lại trang">
+            <img src="${iconPath}refresh.svg" class="icon icon-18" alt="" />
+          </button>
         </div>
 
         <!-- Thao tác tài khoản và giỏ hàng -->
@@ -194,7 +208,98 @@ function renderStoreHeader(containerId, options = {}) {
         </div>
       </div>
     </header>
+
+    <div class="mobile-menu-layer" id="storeMobileMenu" aria-hidden="true">
+      <button type="button" class="mobile-menu-backdrop" aria-label="Đóng menu"></button>
+      <aside class="mobile-menu-drawer" role="dialog" aria-modal="true" aria-label="Menu điều hướng" inert>
+        <div class="mobile-menu-header">
+          <a href="${homeUrl}" class="brand-logo">
+            <img src="${iconPath}dien-thoai.svg" class="icon icon-32" alt="" />
+            Techno<span class="brand-accent">Store</span>
+          </a>
+          <button type="button" class="mobile-menu-close" aria-label="Đóng menu">×</button>
+        </div>
+        <div class="mobile-menu-content">
+          ${user ? `
+            <a class="mobile-menu-account" href="${getStorePageUrl('profile', { tab: 'info' })}">
+              <span class="account-avatar">${accountAvatar}</span>
+              <span class="mobile-menu-account-details">
+                <strong>${escapeHeader(accountName)}</strong>
+                <span>${escapeHeader((customer && customer.phone) || user.phone || 'Đã đăng nhập')}</span>
+              </span>
+            </a>
+          ` : ''}
+          <div class="mobile-menu-section">
+            <h2 class="mobile-menu-section-title">Danh mục sản phẩm</h2>
+            <nav class="mobile-menu-nav" aria-label="Danh mục sản phẩm">
+              ${activeCategories.map(category => `
+                <a class="mobile-menu-link" href="${homeUrl}?cat=${encodeURIComponent(category)}">${escapeHeader(category)}</a>
+              `).join('')}
+            </nav>
+          </div>
+          <div class="mobile-menu-section">
+            <h2 class="mobile-menu-section-title">Tiện ích</h2>
+            <a class="mobile-menu-link" href="${user ? getStorePageUrl('history') : getStorePageUrl('login', { redirect: 'history' })}">
+              Đơn hàng của tôi
+            </a>
+          </div>
+        </div>
+        <div class="mobile-menu-footer">
+          ${user
+      ? `<button type="button" class="mobile-menu-auth-action mobile-menu-logout">Đăng xuất</button>`
+      : `<a class="mobile-menu-auth-action" href="${getStorePageUrl('login')}">Đăng nhập / Đăng ký</a>`}
+        </div>
+      </aside>
+    </div>
   `;
+
+  const menuLayer = container.querySelector('.mobile-menu-layer');
+  const menuToggle = container.querySelector('.mobile-menu-toggle');
+  const menuDrawer = container.querySelector('.mobile-menu-drawer');
+  const closeMobileMenu = () => {
+    menuLayer.classList.remove('is-open');
+    menuLayer.setAttribute('aria-hidden', 'true');
+    menuDrawer.inert = true;
+    menuToggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('mobile-menu-scroll-locked');
+  };
+  const openMobileMenu = () => {
+    menuLayer.classList.add('is-open');
+    menuLayer.setAttribute('aria-hidden', 'false');
+    menuDrawer.inert = false;
+    menuToggle.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('mobile-menu-scroll-locked');
+    menuDrawer.querySelector('.mobile-menu-close').focus();
+  };
+
+  menuToggle.addEventListener('click', openMobileMenu);
+  menuLayer.querySelector('.mobile-menu-close').addEventListener('click', () => {
+    closeMobileMenu();
+    menuToggle.focus();
+  });
+  menuLayer.querySelector('.mobile-menu-backdrop').addEventListener('click', () => {
+    closeMobileMenu();
+    menuToggle.focus();
+  });
+  menuDrawer.addEventListener('click', event => {
+    if (event.target.closest('a')) closeMobileMenu();
+  });
+  menuDrawer.addEventListener('click', event => {
+    if (!event.target.closest('.mobile-menu-logout')) return;
+    closeMobileMenu();
+    logoutUser();
+    window.location.href = homeUrl;
+  });
+  menuLayer.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    closeMobileMenu();
+    menuToggle.focus();
+  });
+  window.addEventListener('resize', () => {
+    if (window.matchMedia('(min-width: 1101px)').matches && menuLayer.classList.contains('is-open')) {
+      closeMobileMenu();
+    }
+  });
 
   const accountWrap = container.querySelector('.account-menu-wrap');
   if (accountWrap) {
