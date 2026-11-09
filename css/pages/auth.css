@@ -259,16 +259,12 @@
   font-size: 14px;
   color: var(--color-ink-2);
 }
-.password-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
-.password-heading .profile-form-title{margin:0}
-.password-lamp{display:inline-flex;align-items:center;gap:7px;border:1px solid #dce5f2;border-radius:999px;background:#f6f8fc;color:#60718a;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s,border-color .2s,color .2s,box-shadow .2s}
-.password-lamp svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.password-lamp .lamp-rays{opacity:.25;transition:opacity .2s}
-.password-lamp[aria-pressed="true"]{background:#fff8df;border-color:#f4d77e;color:#9b6500;box-shadow:0 0 16px rgba(255,195,61,.25)}
-.password-lamp[aria-pressed="true"] .lamp-shade{fill:#ffe38b}
-.password-lamp[aria-pressed="true"] .lamp-rays{opacity:1}
-.password-lamp:focus-visible{outline:3px solid #91baff;outline-offset:3px}
-@media(max-width:420px){.password-lamp-label{font-size:0}.password-lamp{padding:6px}}
+.password-input-wrap{position:relative}
+.password-input-wrap .input-control{padding-right:48px}
+.password-visibility-toggle{position:absolute;top:50%;right:8px;display:grid;width:32px;height:32px;place-items:center;transform:translateY(-50%);border-radius:8px}
+.password-visibility-toggle:hover{background:var(--color-surface)}
+.password-visibility-toggle img{width:20px;height:20px}
+.password-visibility-toggle:focus-visible{outline:2px solid var(--color-brand-500);outline-offset:1px}
 .profile-field-error{display:block;color:#b42318;font-size:12px;margin-top:5px}
 .info-form-box input[aria-invalid="true"]{border-color:#d92d20;box-shadow:0 0 0 3px rgba(217,45,32,.12)}
 .info-form-box small{display:block;color:#66758a;font-size:12px;margin-top:6px;line-height:1.4}
