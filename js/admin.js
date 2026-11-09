@@ -1,4 +1,4 @@
-﻿/* ==========================================================================
+/* ==========================================================================
    Admin Management Portal Controller (Kiến trúc Product Variant Matrix)
    TechnoStore - Pure Vanilla JavaScript (ES6+)
    ========================================================================== */
@@ -585,8 +585,11 @@ function initAdminPortal(options = {}) {
       </button>
     `).join('');
 
-    const mobileOptions = navItems.map(item => `
-      <option value="${item.id}" ${item.id === currentTab ? 'selected' : ''}>${item.label}</option>
+    const drawerLinks = navItems.map(item => `
+      <button type="button" class="mobile-menu-link admin-drawer-nav-item ${item.id === currentTab ? 'active' : ''}" onclick="switchAdminTab('${item.id}')">
+        <img src="${iconPath}${item.icon}" class="icon icon-18" alt="" />
+        <span>${item.label}</span>
+      </button>
     `).join('');
 
     container.innerHTML = `
@@ -615,14 +618,26 @@ function initAdminPortal(options = {}) {
         <!-- Main Content Area -->
         <main class="admin-main">
           <header class="admin-header">
-            <h1 class="admin-header-title">${activeNav.label}</h1>
-            <select class="mobile-nav-select" onchange="switchAdminTab(this.value)">
-              ${mobileOptions}
-            </select>
+            <!-- Mobile/Tablet Hamburger Toggle (Left) -->
+            <button type="button" class="admin-mobile-toggle" onclick="toggleAdminMobileDrawer()" aria-label="Mở menu quản trị" aria-expanded="false" aria-controls="adminMobileMenu">
+              <img src="${iconPath}menu.svg" class="icon icon-20" alt="Menu" />
+            </button>
 
+            <!-- Mobile/Tablet Logo (Center) -->
+            <a href="javascript:void(0)" onclick="switchAdminTab('dash')" class="admin-mobile-logo" title="TechnoStore Admin">
+              <span class="admin-mobile-logo-icon">
+                <img src="${iconPath}dien-thoai.svg" class="icon icon-20" alt="" />
+              </span>
+              <span class="admin-mobile-logo-text">Techno<span class="brand-accent">Admin</span></span>
+            </a>
+
+            <!-- Desktop Header Title (Visible on Desktop) -->
+            <h1 class="admin-header-title">${activeNav.label}</h1>
+
+            <!-- Admin User / Avatar (Right) -->
             <div class="admin-header-user">
-              <span style="color: var(--color-ink-3); font-size: 14px;">Chủ cửa hàng</span>
-              <div class="admin-avatar-circle">AD</div>
+              <span class="admin-user-role" style="color: var(--color-ink-3); font-size: 14px;">Chủ cửa hàng</span>
+              <div class="admin-avatar-circle" title="Quản trị viên">AD</div>
             </div>
           </header>
 
@@ -630,6 +645,51 @@ function initAdminPortal(options = {}) {
             ${renderTabContent()}
           </div>
         </main>
+
+        <!-- Admin Off-Canvas Mobile Drawer -->
+        <div class="mobile-menu-layer" id="adminMobileMenu" aria-hidden="true">
+          <button type="button" class="mobile-menu-backdrop" onclick="closeAdminMobileDrawer()" aria-label="Đóng menu"></button>
+          <aside class="mobile-menu-drawer" role="dialog" aria-modal="true" aria-label="Menu quản trị" inert>
+            <!-- 1. Header của Menu -->
+            <div class="mobile-menu-header">
+              <a href="javascript:void(0)" onclick="switchAdminTab('dash')" class="admin-sidebar-logo" title="Trang tổng quan Admin" style="margin-bottom: 0;">
+                <span class="admin-sidebar-logo-icon">
+                  <img src="${iconPath}dien-thoai.svg" class="icon icon-28" alt="" />
+                </span>
+                <span class="admin-sidebar-logo-text">Techno<span class="brand-accent">Admin</span></span>
+              </a>
+              <button type="button" class="mobile-menu-close" onclick="closeAdminMobileDrawer()" aria-label="Đóng menu">×</button>
+            </div>
+
+            <!-- 2 & 3. Nội dung Menu -->
+            <div class="mobile-menu-content">
+              <!-- 2. Khối Thông tin Admin -->
+              <div class="mobile-menu-account admin-drawer-account">
+                <div class="admin-avatar-circle" title="Quản trị viên">AD</div>
+                <div class="admin-drawer-account-details">
+                  <strong>Quản trị viên</strong>
+                  <span>admin@technostore.vn</span>
+                </div>
+              </div>
+
+              <!-- 3. Khối Tab Quản trị (Main Navigation Links) -->
+              <div class="mobile-menu-section">
+                <h2 class="mobile-menu-section-title">Danh mục quản trị</h2>
+                <nav class="mobile-menu-nav" aria-label="Danh mục quản trị">
+                  ${drawerLinks}
+                </nav>
+              </div>
+            </div>
+
+            <!-- 4. Khối Đăng xuất (Cố định ở ĐÁY Menu) -->
+            <div class="mobile-menu-footer">
+              <button type="button" class="mobile-menu-auth-action mobile-menu-logout admin-drawer-logout" onclick="handleAdminLogout()">
+                <img src="${iconPath}thoat.svg" class="icon icon-18" alt="" />
+                Đăng xuất
+              </button>
+            </div>
+          </aside>
+        </div>
       </div>
     `;
   }
@@ -2734,6 +2794,47 @@ function initAdminPortal(options = {}) {
     render();
   };
 
+  // --------------------------------------------------------------------------
+  // ADMIN OFF-CANVAS MOBILE DRAWER CONTROLLER
+  // --------------------------------------------------------------------------
+  window.openAdminMobileDrawer = () => {
+    const layer = document.getElementById('adminMobileMenu');
+    const toggle = document.querySelector('.admin-mobile-toggle');
+    if (!layer) return;
+    const drawer = layer.querySelector('.mobile-menu-drawer');
+    layer.classList.add('is-open');
+    layer.classList.add('active');
+    layer.setAttribute('aria-hidden', 'false');
+    if (drawer) drawer.inert = false;
+    if (toggle) toggle.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('mobile-menu-scroll-locked');
+    const closeBtn = layer.querySelector('.mobile-menu-close');
+    if (closeBtn) closeBtn.focus();
+  };
+
+  window.closeAdminMobileDrawer = () => {
+    const layer = document.getElementById('adminMobileMenu');
+    const toggle = document.querySelector('.admin-mobile-toggle');
+    if (layer) {
+      const drawer = layer.querySelector('.mobile-menu-drawer');
+      layer.classList.remove('is-open');
+      layer.classList.remove('active');
+      layer.setAttribute('aria-hidden', 'true');
+      if (drawer) drawer.inert = true;
+    }
+    if (toggle) toggle.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('mobile-menu-scroll-locked');
+  };
+
+  window.toggleAdminMobileDrawer = () => {
+    const layer = document.getElementById('adminMobileMenu');
+    if (layer && (layer.classList.contains('is-open') || layer.classList.contains('active'))) {
+      window.closeAdminMobileDrawer();
+    } else {
+      window.openAdminMobileDrawer();
+    }
+  };
+
   window.switchAdminTab = (tab) => {
     // Tự động map alias tab 'prices' về 'pricing' (Giá bán)
     if (tab === 'prices') tab = 'pricing';
@@ -2751,6 +2852,7 @@ function initAdminPortal(options = {}) {
     editingReceiptId = null;
     editingReceiptItems = [];
     userMessage = '';
+    window.closeAdminMobileDrawer();
     render();
   };
 
@@ -2787,6 +2889,7 @@ function initAdminPortal(options = {}) {
 
   window.handleAdminLogout = () => {
     isLoggedIn = false;
+    window.closeAdminMobileDrawer();
     logoutAdmin();
     render();
   };
@@ -3678,6 +3781,7 @@ function initAdminPortal(options = {}) {
     const targetOrder = orders.find(o => o.id === id);
     if (!targetOrder) return;
 
+    const isOrderModalOpen = selectedOrderModal?.id === id;
     const oldStatus = targetOrder.status;
     if (newStatus === oldStatus) return;
     const wasCancelled = oldStatus === 'Đã huỷ' || oldStatus === 'Đã hủy';
@@ -3713,7 +3817,7 @@ function initAdminPortal(options = {}) {
       customers = syncCustomerOrderCounts(orders);
     }
 
-    selectedOrderModal = orders.find(order => order.id === id) || null;
+    selectedOrderModal = isOrderModalOpen ? targetOrder : null;
     products = getProducts();
     render();
   };
@@ -4015,6 +4119,19 @@ function initAdminPortal(options = {}) {
     currentPageByTab.pricing = 1;
     render();
   };
+
+  // Lắng nghe phím Esc và thay đổi kích thước màn hình để tự động đóng Drawer
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      window.closeAdminMobileDrawer();
+    }
+  });
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1024) {
+      window.closeAdminMobileDrawer();
+    }
+  });
 
   // Khởi chạy render đầu tiên
   render();
