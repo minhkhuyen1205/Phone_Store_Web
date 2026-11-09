@@ -91,7 +91,7 @@ loginForm.addEventListener('submit', event => {
     (item.email && item.email.toLowerCase() === identity.toLowerCase()) ||
     (/^0\d{9}$/.test(phone) && item.phone && normalizePhone(item.phone) === phone)
   );
-  if (!customer || !(customer.password ? customer.password === password : ['password123', '123456'].includes(password))) {
+  if (!customer || !(customer.password ? customer.password === password : ['123456'].includes(password))) {
     showError(document.getElementById('identity'), 'Thông tin đăng nhập không chính xác.');
     document.getElementById('loginPassword').setAttribute('aria-invalid', 'true');
     return;
