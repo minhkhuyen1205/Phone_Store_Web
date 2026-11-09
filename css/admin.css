@@ -44,9 +44,9 @@
   box-shadow: 4px 0 20px rgba(10, 88, 230, 0.15);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .admin-sidebar {
-    display: none;
+    display: none !important;
   }
 }
 
@@ -206,20 +206,308 @@
   color: var(--color-ink);
 }
 
-.mobile-nav-select {
-  display: block;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--color-line);
-  background-color: var(--color-white);
-  padding: 0 8px;
-  font-size: 14px;
+/* Mobile Header Toggle & Logo (Hidden by default on Desktop) */
+.admin-mobile-toggle {
+  display: none;
 }
 
-@media (min-width: 769px) {
-  .mobile-nav-select {
-    display: none;
+.admin-mobile-logo {
+  display: none;
+}
+
+/* Tablet & Mobile Admin Header + Drawer Styles (<= 1024px) */
+@media (max-width: 1024px) {
+  .admin-header {
+    height: 60px;
+    min-height: 60px;
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background-color: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--color-line);
   }
+
+  .admin-header-title {
+    display: none !important;
+  }
+
+  .admin-mobile-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    flex: 0 0 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--color-ink);
+    padding: 0;
+    transition: background-color var(--transition-fast);
+  }
+
+  .admin-mobile-toggle:hover {
+    background-color: var(--color-surface);
+  }
+
+  .admin-mobile-toggle:focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+
+  .admin-mobile-toggle .icon {
+    width: 22px;
+    height: 22px;
+    filter: brightness(0) saturate(100%);
+  }
+
+  .admin-mobile-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 12px;
+    text-decoration: none;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+    background: linear-gradient(135deg, #1a6dff 0%, #0d57d6 100%);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 8px rgba(10, 88, 230, 0.25);
+    transition: all var(--transition-fast);
+  }
+
+  .admin-mobile-logo:hover {
+    background: linear-gradient(135deg, #2575fc 0%, #1062e6 100%);
+    color: #ffffff;
+    transform: scale(1.02);
+  }
+
+  .admin-mobile-logo-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(255, 255, 255, 0.22);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
+  }
+
+  .admin-mobile-logo-icon .icon {
+    width: 20px;
+    height: 20px;
+    filter: none !important;
+  }
+
+  .admin-mobile-logo .brand-accent {
+    color: #bae6fd;
+    font-weight: 800;
+  }
+
+  .admin-header-user {
+    margin-left: 0;
+    flex: 0 0 40px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .admin-header-user .admin-user-role {
+    display: none !important;
+  }
+}
+
+/* ==========================================================================
+   ADMIN MOBILE DRAWER - BLUE THEME SYNCHRONIZED WITH DESKTOP SIDEBAR
+   ========================================================================== */
+#adminMobileMenu .mobile-menu-drawer {
+  background: linear-gradient(180deg, #1a6dff 0%, #0d57d6 55%, #0846b8 100%);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 16px 0 40px rgba(10, 88, 230, 0.35);
+  color: #ffffff;
+}
+
+#adminMobileMenu .mobile-menu-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 14px 18px;
+}
+
+#adminMobileMenu .mobile-menu-header .admin-sidebar-logo {
+  margin-bottom: 0;
+  padding: 8px 12px;
+}
+
+#adminMobileMenu .mobile-menu-close {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition-fast);
+}
+
+#adminMobileMenu .mobile-menu-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+}
+
+#adminMobileMenu .admin-drawer-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+}
+
+#adminMobileMenu .admin-drawer-account .admin-avatar-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-ink);
+  color: var(--color-white);
+  font-size: 13px;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+}
+
+#adminMobileMenu .admin-drawer-account-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+#adminMobileMenu .admin-drawer-account-details strong {
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+#adminMobileMenu .admin-drawer-account-details span {
+  color: #bae6fd;
+  font-size: 12px;
+}
+
+#adminMobileMenu .mobile-menu-section-title {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+}
+
+#adminMobileMenu .admin-drawer-nav-item {
+  display: flex;
+  width: 100%;
+  height: 44px;
+  align-items: center;
+  gap: 12px;
+  border-radius: var(--radius-lg);
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.86);
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  margin-bottom: 4px;
+}
+
+#adminMobileMenu .admin-drawer-nav-item .icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+#adminMobileMenu .admin-drawer-nav-item:hover,
+#adminMobileMenu .admin-drawer-nav-item:focus-visible {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  outline: none;
+}
+
+#adminMobileMenu .admin-drawer-nav-item:hover .icon {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+#adminMobileMenu .admin-drawer-nav-item.active {
+  background-color: #ffffff;
+  color: var(--color-brand-700);
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+#adminMobileMenu .admin-drawer-nav-item.active .icon {
+  filter: invert(24%) sepia(85%) saturate(2250%) hue-rotate(210deg) brightness(85%) contrast(105%);
+  opacity: 1;
+}
+
+#adminMobileMenu .mobile-menu-footer {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 14px 20px max(16px, env(safe-area-inset-bottom));
+}
+
+#adminMobileMenu .admin-drawer-logout {
+  display: flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border-radius: var(--radius-lg);
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.15);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+#adminMobileMenu .admin-drawer-logout:hover,
+#adminMobileMenu .admin-drawer-logout:focus-visible {
+  background-color: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #ffffff;
+  outline: none;
+}
+
+#adminMobileMenu .admin-drawer-logout .icon {
+  filter: invert(70%) sepia(50%) saturate(2000%) hue-rotate(320deg) brightness(105%) contrast(100%);
+  opacity: 0.9;
+  transition: filter var(--transition-fast);
+}
+
+#adminMobileMenu .admin-drawer-logout:hover .icon {
+  filter: brightness(0) invert(1);
 }
 
 .admin-header-user {
