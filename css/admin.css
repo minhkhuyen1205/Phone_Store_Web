@@ -206,6 +206,55 @@
   color: var(--color-ink);
 }
 
+.admin-header-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin-refresh-button {
+  display: inline-grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.admin-refresh-button:hover {
+  background: var(--color-brand-50);
+  border-color: var(--color-line);
+}
+
+.admin-refresh-button:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.admin-refresh-button.is-refreshing img,
+.admin-refresh-button.is-refreshing svg {
+  animation: adminRefreshSpin 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes adminRefreshSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.admin-mobile-brand-group {
+  display: none;
+}
+
 /* Mobile Header Toggle & Logo (Hidden by default on Desktop) */
 .admin-mobile-toggle {
   display: none;
@@ -236,6 +285,21 @@
 
   .admin-header-title {
     display: none !important;
+  }
+
+  .admin-header-title-group {
+    display: none;
+  }
+
+  .admin-mobile-brand-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: auto;
+  }
+
+  .admin-mobile-refresh-button {
+    flex: 0 0 34px;
   }
 
   .admin-mobile-toggle {
