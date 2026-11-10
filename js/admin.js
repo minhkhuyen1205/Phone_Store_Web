@@ -623,15 +623,24 @@ function initAdminPortal(options = {}) {
             </button>
 
             <!-- Mobile/Tablet Logo (Center) -->
-            <a href="javascript:void(0)" onclick="switchAdminTab('dash')" class="admin-mobile-logo" title="TechnoStore Admin">
-              <span class="admin-mobile-logo-icon">
-                <img src="${iconPath}dien-thoai.svg" class="icon icon-20" alt="" />
-              </span>
-              <span class="admin-mobile-logo-text">Techno<span class="brand-accent">Admin</span></span>
-            </a>
+            <div class="admin-mobile-brand-group">
+              <a href="javascript:void(0)" onclick="switchAdminTab('dash')" class="admin-mobile-logo" title="TechnoStore Admin">
+                <span class="admin-mobile-logo-icon">
+                  <img src="${iconPath}dien-thoai.svg" class="icon icon-20" alt="" />
+                </span>
+                <span class="admin-mobile-logo-text">Techno<span class="brand-accent">Admin</span></span>
+              </a>
+              <button type="button" class="admin-refresh-button admin-mobile-refresh-button" onclick="refreshAdminContent()" aria-label="Làm mới ${activeNav.label.toLowerCase()}" title="Làm mới">
+                <img src="${iconPath}refresh.svg" class="icon icon-18" alt="" />
+              </button>
+            </div>
 
-            <!-- Desktop Header Title (Visible on Desktop) -->
-            <h1 class="admin-header-title">${activeNav.label}</h1>
+            <div class="admin-header-title-group">
+              <h1 class="admin-header-title">${activeNav.label}</h1>
+              <button type="button" class="admin-refresh-button" onclick="refreshAdminContent()" aria-label="Làm mới ${activeNav.label.toLowerCase()}" title="Làm mới">
+                <img src="${iconPath}refresh.svg" class="icon icon-18" alt="" />
+              </button>
+            </div>
 
             <!-- Admin User / Avatar (Right) -->
             <div class="admin-header-user">
@@ -2793,6 +2802,75 @@ function initAdminPortal(options = {}) {
     render();
   };
 
+  window.refreshAdminContent = () => {
+    // 1. Nạp lại toàn bộ dữ liệu mới nhất từ Storage (đảm bảo đồng bộ với thay đổi của User & Admin)
+    products = getProducts();
+    orders = getOrders();
+    customers = typeof syncCustomerOrderCounts === 'function'
+      ? syncCustomerOrderCounts(orders)
+      : getCustomers();
+    receipts = getReceipts();
+    categories = getCategories();
+
+    // 2. Tính lại tỷ lệ lợi nhuận margin theo giá và giá vốn mới nhất
+    margins = {};
+    products.forEach(product => {
+      margins[product.id] = Math.round(((product.basePrice || product.price) / (product.cost || 1) - 1) * 100) || 15;
+    });
+
+    // 3. Đưa phân trang tab hiện tại về trang 1 và xóa bộ lọc tìm kiếm dở dang để dữ liệu mới luôn hiển thị
+    if (currentPageByTab[currentTab]) {
+      currentPageByTab[currentTab] = 1;
+    }
+
+    if (currentTab === 'orders') {
+      orderSearchQuery = '';
+      orderStatusFilter = '';
+      orderDateFrom = '';
+      orderDateTo = '';
+      receivedDateFrom = '';
+      receivedDateTo = '';
+    } else if (currentTab === 'products') {
+      prodSearchQuery = '';
+      prodCategoryFilter = '';
+    } else if (currentTab === 'stock') {
+      stockSearchQuery = '';
+      stockDateFrom = '';
+      stockDateTo = '';
+      stockOnlyLow = false;
+    } else if (currentTab === 'users') {
+      userSearchQuery = '';
+    } else if (currentTab === 'cats') {
+      catSearchQuery = '';
+    } else if (currentTab === 'receipts') {
+      receiptSearchQuery = '';
+    } else if (currentTab === 'pricing' || currentTab === 'prices') {
+      pricingSearchQuery = '';
+      pricingCategoryFilter = '';
+      editingPricingId = null;
+      skuPricingDraft = {};
+    }
+
+    // 4. Đóng các popup modal dở dang nếu có
+    selectedOrderModal = null;
+    selectedReceiptModal = null;
+    selectedUserModal = null;
+
+    // 5. Render lại toàn bộ giao diện trang quản trị
+    render();
+
+    // 6. Hiệu ứng xoay icon nút refresh và Toast thông báo trực quan
+    const refreshBtns = document.querySelectorAll('.admin-refresh-button');
+    refreshBtns.forEach(btn => {
+      btn.classList.add('is-refreshing');
+      setTimeout(() => btn.classList.remove('is-refreshing'), 600);
+    });
+
+    if (typeof showToast === 'function') {
+      showToast('Đã làm mới và đồng bộ toàn bộ dữ liệu trang quản trị!');
+    }
+  };
+
   // --------------------------------------------------------------------------
   // ADMIN OFF-CANVAS MOBILE DRAWER CONTROLLER
   // --------------------------------------------------------------------------
@@ -4136,6 +4214,29 @@ function initAdminPortal(options = {}) {
       window.closeAdminMobileDrawer();
     }
   });
+
+  // Lắng nghe sự kiện Storage để tự động đồng bộ dữ liệu Real-time khi User hoặc tab khác có thay đổi
+  const handleAdminStorageChange = (e) => {
+    if (!isLoggedIn) return;
+    const syncedKeys = ['techno_orders', 'techno_products', 'techno_customers', 'techno_receipts', 'techno_categories'];
+    if (!e.key || syncedKeys.includes(e.key)) {
+      if (!showProductForm && !showCategoryModal && !showReceiptModal && !editingPricingId) {
+        products = getProducts();
+        orders = getOrders();
+        customers = typeof syncCustomerOrderCounts === 'function' ? syncCustomerOrderCounts(orders) : getCustomers();
+        receipts = getReceipts();
+        categories = getCategories();
+        margins = {};
+        products.forEach(p => {
+          margins[p.id] = Math.round(((p.basePrice || p.price) / (p.cost || 1) - 1) * 100) || 15;
+        });
+        render();
+      }
+    }
+  };
+  window.removeEventListener('storage', window._adminStorageListener);
+  window._adminStorageListener = handleAdminStorageChange;
+  window.addEventListener('storage', handleAdminStorageChange);
 
   // Khởi chạy render đầu tiên
   render();
