@@ -274,7 +274,6 @@ function initCartPage(options = {}) {
           </button>
         </div>
       `;
-
       return html;
     }
 
