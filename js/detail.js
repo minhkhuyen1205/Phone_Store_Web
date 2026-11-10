@@ -357,8 +357,8 @@ function renderVariantSelectionChips(p) {
 }
 
 /**
- * Xử lý khi chọn Dung lượng (ROM)
- * Hỗ trợ Toggle-off (Bấm lại nút đang chọn sẽ tắt chọn về null)
+ * Xử lý khi chọn Dung lượng 
+ * Hỗ trợ Toggle-off 
  */
 function handleSelectRom(rom) {
   if (!currentProduct || !currentProduct.variants) return;
@@ -388,8 +388,8 @@ function handleSelectRom(rom) {
 }
 
 /**
- * Xử lý khi chọn Màu sắc (Color)
- * Hỗ trợ Toggle-off (Bấm lại nút đang chọn sẽ tắt chọn về null)
+ * Xử lý khi chọn Màu sắc
+ * Hỗ trợ Toggle-off 
  */
 function handleSelectColor(color) {
   if (!currentProduct || !currentProduct.variants) return;
