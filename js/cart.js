@@ -23,6 +23,25 @@ function initCartPage(options = {}) {
 
   // TASK 1: Khi tải trang Giỏ hàng, các ô vuông tick chọn sản phẩm phải ở trạng thái Unchecked (để trống)
   const selectedSkus = new Set();
+  let activeVariantSku = null;
+  const draftVariantSelections = {};
+
+  const cartColorMap = {
+    'Titan Đen': '#1f2022', 'Titan Trắng': '#f2f3f5', 'Titan Tự Nhiên': '#9b958c',
+    'Titan Sa Mạc': '#c8b29b', 'Hồng Pastel': '#f8c8d0', 'Xanh Lưu Ly': '#4682b4',
+    'Đen Nhám': '#222325', 'Xanh Titan': '#2e4057', 'Đen Titan': '#181a1b',
+    'Xám Titan': '#70737a', 'Xanh Maya': '#5c94d4', 'Xám Metal': '#8e9297',
+    'Vàng Solar': '#ebd671', 'Đen Gốm': '#111213', 'Trắng Gốm': '#ffffff',
+    'Trắng Ngọc Trai': '#faf6f0', 'Đen Không Gian': '#1c1d1f', 'Xanh Ánh Sao': '#3b5998',
+    'Đen Huyền Bí': '#1a1a1a', 'Bạc Ánh Kim': '#e2e4e8', 'Xanh Lục Bảo': '#00695c',
+    'Đen Phantom': '#111111', 'Trắng Storm': '#eeeeee', 'Xám Không Gian': '#757575',
+    'Xanh Dương': '#64b5f6', 'Tím Pastel': '#d1c4e9', 'Xám Moonstone': '#686b73',
+    'Bạc Platinum': '#e5e7eb', 'Xanh Băng': '#80deea', 'Trắng': '#ffffff',
+    'Bạc Titan': '#cfd8dc', 'Trắng Mây': '#f5f5f5', 'Bạc Bạch Kim': '#e0e0e0',
+    'Nhôm Đen Bóng': '#141517', 'Nhôm Bạc': '#d8dade', 'Xanh Quân Đội': '#4b5320',
+    'Bạc Kem': '#e0dcd3', 'Trắng 1m': '#f5f5f7', 'Trắng 2m': '#f5f5f7',
+    'Trắng Bạc': '#e0e0e0'
+  };
 
   /**
    * ĐỒNG BỘ TỒN KHO THỰC TẾ VỚI GIỎ HÀNG KHÁCH HÀNG (REAL-TIME INVENTORY RECONCILIATION)
@@ -108,6 +127,160 @@ function initCartPage(options = {}) {
     const shipping = selectedItems.length > 0 && subtotal <= 2000000 ? 30000 : 0;
     const total = selectedItems.length > 0 ? subtotal + shipping : 0;
 
+    function getCartVariantMemoryLabel(variant, product) {
+      const ram = variant && variant.ram && variant.ram !== 'Tiêu chuẩn'
+        ? variant.ram
+        : (product.ram && product.ram !== 'Tiêu chuẩn' ? product.ram : '');
+      const rom = variant && variant.rom && variant.rom !== 'Tiêu chuẩn'
+        ? variant.rom
+        : '';
+
+      if (ram && rom) return `${ram}/${rom}`;
+      return ram || rom;
+    }
+
+    function renderCartVariantDropdownContent(sku, currentItems) {
+      const item = currentItems.find(i => i.sku === sku);
+      if (!item) return '';
+      const p = item.product;
+      const draft = draftVariantSelections[sku] || { color: item.variant.color, rom: item.variant.rom, lastGroup: 'color' };
+
+      const romList = Array.from(new Set((p.variants || []).map(v => v.rom).filter(Boolean).filter(r => r !== 'Tiêu chuẩn')));
+      const colorList = Array.from(new Set((p.variants || []).map(v => v.color).filter(Boolean).filter(c => c !== 'Tiêu chuẩn')));
+
+      let html = '';
+
+      
+      // 1. Nhóm ROM/Dung lượng
+      if (romList.length > 0) {
+        const romTitle = p.category === 'Đồng hồ thông minh' ? 'Chọn bộ nhớ:' : 'Chọn dung lượng bộ nhớ:';
+
+        let currentRamRomTitle = '';
+        if (draft.rom) {
+          const matchVar = p.variants.find(v => v.rom === draft.rom && (draft.color ? v.color === draft.color : true))
+            || p.variants.find(v => v.rom === draft.rom);
+          currentRamRomTitle = getCartVariantMemoryLabel(matchVar, p) || draft.rom;
+        }
+
+        html += `
+          <div class="variant-group-box">
+            <div class="variant-group-title">
+              <span>${romTitle}</span>
+              <span class="selected-val">${currentRamRomTitle}</span>
+            </div>
+            <div class="variant-chips-grid">
+              ${romList.map(rom => {
+                const isActive = rom === draft.rom;
+
+                // Nếu đã chọn Color → chỉ mở ROM có tồn kho thuộc Color đó
+                // Chưa chọn Color → mở toàn bộ ROM có tồn kho
+                const isDisabled = draft.color
+                  ? !p.variants.some(v => v.color === draft.color && v.rom === rom && (Number(v.stock) || 0) > 0)
+                  : !p.variants.some(v => v.rom === rom && (Number(v.stock) || 0) > 0);
+
+                const variantWithRom = p.variants.find(v => v.rom === rom && (draft.color ? v.color === draft.color : true))
+                  || p.variants.find(v => v.rom === rom);
+                const ramRomLabel = getCartVariantMemoryLabel(variantWithRom, p) || rom;
+
+                return `
+                  <button
+                    type="button"
+                    class="variant-chip-btn ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}"
+                    onclick="handleSelectCartVariantRom(event, '${sku}', '${rom}')"
+                    aria-label="Chọn dung lượng ${ramRomLabel}"
+                    ${isDisabled ? 'disabled tabindex="-1" style="opacity:0.4; cursor:not-allowed; pointer-events:none; background:#f1f5f9;"' : ''}
+                  >
+                    <b>${ramRomLabel}</b>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // 2. Nhóm Màu sắc 
+      if (colorList.length > 0) {
+        let colorTitle = 'Chọn màu sắc:';
+        if (p.category === 'Phụ kiện') colorTitle = 'Chọn phân loại / quy cách:';
+        else if (p.category === 'Tai nghe') colorTitle = 'Chọn màu sắc / phiên bản:';
+
+        html += `
+          <div class="variant-group-box" style="${romList.length > 0 ? 'margin-top: 16px;' : ''}">
+            <div class="variant-group-title">
+              <span>${colorTitle}</span>
+              <span class="selected-val">${draft.color || ''}</span>
+            </div>
+            <div class="variant-chips-grid">
+              ${colorList.map(color => {
+                const isActive = color === draft.color;
+
+                // Nếu vừa click ROM → chỉ mở Màu có tồn kho thuộc ROM đó
+                // Ngược lại → mở toàn bộ Màu có tồn kho
+                const isDisabled = (draft.lastGroup === 'rom' && draft.rom)
+                  ? !p.variants.some(v => v.rom === draft.rom && v.color === color && (Number(v.stock) || 0) > 0)
+                  : !p.variants.some(v => v.color === color && (Number(v.stock) || 0) > 0);
+
+                const dotColor = cartColorMap[color] || '#8c867b';
+
+                return `
+                  <button
+                    type="button"
+                    class="variant-chip-btn ${isActive ? 'active' : ''} ${isDisabled ? 'disabled' : ''}"
+                    onclick="handleSelectCartVariantColor(event, '${sku}', '${color}')"
+                    aria-label="Chọn ${color}"
+                    ${isDisabled ? 'disabled tabindex="-1" style="opacity:0.4; cursor:not-allowed; pointer-events:none; background:#f1f5f9;"' : ''}
+                  >
+                    <span class="variant-color-dot" style="background-color: ${dotColor};"></span>
+                    <span>${color}</span>
+                  </button>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      if (colorList.length === 0 && romList.length === 0) {
+        html += `<div style="font-size:13px;color:var(--color-ink-3);padding:8px 0;">Sản phẩm chỉ có một phiên bản duy nhất tiêu chuẩn.</div>`;
+      }
+
+      // ----------------------------------------------------------------
+      // 3. Nút Xác nhận / Hủy
+      // ----------------------------------------------------------------
+      // Tính variant khớp hiện tại (giống syncVariantSelection trong detail.js)
+      let matchedVariant = null;
+      if (colorList.length > 0 && romList.length > 0) {
+        if (draft.color && draft.rom) {
+          matchedVariant = p.variants.find(v => v.color === draft.color && v.rom === draft.rom) || null;
+        }
+      } else if (colorList.length > 0) {
+        matchedVariant = draft.color ? p.variants.find(v => v.color === draft.color) || null : null;
+      } else if (romList.length > 0) {
+        matchedVariant = draft.rom ? p.variants.find(v => v.rom === draft.rom) || null : null;
+      } else {
+        matchedVariant = p.variants[0] || null;
+      }
+
+      const isAvailable = Boolean(matchedVariant && (Number(matchedVariant.stock) || 0) > 0);
+
+      html += `
+        <div class="cart-variant-actions">
+          <button type="button" class="cart-variant-btn-cancel" onclick="handleCancelCartVariant(event, '${sku}')">Hủy</button>
+          <button
+            type="button"
+            class="cart-variant-btn-confirm"
+            onclick="handleConfirmCartVariant(event, '${sku}')"
+            ${!isAvailable ? 'disabled title="Vui lòng chọn đủ màu sắc / dung lượng hoặc phiên bản đã hết hàng"' : ''}
+          >
+            Xác nhận
+          </button>
+        </div>
+      `;
+
+      return html;
+    }
+
     const itemsHtml = items.map(item => `
       <div class="cart-item-card" onclick="handleCartItemCardClick(event, ${item.product.id})">
         <input
@@ -130,11 +303,31 @@ function initCartPage(options = {}) {
           <a href="${getStorePageUrl('detail', { id: item.product.id })}" class="cart-item-name">
             ${item.product.name}
           </a>
-          <div class="cart-item-meta" style="color: var(--color-ink-2); font-size: 13px; margin-top: 2px;">
-            Phiên bản: <b style="color: var(--color-ink);">${item.variant.color}</b> · ${item.variant.rom || 'Tiêu chuẩn'}
-          </div>
-          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--color-brand-700); margin-top: 2px;">
-            SKU: ${item.variant.sku}
+          <div class="cart-item-meta cart-item-variant-row">
+            <span class="cart-variant-label">Phiên bản:</span>
+            <div class="cart-variant-combobox-wrap" id="variantWrap_${item.sku}">
+              <button 
+                type="button" 
+                class="cart-variant-combobox-btn ${activeVariantSku === item.sku ? 'is-open' : ''}" 
+                id="variantBtn_${item.sku}"
+                onclick="handleToggleCartVariantDropdown(event, '${item.sku}')"
+                aria-expanded="${activeVariantSku === item.sku ? 'true' : 'false'}"
+                title="Bấm để đổi phiên bản"
+              >
+                <span class="cart-variant-btn-label">${item.variant.color}${getCartVariantMemoryLabel(item.variant, item.product) ? ' · ' + getCartVariantMemoryLabel(item.variant, item.product) : ''}</span>
+                <svg class="cart-variant-btn-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+              <div 
+                class="cart-variant-dropdown-panel" 
+                id="variantDropdown_${item.sku}" 
+                style="${activeVariantSku === item.sku ? 'display: block;' : 'display: none;'}" 
+                onclick="event.stopPropagation()"
+              >
+                ${activeVariantSku === item.sku ? renderCartVariantDropdownContent(item.sku, items) : ''}
+              </div>
+            </div>
           </div>
           <div class="cart-item-price-mobile">${vnd(item.variant.price * item.qty)}</div>
         </div>
@@ -210,9 +403,152 @@ function initCartPage(options = {}) {
   }
 
   window.handleCartItemCardClick = (event, productId) => {
-    if (event.target.closest('a, button, input, select, textarea, label')) return;
+    if (event.target.closest('a, button, input, select, textarea, label, .cart-variant-combobox-wrap, .cart-variant-dropdown-panel')) return;
     window.location.href = getStorePageUrl('detail', { id: productId });
   };
+
+  window.handleToggleCartVariantDropdown = (event, sku) => {
+    if (event) event.stopPropagation();
+    if (activeVariantSku === sku) {
+      window.handleCancelCartVariant(event, sku);
+      return;
+    }
+
+    if (activeVariantSku) {
+      window.handleCancelCartVariant(event, activeVariantSku);
+    }
+
+    const rawCart = getCart();
+    const foundItem = rawCart.find(i => i.sku === sku);
+    const variantData = findVariantBySku(sku);
+    if (!foundItem || !variantData) return;
+
+    activeVariantSku = sku;
+    draftVariantSelections[sku] = {
+      color: variantData.variant.color,
+      rom: variantData.variant.rom,
+      lastGroup: 'color'
+    };
+
+    render();
+  };
+
+  window.handleSelectCartVariantColor = (event, sku, color) => {
+    if (event) event.stopPropagation();
+    if (!draftVariantSelections[sku]) return;
+    // Toggle-off: bấm lại chip đang chọn → hủy chọn về null 
+    if (draftVariantSelections[sku].color === color) {
+      draftVariantSelections[sku].color = null;
+    } else {
+      draftVariantSelections[sku].color = color;
+      draftVariantSelections[sku].lastGroup = 'color';
+    }
+    render();
+  };
+
+  window.handleSelectCartVariantRom = (event, sku, rom) => {
+    if (event) event.stopPropagation();
+    if (!draftVariantSelections[sku]) return;
+    // Toggle-off: bấm lại chip đang chọn → hủy chọn về null
+    if (draftVariantSelections[sku].rom === rom) {
+      draftVariantSelections[sku].rom = null;
+    } else {
+      draftVariantSelections[sku].rom = rom;
+      draftVariantSelections[sku].lastGroup = 'rom';
+    }
+    render();
+  };
+
+  window.handleCancelCartVariant = (event, sku) => {
+    if (event) event.stopPropagation();
+    delete draftVariantSelections[sku];
+    if (activeVariantSku === sku) {
+      activeVariantSku = null;
+    }
+    render();
+  };
+
+  window.handleConfirmCartVariant = (event, sku) => {
+    if (event) event.stopPropagation();
+    const variantData = findVariantBySku(sku);
+    if (!variantData) return;
+
+    const draft = draftVariantSelections[sku];
+    if (!draft) {
+      window.handleCancelCartVariant(event, sku);
+      return;
+    }
+
+    const p = variantData.product;
+    const romList = Array.from(new Set((p.variants || []).map(v => v.rom).filter(Boolean).filter(r => r !== 'Tiêu chuẩn')));
+    const colorList = Array.from(new Set((p.variants || []).map(v => v.color).filter(Boolean).filter(c => c !== 'Tiêu chuẩn')));
+
+    const targetVariant = p.variants.find(v => {
+      const matchColor = colorList.length > 0 ? v.color === draft.color : true;
+      const matchRom = romList.length > 0 ? v.rom === draft.rom : true;
+      return matchColor && matchRom;
+    });
+
+    if (!targetVariant || (Number(targetVariant.stock) || 0) <= 0) {
+      if (typeof showToast === 'function') {
+        showToast('Phiên bản này hiện đã hết hàng, vui lòng chọn phiên bản khác!');
+      }
+      return;
+    }
+
+    // Nếu không thay đổi gì
+    if (targetVariant.sku === sku) {
+      window.handleCancelCartVariant(event, sku);
+      return;
+    }
+
+    const rawCart = getCart();
+    const oldIndex = rawCart.findIndex(i => i.sku === sku);
+    if (oldIndex === -1) {
+      window.handleCancelCartVariant(event, sku);
+      return;
+    }
+
+    const currentQty = rawCart[oldIndex].qty || 1;
+    const maxStock = Number(targetVariant.stock) || 1;
+    const existingIndex = rawCart.findIndex(i => i.sku === targetVariant.sku);
+
+    if (existingIndex !== -1) {
+      // Đã có biến thể mới trong giỏ -> Gộp số lượng và xóa sku cũ
+      rawCart[existingIndex].qty = Math.min((rawCart[existingIndex].qty || 1) + currentQty, maxStock);
+      rawCart.splice(oldIndex, 1);
+    } else {
+      // Thay đổi sang SKU mới
+      rawCart[oldIndex].sku = targetVariant.sku;
+      rawCart[oldIndex].qty = Math.min(currentQty, maxStock);
+    }
+
+    // Cập nhật selectedSkus nếu item cũ đang được tick
+    if (selectedSkus.has(sku)) {
+      selectedSkus.delete(sku);
+      selectedSkus.add(targetVariant.sku);
+    }
+
+    saveCart(rawCart);
+    activeVariantSku = null;
+    delete draftVariantSelections[sku];
+
+    render();
+
+    if (typeof showToast === 'function') {
+      const romText = targetVariant.rom && targetVariant.rom !== 'Tiêu chuẩn' ? ` · ${targetVariant.rom}` : '';
+      showToast(`Đã đổi phiên bản: ${targetVariant.color}${romText}`);
+    }
+  };
+
+  const handleGlobalCartVariantClick = (e) => {
+    if (activeVariantSku && !e.target.closest('.cart-variant-combobox-wrap')) {
+      window.handleCancelCartVariant(null, activeVariantSku);
+    }
+  };
+  document.removeEventListener('click', window._cartVariantDocClick);
+  window._cartVariantDocClick = handleGlobalCartVariantClick;
+  document.addEventListener('click', handleGlobalCartVariantClick);
 
   window.handleUpdateCartQty = (sku, newQty) => {
     if (newQty <= 0) {
