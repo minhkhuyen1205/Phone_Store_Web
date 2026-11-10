@@ -545,8 +545,8 @@ function initAdminPortal(options = {}) {
                       autocomplete="current-password"
                       required
                     />
-                    <button type="button" class="field-toggle-pwd" onclick="toggleAdminPasswordVisibility(this)" title="Hiện/ẩn mật khẩu">
-                      <img src="${iconPath}view.svg" class="icon icon-18" alt="" />
+                    <button type="button" class="field-toggle-pwd" aria-label="Hiển thị mật khẩu" aria-pressed="false" aria-controls="adminPasswordInput" onclick="toggleAdminPasswordVisibility(this)" title="Hiển thị mật khẩu">
+                      <img src="${iconPath}eye-off.svg" class="icon icon-18" alt="" />
                     </button>
                   </div>
                 </div>
@@ -556,7 +556,6 @@ function initAdminPortal(options = {}) {
                     <input type="checkbox" id="adminRememberMe" />
                     Ghi nhớ đăng nhập
                   </label>
-                  <span class="support-hint">Hỗ trợ kỹ thuật</span>
                 </div>
 
                 <button type="submit" class="btn-admin-login-submit">
@@ -2884,7 +2883,12 @@ function initAdminPortal(options = {}) {
     if (!wrap) return;
     const input = wrap.querySelector('input');
     if (!input) return;
-    input.type = input.type === 'password' ? 'text' : 'password';
+    const show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    btn.setAttribute('aria-pressed', String(show));
+    btn.setAttribute('aria-label', `${show ? 'Ẩn' : 'Hiển thị'} mật khẩu`);
+    btn.title = `${show ? 'Ẩn' : 'Hiển thị'} mật khẩu`;
+    btn.querySelector('img').src = `${iconPath}${show ? 'view.svg' : 'eye-off.svg'}`;
   };
 
   window.handleAdminLogout = () => {
