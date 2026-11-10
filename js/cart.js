@@ -127,18 +127,6 @@ function initCartPage(options = {}) {
     const shipping = selectedItems.length > 0 && subtotal <= 2000000 ? 30000 : 0;
     const total = selectedItems.length > 0 ? subtotal + shipping : 0;
 
-    function getCartVariantMemoryLabel(variant, product) {
-      const ram = variant && variant.ram && variant.ram !== 'Tiêu chuẩn'
-        ? variant.ram
-        : (product.ram && product.ram !== 'Tiêu chuẩn' ? product.ram : '');
-      const rom = variant && variant.rom && variant.rom !== 'Tiêu chuẩn'
-        ? variant.rom
-        : '';
-
-      if (ram && rom) return `${ram}/${rom}`;
-      return ram || rom;
-    }
-
     function renderCartVariantDropdownContent(sku, currentItems) {
       const item = currentItems.find(i => i.sku === sku);
       if (!item) return '';
@@ -150,8 +138,9 @@ function initCartPage(options = {}) {
 
       let html = '';
 
-      
-      // 1. Nhóm ROM/Dung lượng
+      // ----------------------------------------------------------------
+      // 1. Nhóm ROM/Dung lượng (giống detail.js: hiển thị TRƯỚC màu sắc)
+      // ----------------------------------------------------------------
       if (romList.length > 0) {
         const romTitle = p.category === 'Đồng hồ thông minh' ? 'Chọn bộ nhớ:' : 'Chọn dung lượng bộ nhớ:';
 
@@ -159,7 +148,10 @@ function initCartPage(options = {}) {
         if (draft.rom) {
           const matchVar = p.variants.find(v => v.rom === draft.rom && (draft.color ? v.color === draft.color : true))
             || p.variants.find(v => v.rom === draft.rom);
-          currentRamRomTitle = getCartVariantMemoryLabel(matchVar, p) || draft.rom;
+          const ramVal = (matchVar && matchVar.ram && matchVar.ram !== 'Tiêu chuẩn')
+            ? matchVar.ram
+            : (p.ram && p.ram !== 'Tiêu chuẩn' ? p.ram : '');
+          currentRamRomTitle = ramVal ? `${ramVal}/${draft.rom}` : draft.rom;
         }
 
         html += `
@@ -180,7 +172,10 @@ function initCartPage(options = {}) {
 
                 const variantWithRom = p.variants.find(v => v.rom === rom && (draft.color ? v.color === draft.color : true))
                   || p.variants.find(v => v.rom === rom);
-                const ramRomLabel = getCartVariantMemoryLabel(variantWithRom, p) || rom;
+                const ramVal = (variantWithRom && variantWithRom.ram && variantWithRom.ram !== 'Tiêu chuẩn')
+                  ? variantWithRom.ram
+                  : (p.ram && p.ram !== 'Tiêu chuẩn' ? p.ram : '');
+                const ramRomLabel = ramVal ? `${ramVal}/${rom}` : rom;
 
                 return `
                   <button
@@ -199,7 +194,9 @@ function initCartPage(options = {}) {
         `;
       }
 
-      // 2. Nhóm Màu sắc 
+      // ----------------------------------------------------------------
+      // 2. Nhóm Màu sắc (giống detail.js: sau ROM)
+      // ----------------------------------------------------------------
       if (colorList.length > 0) {
         let colorTitle = 'Chọn màu sắc:';
         if (p.category === 'Phụ kiện') colorTitle = 'Chọn phân loại / quy cách:';
@@ -314,7 +311,7 @@ function initCartPage(options = {}) {
                 aria-expanded="${activeVariantSku === item.sku ? 'true' : 'false'}"
                 title="Bấm để đổi phiên bản"
               >
-                <span class="cart-variant-btn-label">${item.variant.color}${getCartVariantMemoryLabel(item.variant, item.product) ? ' · ' + getCartVariantMemoryLabel(item.variant, item.product) : ''}</span>
+                <span class="cart-variant-btn-label"><b>${item.variant.color}</b>${item.variant.rom && item.variant.rom !== 'Tiêu chuẩn' ? ' · ' + item.variant.rom : ''}</span>
                 <svg class="cart-variant-btn-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                   <polyline points="6 9 12 15 18 9"></polyline>
                 </svg>
@@ -436,7 +433,7 @@ function initCartPage(options = {}) {
   window.handleSelectCartVariantColor = (event, sku, color) => {
     if (event) event.stopPropagation();
     if (!draftVariantSelections[sku]) return;
-    // Toggle-off: bấm lại chip đang chọn → hủy chọn về null 
+    // Toggle-off: bấm lại chip đang chọn → hủy chọn về null (giống detail.js)
     if (draftVariantSelections[sku].color === color) {
       draftVariantSelections[sku].color = null;
     } else {
@@ -449,7 +446,7 @@ function initCartPage(options = {}) {
   window.handleSelectCartVariantRom = (event, sku, rom) => {
     if (event) event.stopPropagation();
     if (!draftVariantSelections[sku]) return;
-    // Toggle-off: bấm lại chip đang chọn → hủy chọn về null
+    // Toggle-off: bấm lại chip đang chọn → hủy chọn về null (giống detail.js)
     if (draftVariantSelections[sku].rom === rom) {
       draftVariantSelections[sku].rom = null;
     } else {
